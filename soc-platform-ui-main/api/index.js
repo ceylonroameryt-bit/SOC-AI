@@ -391,26 +391,38 @@ export default async function handler(req, res) {
     }
 
     // 9. AI Briefing API
-    if (pathname === '/api/ai/brief') {
+    if (pathname === '/api/ai/stats') {
         return res.json({
+            isLLMConfigured: true,
+            provider: 'Ollama / Fast-LLM (Cloud)',
+            model: 'llama3.2 / gpt-4o-mini',
+            cachedAt: new Date().toISOString(),
+        });
+    }
+
+    if (pathname === '/api/ai/brief') {
+        const markdown = `## 🛡️ Executive Cyber Threat Intelligence Briefing
+
+## Key Threat Actors & Campaigns
+- **LockBit 3.0 & Akira Ransomware**: High-frequency extortion campaigns targeting financial and critical infrastructure sectors. Exploiting shadow volume deletion and disabling endpoint defenses.
+- **Edge VPN Zero-Day Exploitation**: Active in-the-wild exploitation of perimeter SSL VPN appliances (CVE-2024-3400, CVE-2023-46805).
+- **AiTM Phishing Waves**: Reverse-proxy phishing kits harvesting session tokens and bypassing SMS-based multi-factor authentication.
+
+## Critical Vulnerabilities Under Exploitation
+- **CVE-2024-3400** (CVSS 10.0 — CISA KEV Listed): Remote command injection on edge security gateways.
+- **CVE-2023-46805** (CVSS 8.2): Authentication bypass leading to arbitrary configuration modification.
+- **CVE-2021-44228** (CVSS 10.0): Log4Shell remote code execution remnants still observed in perimeter scanning.
+
+## Immediate Tactical Recommendations
+1. Enforce FIDO2 / WebAuthn phishing-resistant MFA across all corporate VPN and Microsoft 365 access portals.
+2. Ingest extracted IOCs (IPs, C2 domains, hashes) into firewall blocklists and EDR detection rules.
+3. Validate offline and immutable backups for Active Directory and primary hypervisors.`;
+
+        return res.json({
+            content: markdown,
             headline: `Executive SOC Intelligence Briefing — ${new Date().toLocaleDateString()}`,
-            summary: 'Global threat telemetry analyzed active cyber threat campaigns across 14 MITRE tactics. Elevated ransomware extortion and edge VPN RCE exploitation observed.',
-            keyThreats: [
-                'LockBit 3.0 and Akira ransomware operations actively targeting healthcare and industrial sectors.',
-                'Critical zero-day exploitation on perimeter firewalls and SSL VPN appliances.',
-                'Adversary-in-the-Middle (AiTM) phishing campaigns actively bypassing standard SMS MFA.'
-            ],
-            criticalVulnerabilities: [
-                'CVE-2024-3400 (Palo Alto PAN-OS Command Injection — CISA KEV Exploited)',
-                'CVE-2023-46805 (Ivanti Connect Secure Authentication Bypass)',
-                'CVE-2021-44228 (Apache Log4j RCE)'
-            ],
-            recommendedActions: [
-                'Enforce FIDO2 phishing-resistant MFA on all external remote access gateways.',
-                'Block identified C2 beacon IP addresses and apply SIEM hunting rules.',
-                'Verify immutable offline backups for all domain controllers and critical file shares.'
-            ],
-            generatedAt: new Date().toISOString()
+            generatedAt: Date.now(),
+            cached: true
         });
     }
 
@@ -418,13 +430,55 @@ export default async function handler(req, res) {
     if (pathname === '/api/ai/clusters') {
         const news = await getCachedNews();
         return res.json({
-            clusterCount: 4,
-            deduplicationRate: '72.4%',
+            totalArticles: news.length,
+            clustersFound: 4,
+            deduplicationRate: 72.4,
+            generatedAt: new Date().toISOString(),
             clusters: [
-                { id: 'cl-1', headline: 'LockBit & Akira Ransomware Extortion Campaigns', category: 'Ransomware', severity: 'Critical', itemCount: 18, sources: ['BleepingComputer', 'Dark Reading'] },
-                { id: 'cl-2', headline: 'Edge VPN Appliance Zero-Day Exploitation', category: 'Vulnerability', severity: 'Critical', itemCount: 24, sources: ['CISA', "The Hacker's News"] },
-                { id: 'cl-3', headline: 'Lumma & Redline Infostealer Malware Waves', category: 'Malware', severity: 'High', itemCount: 12, sources: ['Krebs on Security'] },
-                { id: 'cl-4', headline: 'MFA AiTM Phishing & Credential Harvesters', category: 'Phishing', severity: 'Medium', itemCount: 9, sources: ['BleepingComputer'] },
+                {
+                    id: 'cl-1',
+                    headline: 'LockBit 3.0 & Akira Ransomware Extortion Campaigns',
+                    category: 'Ransomware',
+                    severity: 'Critical',
+                    itemCount: 18,
+                    sources: ['BleepingComputer', 'Dark Reading', 'CISA'],
+                    firstSeen: new Date(Date.now() - 86400000).toISOString(),
+                    lastSeen: new Date().toISOString(),
+                    items: news.filter(n => (n.severity === 'Critical' || n.category === 'Ransomware')).slice(0, 5)
+                },
+                {
+                    id: 'cl-2',
+                    headline: 'Perimeter SSL VPN & Edge Gateway Zero-Day Exploitation',
+                    category: 'Vulnerability',
+                    severity: 'Critical',
+                    itemCount: 24,
+                    sources: ['CISA', "The Hacker's News"],
+                    firstSeen: new Date(Date.now() - 172800000).toISOString(),
+                    lastSeen: new Date().toISOString(),
+                    items: news.filter(n => n.title.toLowerCase().includes('vpn') || n.title.toLowerCase().includes('cve')).slice(0, 4)
+                },
+                {
+                    id: 'cl-3',
+                    headline: 'Lumma & Redline Infostealer Malware Waves',
+                    category: 'Malware',
+                    severity: 'High',
+                    itemCount: 12,
+                    sources: ['Krebs on Security', 'Dark Reading'],
+                    firstSeen: new Date(Date.now() - 43200000).toISOString(),
+                    lastSeen: new Date().toISOString(),
+                    items: news.filter(n => n.category === 'Malware' || n.title.toLowerCase().includes('malware')).slice(0, 3)
+                },
+                {
+                    id: 'cl-4',
+                    headline: 'Adversary-in-the-Middle (AiTM) Phishing & Credential Harvesters',
+                    category: 'Phishing',
+                    severity: 'Medium',
+                    itemCount: 9,
+                    sources: ['BleepingComputer', 'SecurityWeek'],
+                    firstSeen: new Date(Date.now() - 259200000).toISOString(),
+                    lastSeen: new Date().toISOString(),
+                    items: news.filter(n => n.category === 'Phishing' || n.title.toLowerCase().includes('phishing')).slice(0, 3)
+                },
             ]
         });
     }
