@@ -109,25 +109,30 @@ CREATE INDEX IF NOT EXISTS idx_alert_logs_created ON alert_logs(created_at DESC)
 -- 7. HELPER VIEWS FOR REALTIME ANALYTICS & DASHBOARD
 -- ==============================================================================
 
--- Severity Breakdown View
-CREATE OR REPLACE VIEW v_severity_stats AS
-SELECT 
-    severity,
-    COUNT(*) AS count
-FROM threats
-WHERE published_at >= NOW() - INTERVAL '30 days'
-GROUP BY severity;
+-- ==============================================================================
+-- 8. ROW LEVEL SECURITY (RLS) POLICIES
+-- ==============================================================================
 
--- Top MITRE Techniques View
-CREATE OR REPLACE VIEW v_top_mitre_techniques AS
-SELECT 
-    technique_id,
-    technique_name,
-    tactic_name,
-    COUNT(*) AS hit_count
-FROM threat_mitre_mapping
-GROUP BY technique_id, technique_name, tactic_name
-ORDER BY hit_count DESC;
+-- Enable RLS on all tables
+ALTER TABLE threats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE iocs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE threat_mitre_mapping ENABLE ROW LEVEL SECURITY;
+ALTER TABLE incident_clusters ENABLE ROW LEVEL SECURITY;
+ALTER TABLE alert_logs ENABLE ROW LEVEL SECURITY;
 
--- Optional: Enable Realtime on Supabase
+-- Allow public read-only access to threat data and IOCs
+CREATE POLICY "Allow public read access on threats" ON threats FOR SELECT USING (true);
+CREATE POLICY "Allow public read access on iocs" ON iocs FOR SELECT USING (true);
+CREATE POLICY "Allow public read access on threat_mitre_mapping" ON threat_mitre_mapping FOR SELECT USING (true);
+CREATE POLICY "Allow public read access on incident_clusters" ON incident_clusters FOR SELECT USING (true);
+
+-- Allow service_role (backend server) full read/write access
+CREATE POLICY "Allow service_role full access on threats" ON threats FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service_role full access on iocs" ON iocs FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service_role full access on threat_mitre_mapping" ON threat_mitre_mapping FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service_role full access on incident_clusters" ON incident_clusters FOR ALL USING (auth.role() = 'service_role');
+CREATE POLICY "Allow service_role full access on alert_logs" ON alert_logs FOR ALL USING (auth.role() = 'service_role');
+
+-- Enable Realtime on Supabase (optional)
 -- ALTER PUBLICATION supabase_realtime ADD TABLE threats, alert_logs;
+
