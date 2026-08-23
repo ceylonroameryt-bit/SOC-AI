@@ -1,0 +1,367 @@
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import compression from 'compression';
+import cron from 'node-cron';
+
+// Route imports
+import newsRouter     from './routes/news.js';
+import threatsRouter  from './routes/threats.js';
+import reportsRouter  from './routes/reports.js';
+import sourcesRouter  from './routes/sources.js';
+import enrichRouter   from './routes/enrich.js';
+import mitreRouter    from './routes/mitre.js';
+import webhooksRouter from './routes/webhooks.js';
+import aiRouter       from './routes/ai.js';
+import rulesRouter    from './routes/rules.js';
+
+// Service imports
+import { fetchAndProcessNews, getNews } from './services/newsService.js';
+import { sendPeriodicSummary }          from './services/emailService.js';
+import { broadcastAlert }               from './services/webhookService.js';
+import { processNewsForMitre }          from './services/mitreService.js';
+
+// ES module __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+const isDev = process.env.NODE_ENV !== 'production';
+
+// ==========================================
+// SECURITY MIDDLEWARE
+// ==========================================
+
+// 1. Compression
+app.use(compression());
+
+// 2. Helmet - Security Headers (CSP temporarily disabled for Azure debugging)
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: false,
+    crossOriginResourcePolicy: false,
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+    noSniff: true,
+    xssFilter: true,
+}));
+
+// 3. Custom Security Headers
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    res.removeHeader('X-Powered-By');
+    next();
+});
+
+// 4. CORS - Strict Origin Allowlist
+const allowedOrigins = [
+    'http://localhost:5173',   // Vite dev server (primary)
+    'http://localhost:5174',   // Vite dev server (fallback)
+    'http://localhost:5175',   // Vite dev server (fallback)
+    'http://localhost:5176',   // Vite dev server (fallback)
+    'http://localhost:4173',   // Vite preview
+    'http://localhost:3000',   // Server itself
+    process.env.ALLOWED_ORIGIN, // Production domain from .env
+    process.env.WEBSITE_HOSTNAME ? `https://${process.env.WEBSITE_HOSTNAME}` : null // Azure specific hostname
+].filter(Boolean);
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (server-to-server, curl, mobile apps, standard browser navigation)
+        if (!origin) return callback(null, true);
+        
+        // Dynamically allow Railway domains to prevent production lockouts
+        if (allowedOrigins.includes(origin) || origin.endsWith('.up.railway.app')) {
+            callback(null, true);
+        } else {
+            console.warn(`⚠️  CORS blocked request from: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    maxAge: 86400 // Cache preflight for 24 hours
+}));
+
+// 5. Body Parser with Size Limit (prevent payload bombs)
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: false, limit: '10kb' }));
+
+// 6. Rate Limiting - Tiered
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 500,
+    standardHeaders: true,  // Return rate limit info in headers
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later.' },
+});
+
+const strictLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10, // Very strict for sensitive endpoints
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Rate limit exceeded for this action.' }
+});
+
+app.use('/api', apiLimiter);
+
+// 7. Request Logging (Security Audit Trail)
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        if (req.path.startsWith('/api')) {
+            console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} ${res.statusCode} ${duration}ms - ${req.ip}`);
+        }
+    });
+    next();
+});
+
+// ==========================================
+// API ROUTES (Must come before static/SPA catch-all)
+// ==========================================
+app.use('/api/news',      newsRouter);
+app.use('/api/threats',   threatsRouter);
+app.use('/api/reports',   reportsRouter);
+app.use('/api/sources',   sourcesRouter);
+app.use('/api/enrich',    enrichRouter);
+app.use('/api/mitre',     mitreRouter);
+app.use('/api/webhooks',  webhooksRouter);
+app.use('/api/ai',        aiRouter);
+app.use('/api/rules',     rulesRouter);
+
+// ==========================================
+// STATIC FILES (production)
+// ==========================================
+// __dirname-relative path is always correct; cwd() varies on Azure iisnode
+const distPathFromDirname = path.join(__dirname, '../dist');
+const distPathFromCwd = path.join(process.cwd(), 'dist');
+const resolvedDistPath = fs.existsSync(distPathFromDirname) ? distPathFromDirname : distPathFromCwd;
+console.log(`[STATIC] __dirname dist: ${distPathFromDirname} (exists: ${fs.existsSync(distPathFromDirname)})`);
+console.log(`[STATIC] cwd dist: ${distPathFromCwd} (exists: ${fs.existsSync(distPathFromCwd)})`);
+console.log(`[STATIC] Using: ${resolvedDistPath}`);
+
+// Serve static files from dist/
+app.use(express.static(resolvedDistPath, {
+    dotfiles: 'deny',
+    etag: true,
+    maxAge: isDev ? 0 : '1d',
+    index: 'index.html',
+    setHeaders: (res, filePath) => {
+        // Ensure correct MIME types for Azure/IIS compatibility
+        if (filePath.endsWith('.js')) res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+        if (filePath.endsWith('.css')) res.setHeader('Content-Type', 'text/css; charset=utf-8');
+        if (filePath.endsWith('.svg')) res.setHeader('Content-Type', 'image/svg+xml');
+        if (filePath.endsWith('.woff2')) res.setHeader('Content-Type', 'font/woff2');
+        if (filePath.endsWith('.woff')) res.setHeader('Content-Type', 'font/woff');
+        // Cache hashed assets for 1 year, others no-cache
+        if (filePath.includes('/assets/') && /\.[a-zA-Z0-9]{8,}\./.test(path.basename(filePath))) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        } else {
+            res.setHeader('Cache-Control', 'no-cache');
+        }
+    }
+}));
+
+// ==========================================
+// SIEM INGESTION ENDPOINT — POST /api/v1/alerts
+// Accepts alerts from Wazuh, Snort, Suricata, etc.
+// Authentication: X-API-Key header
+// ==========================================
+app.post('/api/v1/alerts', async (req, res) => {
+    const apiKey = req.headers['x-api-key'];
+    const expectedKey = process.env.INGEST_API_KEY;
+
+    // Require key if configured
+    if (expectedKey && apiKey !== expectedKey) {
+        console.warn(`[INGEST] Unauthorized alert push attempt from ${req.ip}`);
+        return res.status(401).json({ error: 'Unauthorized. Provide a valid X-API-Key header.' });
+    }
+
+    const { type, severity, description, source, ioc } = req.body;
+    if (!type || !severity) {
+        return res.status(400).json({ error: '"type" and "severity" are required fields.' });
+    }
+    const allowedSeverities = ['Critical', 'High', 'Medium', 'Low'];
+    if (!allowedSeverities.includes(severity)) {
+        return res.status(400).json({ error: `Invalid severity. Must be one of: ${allowedSeverities.join(', ')}` });
+    }
+
+    const newAlert = {
+        id: `EXT-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
+        type,
+        severity,
+        source: source || 'External SIEM',
+        description: description || `External ${severity} alert: ${type}`,
+        ioc: ioc || {},
+        timestamp: new Date().toISOString(),
+        externalIngestion: true,
+    };
+
+    // Persist to threats.json
+    try {
+        const threatsPath = path.join(__dirname, 'data/threats.json');
+        const existing = fs.existsSync(threatsPath)
+            ? JSON.parse(fs.readFileSync(threatsPath, 'utf8'))
+            : [];
+        existing.unshift(newAlert);
+        fs.writeFileSync(threatsPath, JSON.stringify(existing.slice(0, 200), null, 2));
+        console.log(`[INGEST] New external alert ingested: ${newAlert.id} (${severity} ${type})`);
+
+        // Broadcast to ChatOps if Critical or High
+        if (severity === 'Critical' || severity === 'High') {
+            broadcastAlert(newAlert).catch(err => console.error('[INGEST] Webhook broadcast failed:', err.message));
+        }
+
+        res.status(201).json({ success: true, alertId: newAlert.id, message: 'Alert ingested successfully.' });
+    } catch (err) {
+        console.error('[INGEST] Failed to save alert:', err.message);
+        res.status(500).json({ error: 'Failed to persist alert.' });
+    }
+});
+
+// Debug endpoint - shows file paths on Azure (remove after debugging)
+// Debug endpoint - Deep scan of file system on Azure
+app.get('/api/debug/paths', (req, res) => {
+    const listDir = (dir) => {
+        try {
+            return fs.readdirSync(dir).map(f => {
+                const fullPath = path.join(dir, f);
+                const stat = fs.statSync(fullPath);
+                return {
+                    name: f,
+                    isDir: stat.isDirectory(),
+                    size: stat.size,
+                    children: stat.isDirectory() && f !== 'node_modules' && f !== '.git' ? listDir(fullPath) : undefined
+                };
+            });
+        } catch (e) {
+            return { error: e.message };
+        }
+    };
+
+    res.json({
+        cwd: process.cwd(),
+        __dirname,
+        __filename,
+        env: process.env,
+        distPathFromDirname,
+        distPathFromCwd,
+        resolvedDistPath,
+        fsTree: {
+            dirname: listDir(__dirname),
+            cwd: listDir(process.cwd()),
+            // Try to find dist in common locations
+            distInCwd: listDir(path.join(process.cwd(), 'dist')),
+            distInRoot: listDir(path.join(process.cwd(), '..', 'dist')),
+            wwwroot: listDir('C:\\home\\site\\wwwroot')
+        }
+    });
+});
+
+// Manual Email Trigger (with strict rate limit + input validation)
+app.post('/api/notifications/send', strictLimiter, async (req, res) => {
+    try {
+        const { email } = req.body;
+        const targetEmail = email || process.env.DEFAULT_EMAIL || 'poornasujampathi@gmail.com';
+
+        // Email validation regex
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (email && !emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Invalid email address format.' });
+        }
+
+        console.log(`[EMAIL] Sending report to ${targetEmail}...`);
+        const result = await sendPeriodicSummary(targetEmail);
+
+        if (result.success) {
+            res.json({ success: true, message: 'Report sent successfully.' });
+        } else {
+            // Don't leak internal error details to client
+            res.status(500).json({ success: false, error: 'Failed to send email. Try again later.' });
+        }
+    } catch (err) {
+        console.error('[EMAIL ERROR]', err);
+        res.status(500).json({ success: false, error: 'Internal server error.' });
+    }
+});
+
+
+// ==========================================
+// SPA FALLBACK (Serves index.html for frontend routing)
+// ==========================================
+app.get('{*path}', (req, res, next) => {
+    // If request starts with /api, pass to 404 / error handler
+    if (req.path.startsWith('/api')) {
+        return res.status(404).json({ error: `API endpoint not found: ${req.method} ${req.path}` });
+    }
+    res.sendFile(path.join(resolvedDistPath, 'index.html'));
+});
+
+// ==========================================
+// GLOBAL ERROR HANDLER (prevents stack trace leaks)
+// ==========================================
+app.use((err, req, res, next) => {
+    console.error(`[ERROR] ${req.method} ${req.path}:`, err.message);
+
+    // CORS errors
+    if (err.message === 'Not allowed by CORS') {
+        return res.status(403).json({ error: 'Origin not allowed.' });
+    }
+
+    // JSON parse errors
+    if (err.type === 'entity.too.large') {
+        return res.status(413).json({ error: 'Request payload too large.' });
+    }
+
+    if (err.type === 'entity.parse.failed') {
+        return res.status(400).json({ error: 'Malformed JSON in request body.' });
+    }
+
+    // Generic error (never leak stack traces in production)
+    res.status(err.status || 500).json({
+        error: isDev ? err.message : 'Internal server error.'
+    });
+});
+
+// ==========================================
+// START SERVER
+// ==========================================
+app.listen(PORT, () => {
+    console.log(`\n🔒 SOC Server running on http://localhost:${PORT}`);
+    console.log(`   Environment: ${isDev ? 'DEVELOPMENT' : 'PRODUCTION'}`);
+    console.log(`   CORS Origins: ${allowedOrigins.join(', ')}`);
+    console.log(`   Rate Limit: 500 req/15min (API), 10 req/15min (Email)\n`);
+
+    // Initial data fetch + MITRE mapping
+    fetchAndProcessNews().then(news => {
+        if (news?.length) processNewsForMitre(news);
+    });
+
+    // Schedule email every 3 hours
+    const reportEmail = process.env.DEFAULT_EMAIL || 'poornasujampathi@gmail.com';
+    cron.schedule('0 */3 * * *', () => {
+        console.log(`[CRON] Running periodic email report...`);
+        sendPeriodicSummary(reportEmail);
+    });
+
+    // Refresh news every 30 minutes + update MITRE heatmap
+    setInterval(async () => {
+        const news = await fetchAndProcessNews();
+        if (news?.length) processNewsForMitre(news);
+    }, 30 * 60 * 1000);
+
+    console.log('   New APIs: /api/enrich, /api/mitre, /api/ai, /api/rules, /api/webhooks, /api/v1/alerts\n');
+});

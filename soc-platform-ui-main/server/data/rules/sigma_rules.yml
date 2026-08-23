@@ -1,0 +1,169 @@
+title: Suspicious PowerShell Encoded Command Execution
+id: a8b6c1d2-e3f4-5678-90ab-cdef01234567
+status: stable
+description: Detects execution of PowerShell with encoded or obfuscated command payloads, commonly used by threat actors to evade detection.
+references:
+    - https://attack.mitre.org/techniques/T1059/001/
+    - https://lolbas-project.github.io/lolbas/Binaries/Powershell/
+date: 2024-01-15
+author: NO ENTRY SOC Platform (adapted from SigmaHQ)
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - attack.defense_evasion
+    - attack.t1027
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith:
+            - '\powershell.exe'
+            - '\pwsh.exe'
+    selection_encoded:
+        CommandLine|contains:
+            - '-EncodedCommand'
+            - '-enc '
+            - '-ec '
+            - 'FromBase64String'
+            - 'JABjAG'
+            - 'JgAgA'
+    condition: selection_img and selection_encoded
+falsepositives:
+    - Legitimate administrative scripts using encoded commands
+    - Software deployment tools (SCCM, Intune)
+level: high
+---
+title: LSASS Memory Dump via Common Tools (Mimikatz / ProcDump)
+id: b9c7d2e3-f4a5-6789-01bc-def012345678
+status: stable
+description: Detects attempts to dump LSASS process memory for credential extraction using common tools like Mimikatz, ProcDump, or Task Manager.
+references:
+    - https://attack.mitre.org/techniques/T1003/001/
+date: 2024-01-15
+author: NO ENTRY SOC Platform (adapted from SigmaHQ)
+tags:
+    - attack.credential_access
+    - attack.t1003.001
+logsource:
+    category: process_access
+    product: windows
+detection:
+    selection:
+        TargetImage|endswith: '\lsass.exe'
+        GrantedAccess|contains:
+            - '0x1010'
+            - '0x1038'
+            - '0x40'
+            - '0x1fffff'
+    filter_ms:
+        SourceImage|startswith:
+            - 'C:\Windows\System32\'
+            - 'C:\Windows\SysWOW64\'
+    condition: selection and not filter_ms
+falsepositives:
+    - Antivirus / EDR products accessing LSASS for monitoring
+    - Windows Defender credential guard
+level: critical
+---
+title: Ransomware Indicator - Mass File Extension Change
+id: c0d8e3f4-0ab5-789c-12cd-ef0123456789
+status: experimental
+description: Detects rapid file extension changes across multiple directories, a common indicator of ransomware file encryption activity.
+references:
+    - https://attack.mitre.org/techniques/T1486/
+date: 2024-01-15
+author: NO ENTRY SOC Platform (adapted from SigmaHQ)
+tags:
+    - attack.impact
+    - attack.t1486
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection:
+        TargetFilename|endswith:
+            - '.locked'
+            - '.encrypted'
+            - '.crypt'
+            - '.locky'
+            - '.zepto'
+            - '.cerber'
+            - '.wannacry'
+            - '.wnry'
+            - '.wncry'
+            - '.WNCRY'
+            - '.blackcat'
+            - '.alphv'
+    condition: selection | count() by ComputerName > 20
+falsepositives:
+    - Legitimate file archiving or compression tools
+level: critical
+---
+title: Cobalt Strike Beacon Network Activity
+id: d1e9f4a5-1bc6-890d-23de-f01234567890
+status: stable
+description: Detects network patterns consistent with Cobalt Strike beacon C2 communication, including characteristic HTTP/HTTPS staging URIs and user-agent strings.
+references:
+    - https://attack.mitre.org/techniques/T1071/001/
+date: 2024-01-15
+author: NO ENTRY SOC Platform (adapted from SigmaHQ)
+tags:
+    - attack.command_and_control
+    - attack.t1071.001
+    - attack.t1219
+logsource:
+    category: network_connection
+    product: windows
+detection:
+    selection:
+        DestinationPort:
+            - 80
+            - 443
+            - 8080
+            - 8443
+        Initiated: 'true'
+    cs_indicators:
+        CommandLine|contains:
+            - '/jquery-3.3.1.min.js'
+            - '/push'
+            - '/ca'
+            - '/activity'
+    condition: selection and cs_indicators
+falsepositives:
+    - Legitimate web browsing or CDN traffic
+    - Web application monitoring tools
+level: high
+---
+title: Suspicious Scheduled Task Creation via schtasks.exe
+id: e2f0a5b6-2cd7-901e-34ef-012345678901
+status: stable
+description: Detects creation of scheduled tasks using schtasks.exe with suspicious parameters often used for persistence or lateral movement.
+references:
+    - https://attack.mitre.org/techniques/T1053/005/
+date: 2024-01-15
+author: NO ENTRY SOC Platform (adapted from SigmaHQ)
+tags:
+    - attack.persistence
+    - attack.t1053.005
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        Image|endswith: '\schtasks.exe'
+        CommandLine|contains: '/create'
+    selection_suspicious:
+        CommandLine|contains:
+            - 'powershell'
+            - 'cmd.exe /c'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'regsvr32'
+            - 'rundll32'
+    condition: selection_img and selection_suspicious
+falsepositives:
+    - Legitimate software installers and update schedulers
+    - Administrative automation scripts
+level: high

@@ -1,0 +1,614 @@
+[
+    {
+        "name": "Dark Web: Ransomware Leaks",
+        "url": "https://www.ransomware.live/rss",
+        "category": "Dark Web",
+        "type": "Monitoring"
+    },
+    {
+        "name": "Dark Feed",
+        "url": "https://darkfeed.io/feed/",
+        "category": "Dark Web",
+        "type": "Threat Intel"
+    },
+    {
+        "name": "TOR Project Blog",
+        "url": "https://blog.torproject.org/feed",
+        "category": "Dark Web",
+        "type": "Infrastructure"
+    },
+    {
+        "name": "The Hacker News",
+        "url": "https://feeds.feedburner.com/TheHackersNews",
+        "category": "News",
+        "type": "Major News"
+    },
+    {
+        "name": "BleepingComputer",
+        "url": "https://www.bleepingcomputer.com/feed/",
+        "category": "News",
+        "type": "Major News"
+    },
+    {
+        "name": "Krebs on Security",
+        "url": "https://krebsonsecurity.com/feed/",
+        "category": "Investigative",
+        "type": "Blog"
+    },
+    {
+        "name": "Dark Reading",
+        "url": "https://www.darkreading.com/rss.xml",
+        "category": "News",
+        "type": "Enterprise"
+    },
+    {
+        "name": "SecurityWeek",
+        "url": "https://www.securityweek.com/feed/",
+        "category": "News",
+        "type": "Industry"
+    },
+    {
+        "name": "The Record",
+        "url": "https://therecord.media/feed/",
+        "category": "News",
+        "type": "Cybercrime"
+    },
+    {
+        "name": "CISA Current Activity",
+        "url": "https://www.cisa.gov/uscert/ncas/current-activity.xml",
+        "category": "Government",
+        "type": "Advisory"
+    },
+    {
+        "name": "CISA Alerts",
+        "url": "https://www.cisa.gov/uscert/ncas/alerts.xml",
+        "category": "Government",
+        "type": "Advisory"
+    },
+    {
+        "name": "US-CERT Bulletins",
+        "url": "https://www.cisa.gov/uscert/ncas/bulletins.xml",
+        "category": "Government",
+        "type": "Bulletin"
+    },
+    {
+        "name": "Unit 42 (Palo Alto)",
+        "url": "https://unit42.paloaltonetworks.com/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Microsoft Security Blog",
+        "url": "https://www.microsoft.com/security/blog/feed/",
+        "category": "Vendor",
+        "type": "Major Vendor"
+    },
+    {
+        "name": "Microsoft MSRC",
+        "url": "https://msrc.microsoft.com/blog/feed",
+        "category": "Vendor",
+        "type": "Vulnerabilities"
+    },
+    {
+        "name": "Google Project Zero",
+        "url": "https://googleprojectzero.blogspot.com/feeds/posts/default",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Google Online Security",
+        "url": "https://security.googleblog.com/feeds/posts/default",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Mandiant Threat Research",
+        "url": "https://www.mandiant.com/resources/blog/rss.xml",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "CrowdStrike Blog",
+        "url": "https://www.crowdstrike.com/blog/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Trend Micro",
+        "url": "https://blog.trendmicro.com/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Sophos Naked Security",
+        "url": "https://nakedsecurity.sophos.com/feed/",
+        "category": "Vendor",
+        "type": "Blog"
+    },
+    {
+        "name": "Malwarebytes Labs",
+        "url": "https://blog.malwarebytes.com/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Proofpoint Blog",
+        "url": "https://www.proofpoint.com/us/rss.xml",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Fortinet Blog",
+        "url": "https://www.fortinet.com/rss-feeds/rss-blog",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "SentinelOne",
+        "url": "https://www.sentinelone.com/blog/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Check Point Research",
+        "url": "https://research.checkpoint.com/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "ESET WeLiveSecurity",
+        "url": "https://www.welivesecurity.com/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Kaspersky Securelist",
+        "url": "https://securelist.com/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Symantec Threat Intel",
+        "url": "https://symantec-enterprise-blogs.security.com/rss/blogs/threat-intelligence",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "McAfee Labs",
+        "url": "https://www.mcafee.com/blogs/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Cisco Talos",
+        "url": "https://blog.talosintelligence.com/feeds/posts/default",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Red Canary",
+        "url": "https://redcanary.com/blog/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Rapid7 Blog",
+        "url": "https://blog.rapid7.com/rss/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Qualys Blog",
+        "url": "https://blog.qualys.com/feed",
+        "category": "Vendor",
+        "type": "Vulnerabilities"
+    },
+    {
+        "name": "Tenable Blog",
+        "url": "https://www.tenable.com/blog/feed",
+        "category": "Vendor",
+        "type": "Vulnerabilities"
+    },
+    {
+        "name": "Bitsight",
+        "url": "https://www.bitsight.com/blog/rss.xml",
+        "category": "Vendor",
+        "type": "Risk"
+    },
+    {
+        "name": "Flashpoint",
+        "url": "https://www.flashpoint-intel.com/blog/feed/",
+        "category": "Vendor",
+        "type": "Intel"
+    },
+    {
+        "name": "Recorded Future",
+        "url": "https://www.recordedfuture.com/feed",
+        "category": "Vendor",
+        "type": "Intel"
+    },
+    {
+        "name": "Dragos",
+        "url": "https://www.dragos.com/feed/",
+        "category": "Vendor",
+        "type": "ICS/OT"
+    },
+    {
+        "name": "Nozomi Networks",
+        "url": "https://www.nozominetworks.com/blog/feed/",
+        "category": "Vendor",
+        "type": "ICS/OT"
+    },
+    {
+        "name": "Claroty",
+        "url": "https://claroty.com/feed",
+        "category": "Vendor",
+        "type": "ICS/OT"
+    },
+    {
+        "name": "SANS Internet Storm Center",
+        "url": "https://isc.sans.edu/rssfeed.xml",
+        "category": "Community",
+        "type": "Technical"
+    },
+    {
+        "name": "Schneier on Security",
+        "url": "https://www.schneier.com/feed/atom/",
+        "category": "Community",
+        "type": "Blog"
+    },
+    {
+        "name": "Troy Hunt",
+        "url": "https://www.troyhunt.com/rss/",
+        "category": "Community",
+        "type": "Blog"
+    },
+    {
+        "name": "Graham Cluley",
+        "url": "https://grahamcluley.com/feed/",
+        "category": "Community",
+        "type": "Blog"
+    },
+    {
+        "name": "Errata Security",
+        "url": "https://blog.erratasec.com/feeds/posts/default",
+        "category": "Community",
+        "type": "Technical"
+    },
+    {
+        "name": "Trail of Bits",
+        "url": "https://blog.trailofbits.com/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "Volexity",
+        "url": "https://www.volexity.com/blog/feed/",
+        "category": "Vendor",
+        "type": "Research"
+    },
+    {
+        "name": "TrustedSec",
+        "url": "https://www.trustedsec.com/blog/rss",
+        "category": "Vendor",
+        "type": "PenTest"
+    },
+    {
+        "name": "Black Hills InfoSec",
+        "url": "https://www.blackhillsinfosec.com/feed/",
+        "category": "Vendor",
+        "type": "PenTest"
+    },
+    {
+        "name": "SpecterOps",
+        "url": "https://posts.specterops.io/feed",
+        "category": "Vendor",
+        "type": "Red Team"
+    },
+    {
+        "name": "Cobalt Strike Blog",
+        "url": "https://www.cobaltstrike.com/feed/",
+        "category": "Vendor",
+        "type": "Red Team"
+    },
+    {
+        "name": "PortSwigger (Web Security)",
+        "url": "https://portswigger.net/blog/rss",
+        "category": "Vendor",
+        "type": "Web Sec"
+    },
+    {
+        "name": "OWASP",
+        "url": "https://owasp.org/feed.xml",
+        "category": "Community",
+        "type": "Web Sec"
+    },
+    {
+        "name": "Mozilla Security",
+        "url": "https://blog.mozilla.org/security/feed/",
+        "category": "Vendor",
+        "type": "Browser"
+    },
+    {
+        "name": "Cloudflare Blog",
+        "url": "https://blog.cloudflare.com/rss/",
+        "category": "Vendor",
+        "type": "Infrastructure"
+    },
+    {
+        "name": "AWS Security Blog",
+        "url": "https://aws.amazon.com/blogs/security/feed/",
+        "category": "Vendor",
+        "type": "Cloud"
+    },
+    {
+        "name": "Google Cloud Security",
+        "url": "https://cloud.google.com/blog/products/identity-security/rss",
+        "category": "Vendor",
+        "type": "Cloud"
+    },
+    {
+        "name": "NIST NVB",
+        "url": "https://nvd.nist.gov/feeds/xml/cve/misc/nvd-rss.xml",
+        "category": "Government",
+        "type": "Vulnerabilities"
+    },
+    {
+        "name": "CERT-FR",
+        "url": "https://www.cert.ssi.gouv.fr/feed/",
+        "category": "Government",
+        "type": "International"
+    },
+    {
+        "name": "NCSC-UK",
+        "url": "https://www.ncsc.gov.uk/api/1/services/v1/report-rss-feed.xml",
+        "category": "Government",
+        "type": "International"
+    },
+    {
+        "name": "Canadian Centre for Cyber Security",
+        "url": "https://cyber.gc.ca/api/en/rss/alerts-advisories",
+        "category": "Government",
+        "type": "International"
+    },
+    {
+        "name": "JPCERT/CC",
+        "url": "https://www.jpcert.or.jp/english/rss/jpcert.rdf",
+        "category": "Government",
+        "type": "International"
+    },
+    {
+        "name": "GovInfoSecurity",
+        "url": "https://feeds.feedburner.com/govinfosecurity/com",
+        "category": "News",
+        "type": "Government"
+    },
+    {
+        "name": "Help Net Security",
+        "url": "https://www.helpnetsecurity.com/feed/",
+        "category": "News",
+        "type": "General"
+    },
+    {
+        "name": "SC Magazine",
+        "url": "https://www.scmagazine.com/rss",
+        "category": "News",
+        "type": "General"
+    },
+    {
+        "name": "CSO Online",
+        "url": "https://www.csoonline.com/feed",
+        "category": "News",
+        "type": "Management"
+    },
+    {
+        "name": "InfoSecurity Magazine",
+        "url": "https://www.infosecurity-magazine.com/rss/news/",
+        "category": "News",
+        "type": "General"
+    },
+    {
+        "name": "CyberScoop",
+        "url": "https://www.cyberscoop.com/feed/",
+        "category": "News",
+        "type": "Policy"
+    },
+    {
+        "name": "The CyberWire",
+        "url": "https://thecyberwire.com/feeds/rss.xml",
+        "category": "News",
+        "type": "Podcast/News"
+    },
+    {
+        "name": "Security Affairs",
+        "url": "https://securityaffairs.co/wordpress/feed",
+        "category": "News",
+        "type": "Blog"
+    },
+    {
+        "name": "HackRead",
+        "url": "https://www.hackread.com/feed/",
+        "category": "News",
+        "type": "General"
+    },
+    {
+        "name": "TechCrunch Security",
+        "url": "https://techcrunch.com/category/security/feed/",
+        "category": "News",
+        "type": "Tech"
+    },
+    {
+        "name": "Wired Security",
+        "url": "https://www.wired.com/feed/category/security/latest/rss",
+        "category": "News",
+        "type": "Tech"
+    },
+    {
+        "name": "Ars Technica",
+        "url": "https://arstechnica.com/tag/security/feed/",
+        "category": "News",
+        "type": "Tech"
+    },
+    {
+        "name": "Motherboard",
+        "url": "https://motherboard.vice.com/en_us/rss",
+        "category": "News",
+        "type": "Culture"
+    },
+    {
+        "name": "ThreatPost",
+        "url": "https://threatpost.com/feed/",
+        "category": "News",
+        "type": "General"
+    },
+    {
+        "name": "GBHackers",
+        "url": "https://gbhackers.com/feed/",
+        "category": "News",
+        "type": "Technical"
+    },
+    {
+        "name": "KitPloit",
+        "url": "https://feeds.feedburner.com/PentestTools",
+        "category": "Tools",
+        "type": "Hacking"
+    },
+    {
+        "name": "Packet Storm",
+        "url": "https://rss.packetstormsecurity.com/news/",
+        "category": "Tools",
+        "type": "Exploits"
+    },
+    {
+        "name": "Exploit-DB",
+        "url": "https://www.exploit-db.com/rss.xml",
+        "category": "Tools",
+        "type": "Exploits"
+    },
+    {
+        "name": "CX Security",
+        "url": "https://cxsecurity.com/wlb/rss/all/",
+        "category": "Tools",
+        "type": "Exploits"
+    },
+    {
+        "name": "Zero Day Initiative",
+        "url": "https://www.zerodayinitiative.com/blog?format=rss",
+        "category": "Vendor",
+        "type": "Vulnerabilities"
+    },
+    {
+        "name": "Project Discovery",
+        "url": "https://blog.projectdiscovery.io/rss/",
+        "category": "Tools",
+        "type": "Recon"
+    },
+    {
+        "name": "HackerOne Blog",
+        "url": "https://www.hackerone.com/blog.xml",
+        "category": "Vendor",
+        "type": "Bug Bounty"
+    },
+    {
+        "name": "Bugcrowd Blog",
+        "url": "https://www.bugcrowd.com/blog/feed/",
+        "category": "Vendor",
+        "type": "Bug Bounty"
+    },
+    {
+        "name": "Intigriti Blog",
+        "url": "https://blog.intigriti.com/feed/",
+        "category": "Vendor",
+        "type": "Bug Bounty"
+    },
+    {
+        "name": "YesWeHack",
+        "url": "https://blog.yeswehack.com/feed/",
+        "category": "Vendor",
+        "type": "Bug Bounty"
+    },
+    {
+        "name": "Have I Been Pwned",
+        "url": "https://www.troyhunt.com/rss/",
+        "category": "Community",
+        "type": "Breach"
+    },
+    {
+        "name": "1Password Blog",
+        "url": "https://blog.1password.com/feed.xml",
+        "category": "Vendor",
+        "type": "Privacy"
+    },
+    {
+        "name": "Dashlane Blog",
+        "url": "https://blog.dashlane.com/feed/",
+        "category": "Vendor",
+        "type": "Privacy"
+    },
+    {
+        "name": "ProtonMail Blog",
+        "url": "https://protonmail.com/blog/feed/",
+        "category": "Vendor",
+        "type": "Privacy"
+    },
+    {
+        "name": "Tor Project",
+        "url": "https://blog.torproject.org/feed",
+        "category": "Community",
+        "type": "Privacy"
+    },
+    {
+        "name": "EFF DeepLinks",
+        "url": "https://www.eff.org/rss/updates.xml",
+        "category": "Community",
+        "type": "Rights"
+    },
+    {
+        "name": "Privacy International",
+        "url": "https://privacyinternational.org/rss.xml",
+        "category": "Community",
+        "type": "Rights"
+    },
+    {
+        "name": "Citizen Lab",
+        "url": "https://citizenlab.ca/feed/",
+        "category": "Community",
+        "type": "Research"
+    },
+    {
+        "name": "Bellingcat",
+        "url": "https://www.bellingcat.com/feed/",
+        "category": "Community",
+        "type": "OSINT"
+    },
+    {
+        "name": "IntelTechniques",
+        "url": "https://inteltechniques.com/blog/feed/",
+        "category": "Community",
+        "type": "OSINT"
+    },
+    {
+        "name": "OSINT Curious",
+        "url": "https://osintcurio.us/feed/",
+        "category": "Community",
+        "type": "OSINT"
+    },
+    {
+        "name": "SANS Pen Test Blog",
+        "url": "https://pen-testing.sans.org/blog/feed/",
+        "category": "Community",
+        "type": "Training"
+    },
+    {
+        "name": "SANS DFIR Blog",
+        "url": "https://digital-forensics.sans.org/blog/feed/",
+        "category": "Community",
+        "type": "Forensics"
+    },
+    {
+        "name": "SANS ICO",
+        "url": "https://ics.sans.org/blog/feed/",
+        "category": "Community",
+        "type": "ICS"
+    }
+]

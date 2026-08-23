@@ -1,0 +1,224 @@
+[
+  {
+    "id": "TRT-2026-5766",
+    "type": "Phishing",
+    "severity": "Medium",
+    "source": "HoneyPot Network",
+    "description": "Active Phishing campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "192.168.242.102"
+      ],
+      "domains": [
+        "malicious-78.com"
+      ]
+    },
+    "timestamp": "2026-08-23T17:28:11.594Z"
+  },
+  {
+    "id": "TRT-2026-6718",
+    "type": "Phishing",
+    "severity": "Medium",
+    "source": "Internal SOC",
+    "description": "Active Phishing campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "192.168.90.172"
+      ],
+      "domains": [
+        "malicious-114.com"
+      ]
+    },
+    "timestamp": "2026-08-23T17:28:11.594Z"
+  },
+  {
+    "id": "TRT-2026-4603",
+    "type": "Zero-Day",
+    "severity": "Medium",
+    "source": "Internal SOC",
+    "description": "Active Zero-Day campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "192.168.132.150"
+      ],
+      "domains": [
+        "malicious-950.com"
+      ]
+    },
+    "timestamp": "2026-08-23T17:28:11.594Z"
+  },
+  {
+    "id": "TRT-2026-3361",
+    "type": "Zero-Day",
+    "severity": "High",
+    "source": "Threat Intel Feed",
+    "description": "Active Zero-Day campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "192.168.150.207"
+      ],
+      "domains": [
+        "malicious-219.com"
+      ]
+    },
+    "timestamp": "2026-02-12T17:26:34.852Z"
+  },
+  {
+    "id": "TRT-2026-6899",
+    "type": "Dark Web Leak",
+    "severity": "Critical",
+    "source": "Onion Forum Monitor",
+    "description": "Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "192.168.214.82"
+      ],
+      "domains": [
+        "hidden-service.onion"
+      ]
+    },
+    "timestamp": "2026-02-12T17:26:34.852Z"
+  },
+  {
+    "id": "TRT-2026-4804",
+    "type": "Malware",
+    "severity": "High",
+    "source": "Threat Intel Feed",
+    "description": "Active Malware campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "192.168.88.237"
+      ],
+      "domains": [
+        "malicious-76.com"
+      ]
+    },
+    "timestamp": "2026-02-12T17:26:34.852Z"
+  },
+  {
+    "id": "TRT-2026-9360",
+    "type": "Dark Web Leak",
+    "severity": "Critical",
+    "source": "Onion Forum Monitor",
+    "description": "Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.",
+    "ioc": {
+      "ip_addresses": [
+        "192.168.62.53"
+      ],
+      "domains": [
+        "hidden-service.onion"
+      ]
+    },
+    "timestamp": "2026-02-12T17:26:34.852Z"
+  },
+  {
+    "id": "TRT-2026-7962",
+    "type": "Botnet",
+    "severity": "Low",
+    "source": "HoneyPot Network",
+    "description": "Active Botnet campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "192.168.158.12"
+      ],
+      "domains": [
+        "malicious-875.com"
+      ]
+    },
+    "timestamp": "2026-02-12T17:26:34.852Z"
+  },
+  {
+    "id": "TRT-2026-896",
+    "type": "Phishing",
+    "severity": "Critical",
+    "source": "Dark Web Monitor",
+    "description": "Active Phishing campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "192.168.181.172"
+      ],
+      "domains": [
+        "malicious-992.com"
+      ]
+    },
+    "timestamp": "2026-02-11T22:07:10.072Z"
+  },
+  {
+    "id": "TRT-2026-6836",
+    "type": "Zero-Day",
+    "severity": "High",
+    "source": "Threat Intel Feed",
+    "description": "Active Zero-Day campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "192.168.191.193"
+      ],
+      "domains": [
+        "malicious-425.com"
+      ]
+    },
+    "timestamp": "2026-02-11T22:07:10.072Z"
+  },
+  {
+    "id": "TRT-2026-1607",
+    "type": "Botnet",
+    "severity": "Critical",
+    "source": "Internal SOC",
+    "description": "Active Botnet campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "192.168.142.3"
+      ],
+      "domains": [
+        "malicious-969.com"
+      ]
+    },
+    "timestamp": "2026-02-11T22:07:10.072Z"
+  },
+  {
+    "id": "TRT-2026-4028",
+    "type": "Zero-Day",
+    "severity": "Low",
+    "source": "Dark Web Monitor",
+    "description": "Active Zero-Day campaign detected via network sensors. IOCs indicate targeting financial sector.",
+    "ioc": {
+      "ip_addresses": [
+        "192.168.175.53"
+      ],
+      "domains": [
+        "malicious-297.com"
+      ]
+    },
+    "timestamp": "2026-02-11T22:07:10.072Z"
+  },
+  {
+    "id": "TRT-2026-5755",
+    "type": "Dark Web Leak",
+    "severity": "Critical",
+    "source": "Onion Forum Monitor",
+    "description": "Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "192.168.127.20"
+      ],
+      "domains": [
+        "hidden-service.onion"
+      ]
+    },
+    "timestamp": "2026-02-11T22:07:10.072Z"
+  }
+]
