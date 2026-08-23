@@ -1,13 +1,12 @@
 {
-  "version": 2,
   "rewrites": [
     {
-      "source": "/api/:match*",
-      "destination": "/soc-platform-ui-main/api/index.js"
+      "source": "/api/(.*)",
+      "destination": "/api"
     },
     {
       "source": "/((?!api|assets|favicon.ico).*)",
-      "destination": "/soc-platform-ui-main/dist/index.html"
+      "destination": "/index.html"
     }
   ]
 }
