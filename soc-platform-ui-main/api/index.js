@@ -188,7 +188,7 @@ const FALLBACK_NEWS = [
 
 let NEWS_CACHE = [...FALLBACK_NEWS];
 let CACHE_TIME = 0;
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
 async function getCachedNews() {
     const now = Date.now();

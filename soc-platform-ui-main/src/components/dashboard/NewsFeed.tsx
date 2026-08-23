@@ -20,6 +20,7 @@ interface NewsFeedProps {
 const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
     const [news, setNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
     useEffect(() => {
         const fetchNews = () => {
@@ -29,6 +30,7 @@ const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
                     const items = Array.isArray(data) ? data : (data.news || []);
                     setNews(items);
                     setLoading(false);
+                    setLastUpdated(new Date());
                 })
                 .catch(err => {
                     console.error('Error fetching news:', err);
@@ -39,8 +41,8 @@ const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
         // Initial fetch
         fetchNews();
 
-        // Poll every 5 seconds to catch incoming items continuously
-        const interval = setInterval(fetchNews, 5000);
+        // Poll every 30 minutes to catch incoming items continuously
+        const interval = setInterval(fetchNews, 30 * 60 * 1000);
 
         return () => clearInterval(interval);
     }, []);
@@ -155,7 +157,16 @@ const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
                             <Calendar className="w-6 h-6 text-cyan-500" />
                             Latest Security Feed
                         </h3>
-                        <span className="text-sm text-slate-500 font-medium bg-slate-800 px-3 py-1 rounded-full">Live Updates</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 items-end">
+                            {lastUpdated && (
+                                <span className="text-xs text-slate-500 font-mono">
+                                    Last updated: {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                </span>
+                            )}
+                            <span className="text-sm text-slate-500 font-medium bg-slate-800 px-3 py-1 rounded-full">
+                                Auto-updates every 30m
+                            </span>
+                        </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar">
