@@ -58,6 +58,7 @@ export default function AIBrief() {
     const [clusters, setClusters] = useState<ClustersData | null>(null);
     const [briefLoading, setBriefLoading] = useState(false);
     const [clustersLoading, setClustersLoading] = useState(false);
+    const [clustersError, setClustersError] = useState<string | null>(null);
     const [expandedCluster, setExpandedCluster] = useState<string | null>(null);
 
     const loadBrief = async () => {
@@ -71,11 +72,16 @@ export default function AIBrief() {
 
     const loadClusters = async () => {
         setClustersLoading(true);
+        setClustersError(null);
         try {
             const resp = await fetch(`${API_BASE}/api/ai/clusters`);
-            setClusters(await resp.json());
-        } catch { /* silently fail */ }
-        finally { setClustersLoading(false); }
+            if (!resp.ok) throw new Error(`Server returned ${resp.status}`);
+            const data = await resp.json();
+            setClusters(data);
+        } catch (err: any) {
+            console.error('Failed to load clusters:', err);
+            setClustersError(err.message || 'Failed to load incident clusters');
+        } finally { setClustersLoading(false); }
     };
 
     useEffect(() => {
@@ -177,6 +183,15 @@ export default function AIBrief() {
                     <div className="flex items-center justify-center h-32">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
                     </div>
+                ) : clustersError ? (
+                    <div className="text-center py-12 bg-gray-900/40 rounded-2xl border border-red-900/30 space-y-3">
+                        <p className="text-4xl">⚠️</p>
+                        <p className="text-red-400 font-medium">Failed to load incident clusters</p>
+                        <p className="text-gray-500 text-sm">{clustersError}</p>
+                        <button onClick={loadClusters} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm rounded-xl transition-all">
+                            ↺ Retry
+                        </button>
+                    </div>
                 ) : clusters?.clusters?.length ? (
                     <div className="space-y-3">
                         {clusters.clusters.slice(0, 30).map(cluster => (
@@ -235,6 +250,7 @@ export default function AIBrief() {
                         <p>No clusters yet — clusters appear after news is fetched.</p>
                     </div>
                 )}
+
             </section>
         </div>
     );

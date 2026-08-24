@@ -232,8 +232,7 @@ app.post('/api/v1/alerts', async (req, res) => {
     }
 });
 
-// Debug endpoint - shows file paths on Azure (remove after debugging)
-// Debug endpoint - Deep scan of file system on Azure
+// Debug endpoint - shows file paths on Azure (safe version, no env secrets)
 app.get('/api/debug/paths', (req, res) => {
     const listDir = (dir) => {
         try {
@@ -254,22 +253,19 @@ app.get('/api/debug/paths', (req, res) => {
 
     res.json({
         cwd: process.cwd(),
-        __dirname,
-        __filename,
-        env: process.env,
+        nodeEnv: process.env.NODE_ENV || 'development',
         distPathFromDirname,
         distPathFromCwd,
         resolvedDistPath,
         fsTree: {
             dirname: listDir(__dirname),
             cwd: listDir(process.cwd()),
-            // Try to find dist in common locations
             distInCwd: listDir(path.join(process.cwd(), 'dist')),
             distInRoot: listDir(path.join(process.cwd(), '..', 'dist')),
-            wwwroot: listDir('C:\\home\\site\\wwwroot')
         }
     });
 });
+
 
 // Manual Email Trigger (with strict rate limit + input validation)
 app.post('/api/notifications/send', strictLimiter, async (req, res) => {

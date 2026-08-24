@@ -20,20 +20,27 @@ interface NewsFeedProps {
 const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
     const [news, setNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
     useEffect(() => {
         const fetchNews = () => {
             fetch(`${API_BASE}/api/news`)
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+                    return res.json();
+                })
                 .then(data => {
                     const items = Array.isArray(data) ? data : (data.news || []);
+                    if (!Array.isArray(items)) throw new Error('Invalid response format');
                     setNews(items);
+                    setError(null);
                     setLoading(false);
                     setLastUpdated(new Date());
                 })
                 .catch(err => {
                     console.error('Error fetching news:', err);
+                    setError(err.message || 'Failed to load news feed');
                     setLoading(false);
                 });
         };
@@ -172,6 +179,12 @@ const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
                     <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar">
                         {loading ? (
                             <div className="text-slate-500 text-center py-20 text-lg animate-pulse">Loading Intelligence Feed...</div>
+                        ) : error ? (
+                            <div className="text-center py-20 space-y-3">
+                                <p className="text-4xl">⚠️</p>
+                                <p className="text-red-400 font-medium">Failed to load news feed</p>
+                                <p className="text-slate-500 text-sm">{error}</p>
+                            </div>
                         ) : (
                             Object.entries(groupedListItems).map(([dateLabel, items]) => (
                                 <div key={dateLabel} className="mb-8 last:mb-0">

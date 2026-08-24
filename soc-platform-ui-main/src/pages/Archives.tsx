@@ -36,8 +36,8 @@ const Archives = () => {
                 ]);
                 const threatsData = await threatsRes.json();
                 const newsData = await newsRes.json();
-                setThreats(threatsData);
-                setNews(newsData);
+                setThreats(Array.isArray(threatsData) ? threatsData : []);
+                setNews(Array.isArray(newsData) ? newsData : (Array.isArray(newsData?.news) ? newsData.news : []));
             } catch (error) {
                 console.error('Error loading archives:', error);
             } finally {

@@ -21,8 +21,13 @@ const SeverityChart = () => {
 
     useEffect(() => {
         fetch(`${API_BASE}/api/news/stats`)
-            .then(res => res.json())
-            .then(data => setData(data))
+            .then(res => {
+                if (!res.ok) throw new Error(`Stats fetch failed: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                if (Array.isArray(data)) setData(data);
+            })
             .catch(err => console.error('Error fetching stats:', err));
     }, []);
 

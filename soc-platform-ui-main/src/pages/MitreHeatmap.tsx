@@ -46,16 +46,22 @@ export default function MitreHeatmap() {
     const navigate = useNavigate();
     const [data, setData] = useState<HeatmapData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [selectedTechnique, setSelectedTechnique] = useState<Technique | null>(null);
     const [filter, setFilter] = useState<'all' | 'active'>('all');
 
     const fetchHeatmap = async () => {
+        setError(null);
+        setLoading(true);
         try {
             const resp = await fetch(`${API_BASE}/api/mitre/heatmap`);
+            if (!resp.ok) throw new Error(`Server returned ${resp.status}`);
             const json = await resp.json();
+            if (!json?.tactics) throw new Error('Invalid heatmap data received');
             setData(json);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to fetch MITRE heatmap:', err);
+            setError(err.message || 'Failed to load MITRE heatmap data');
         } finally {
             setLoading(false);
         }
@@ -152,6 +158,15 @@ export default function MitreHeatmap() {
             {loading ? (
                 <div className="flex items-center justify-center h-64">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
+                </div>
+            ) : error ? (
+                <div className="flex flex-col items-center justify-center h-64 gap-4">
+                    <p className="text-4xl">⚠️</p>
+                    <p className="text-red-400 font-medium">Failed to load MITRE heatmap</p>
+                    <p className="text-slate-500 text-sm text-center max-w-md">{error}</p>
+                    <button onClick={fetchHeatmap} className="px-4 py-2 bg-cyan-700 hover:bg-cyan-600 text-white rounded-xl text-sm font-medium transition-all">
+                        ↺ Retry
+                    </button>
                 </div>
             ) : (
                 /* Matrix Horizontal Scroll Container */
