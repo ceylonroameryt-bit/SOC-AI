@@ -1,5 +1,90 @@
 [
   {
+    "id": "TRT-2026-6200",
+    "type": "Dark Web Leak",
+    "severity": "Critical",
+    "source": "Onion Forum Monitor",
+    "description": "Corporate VPN credentials listed for sale on RAMP forum. Source appears to be infostealer log.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "62.210.103.244"
+      ],
+      "domains": [
+        "hidden-service.onion"
+      ]
+    },
+    "timestamp": "2026-09-16T10:08:38.691Z"
+  },
+  {
+    "id": "TRT-2026-5896",
+    "type": "Zero-Day",
+    "severity": "High",
+    "source": "Internal SOC",
+    "description": "Zero-day in browser rendering engine being exploited in watering hole campaign against defense contractors.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "89.187.191.12"
+      ],
+      "domains": [
+        "malicious-655.com"
+      ]
+    },
+    "timestamp": "2026-09-16T10:08:38.691Z"
+  },
+  {
+    "id": "TRT-2026-5717",
+    "type": "Zero-Day",
+    "severity": "High",
+    "source": "Dark Web Monitor",
+    "description": "Zero-day in browser rendering engine being exploited in watering hole campaign against defense contractors.",
+    "ioc": {
+      "ip_addresses": [
+        "45.142.212.100"
+      ],
+      "domains": [
+        "malicious-652.com"
+      ]
+    },
+    "timestamp": "2026-09-16T10:08:38.691Z"
+  },
+  {
+    "id": "TRT-2026-6069",
+    "type": "Malware",
+    "severity": "Critical",
+    "source": "Internal SOC",
+    "description": "Lumma Stealer infostealer distributed via malvertising on search engines. Targets browser credentials and crypto wallets.",
+    "ioc": {
+      "ip_addresses": [
+        "89.187.191.12"
+      ],
+      "domains": [
+        "malicious-176.com"
+      ]
+    },
+    "timestamp": "2026-09-16T10:08:38.691Z"
+  },
+  {
+    "id": "TRT-2026-7639",
+    "type": "Botnet",
+    "severity": "High",
+    "source": "HoneyPot Network",
+    "description": "Mirai variant performing DDoS amplification attacks. C2 infrastructure tied to known bulletproof hosting.",
+    "ioc": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "77.91.100.255"
+      ],
+      "domains": [
+        "malicious-471.com"
+      ]
+    },
+    "timestamp": "2026-09-16T10:08:38.691Z"
+  },
+  {
     "id": "TRT-2026-5766",
     "type": "Phishing",
     "severity": "Medium",

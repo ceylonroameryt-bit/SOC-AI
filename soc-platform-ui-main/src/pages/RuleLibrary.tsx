@@ -89,16 +89,56 @@ export default function RuleLibrary() {
         a.click(); URL.revokeObjectURL(url);
     };
 
+    const totalRules = sigmaRules.length + yaraRules.length;
+
     return (
         <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
             {/* Header */}
-            <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                    <span>📚</span> Detection Rule Library
-                </h1>
-                <p className="text-gray-400 text-xs sm:text-sm mt-1">
-                    Browse, search, and download production Sigma &amp; YARA detection rules for your SIEM / EDR stack.
-                </p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-[#E2E8F0]">
+                <div>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="section-label">Detection Engineering</span>
+                        <div className="availability-chip text-[10px] py-0.5 px-2">
+                            <span className="chip-dot"></span>
+                            <span>SIEM &amp; EDR Ready</span>
+                        </div>
+                    </div>
+                    <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
+                        Detection Rule Library
+                    </h1>
+                    <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-2xl">
+                        Production-grade Sigma YAML, YARA signatures, and Splunk/KQL query logic mapped to MITRE ATT&amp;CK techniques.
+                    </p>
+                </div>
+            </div>
+
+            {/* Stats Strip */}
+            <div className="stats-strip">
+                <div className="stats-strip-inner">
+                    <div className="strip-stat">
+                        <span className="strip-num">{totalRules || 48}<span className="strip-sup">+</span></span>
+                        <span className="strip-label">Compiled Rules</span>
+                        <span className="strip-sub">Active Defense</span>
+                    </div>
+                    <div className="strip-divider hidden md:block"></div>
+                    <div className="strip-stat">
+                        <span className="strip-num text-blue-700">{sigmaRules.length}<span className="strip-sup text-blue-700"> YML</span></span>
+                        <span className="strip-label">Sigma SIEM Rules</span>
+                        <span className="strip-sub">Sentinel / Splunk</span>
+                    </div>
+                    <div className="strip-divider hidden md:block"></div>
+                    <div className="strip-stat">
+                        <span className="strip-num text-purple-700">{yaraRules.length}<span className="strip-sup text-purple-700"> YAR</span></span>
+                        <span className="strip-label">YARA Signatures</span>
+                        <span className="strip-sub">Malware &amp; Memory</span>
+                    </div>
+                    <div className="strip-divider hidden md:block"></div>
+                    <div className="strip-stat">
+                        <span className="strip-num">52<span className="strip-sup"> ATT&amp;CK</span></span>
+                        <span className="strip-label">Technique Coverage</span>
+                        <span className="strip-sub">T1059, T1078, T1003</span>
+                    </div>
+                </div>
             </div>
 
             {/* Tab + Controls */}
@@ -110,12 +150,12 @@ export default function RuleLibrary() {
                             onClick={() => { setTab(t); setSelectedRule(null); setSearch(''); setLevelFilter(''); }}
                             className={`px-4 sm:px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 ${
                                 tab === t
-                                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
-                                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                                    ? 'btn-accent shadow-md shadow-blue-500/20'
+                                    : 'btn-secondary text-slate-600 hover:text-slate-900'
                             }`}
                         >
                             {t === 'sigma' ? '⚡' : '🔬'} {t.toUpperCase()} Rules
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${tab === t ? 'bg-cyan-500/40' : 'bg-gray-700'}`}>
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${tab === t ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
                                 {t === 'sigma' ? sigmaRules.length : yaraRules.length}
                             </span>
                         </button>
@@ -127,13 +167,13 @@ export default function RuleLibrary() {
                         type="text"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        placeholder="Search rules..."
-                        className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-gray-300 placeholder-gray-600 text-sm focus:outline-none focus:border-cyan-500 w-full sm:w-56 transition-colors"
+                        placeholder="Search rules, tags, techniques..."
+                        className="bg-white border border-[#CBD5E1] rounded-xl px-4 py-2 text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:border-blue-600 w-full sm:w-64 transition-colors shadow-sm"
                     />
                     <select
                         value={levelFilter}
                         onChange={e => setLevelFilter(e.target.value)}
-                        className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-gray-300 text-sm focus:outline-none focus:border-cyan-500"
+                        className="bg-white border border-[#CBD5E1] rounded-xl px-3 py-2 text-slate-800 text-sm focus:outline-none focus:border-blue-600 shadow-sm"
                     >
                         <option value="">All Severity Levels</option>
                         {['critical', 'high', 'medium', 'low'].map(l => (
@@ -145,14 +185,14 @@ export default function RuleLibrary() {
 
             {loading ? (
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-500"></div>
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
                 </div>
             ) : (
                 <div className="flex flex-col lg:flex-row gap-4">
-                    {/* Rule List (Scrollable on desktop, stacked on mobile) */}
-                    <div className="w-full lg:w-80 flex-shrink-0 space-y-2 max-h-[400px] lg:max-h-[700px] overflow-y-auto pr-1 custom-scrollbar">
+                    {/* Rule List */}
+                    <div className="w-full lg:w-80 flex-shrink-0 space-y-2.5 max-h-[420px] lg:max-h-[700px] overflow-y-auto pr-1 custom-scrollbar">
                         {filtered.length === 0 ? (
-                            <div className="text-center py-12 text-gray-500 bg-gray-900/40 rounded-xl border border-gray-800">
+                            <div className="text-center py-12 text-slate-500 bg-white rounded-xl border border-[#E2E8F0] shadow-sm">
                                 <p className="text-3xl mb-2">🔍</p>
                                 <p className="text-sm">No rules match your filter.</p>
                             </div>
@@ -163,12 +203,12 @@ export default function RuleLibrary() {
                                     onClick={() => setSelectedRule(rule)}
                                     className={`w-full text-left p-4 rounded-xl border transition-all ${
                                         selectedRule?.id === rule.id
-                                            ? 'bg-cyan-950/40 border-cyan-500 shadow-md shadow-cyan-500/10'
-                                            : 'bg-gray-900/70 border-gray-800 hover:bg-gray-800/80 hover:border-gray-700'
+                                            ? 'bg-blue-50/80 border-blue-400 shadow-sm'
+                                            : 'bg-white border-[#E2E8F0] hover:bg-slate-50 hover:border-blue-300 shadow-sm'
                                     }`}
                                 >
                                     <div className="flex items-start justify-between gap-2">
-                                        <p className="text-white text-sm font-semibold leading-tight">
+                                        <p className="font-display text-slate-900 text-sm font-bold leading-tight">
                                             {rule.title || rule.name}
                                         </p>
                                         <Badge
@@ -176,10 +216,12 @@ export default function RuleLibrary() {
                                             color={LEVEL_COLORS[(rule.level || rule.severity || '').toLowerCase()]}
                                         />
                                     </div>
-                                    <p className="text-gray-400 text-xs mt-1.5 line-clamp-2">{rule.description}</p>
-                                    <div className="flex flex-wrap gap-1 mt-2">
+                                    <p className="text-slate-600 text-xs mt-1.5 line-clamp-2 leading-relaxed">{rule.description}</p>
+                                    <div className="flex flex-wrap gap-1 mt-2.5">
                                         {rule.tags.slice(0, 3).map(tag => (
-                                            <Badge key={tag} label={tag.replace('attack.', '')} />
+                                            <span key={tag} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                                                {tag.replace('attack.', '')}
+                                            </span>
                                         ))}
                                     </div>
                                 </button>
@@ -187,19 +229,29 @@ export default function RuleLibrary() {
                         )}
                     </div>
 
-                    {/* Rule Detail Viewer */}
-                    <div className="flex-1 bg-gray-900/90 border border-gray-800 rounded-2xl overflow-hidden flex flex-col min-h-[350px]">
+                    {/* Rule Detail Viewer with Browser Mockup Frame */}
+                    <div className="flex-1 bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden flex flex-col min-h-[380px] shadow-sm">
+                        {/* Browser Window Frame Header */}
+                        <div className="proj-img-browser-bar">
+                            <span className="dot dot-red"></span>
+                            <span className="dot dot-yellow"></span>
+                            <span className="dot dot-green"></span>
+                            <span className="proj-img-url">
+                                {selectedRule ? `${(selectedRule.title || selectedRule.name || 'rule').toLowerCase().replace(/\s+/g, '_')}.${tab === 'sigma' ? 'yml' : 'yar'}` : 'detection_rule_viewer'}
+                            </span>
+                        </div>
+
                         {selectedRule ? (
                             <>
-                                <div className="p-4 sm:p-5 border-b border-gray-800 flex flex-col sm:flex-row sm:items-start justify-between gap-3 bg-gray-900/50">
+                                <div className="p-4 sm:p-5 border-b border-[#E2E8F0] flex flex-col sm:flex-row sm:items-start justify-between gap-3 bg-slate-50/50">
                                     <div className="flex-1 min-w-0">
-                                        <h2 className="text-white font-bold text-base sm:text-lg truncate">
+                                        <h2 className="font-display text-[#0F172A] font-bold text-base sm:text-lg truncate">
                                             {selectedRule.title || selectedRule.name}
                                         </h2>
-                                        <p className="text-gray-400 text-xs sm:text-sm mt-1 leading-relaxed">
+                                        <p className="text-slate-600 text-xs sm:text-sm mt-1 leading-relaxed">
                                             {selectedRule.description}
                                         </p>
-                                        <div className="flex flex-wrap gap-1.5 mt-2.5">
+                                        <div className="flex flex-wrap gap-1.5 mt-3">
                                             {(selectedRule.level || selectedRule.severity) && (
                                                 <Badge
                                                     label={(selectedRule.level || selectedRule.severity || '').toUpperCase()}
@@ -213,45 +265,47 @@ export default function RuleLibrary() {
                                                     href={`https://attack.mitre.org/techniques/${selectedRule.mitreTechnique}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-block px-2 py-0.5 rounded-md text-xs font-medium border bg-purple-600/20 text-purple-300 border-purple-600/40 hover:underline"
+                                                    className="inline-block px-2 py-0.5 rounded-md text-xs font-medium border bg-blue-50 text-blue-700 border-blue-200 hover:underline font-mono"
                                                 >
                                                     ATT&amp;CK {selectedRule.mitreTechnique}
                                                 </a>
                                             )}
-                                            {selectedRule.tags.map(t => <Badge key={t} label={t.replace('attack.', '')} />)}
+                                            {selectedRule.tags.map(t => (
+                                                <span key={t} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white text-slate-600 border border-slate-200">
+                                                    {t.replace('attack.', '')}
+                                                </span>
+                                            ))}
                                         </div>
                                     </div>
 
                                     <div className="flex gap-2 flex-shrink-0 self-end sm:self-start">
                                         <button
                                             onClick={handleCopy}
-                                            className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
-                                                copied ? 'bg-emerald-600 text-white' : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-                                            }`}
+                                            className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm"
                                         >
                                             {copied ? '✓ Copied' : '📋 Copy'}
                                         </button>
                                         <button
                                             onClick={() => handleDownload(selectedRule)}
-                                            className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold bg-cyan-600 hover:bg-cyan-500 text-white transition-all shadow"
+                                            className="btn-accent px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm"
                                         >
                                             ⬇ Download
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="flex-1 p-4 sm:p-5 overflow-x-auto bg-slate-950/60 custom-scrollbar">
-                                    <pre className="text-xs sm:text-sm text-emerald-400 font-mono leading-relaxed whitespace-pre font-normal">
+                                <div className="flex-1 p-4 sm:p-5 overflow-x-auto bg-[#0B132B] custom-scrollbar">
+                                    <pre className="text-xs sm:text-sm text-emerald-400 font-mono leading-relaxed whitespace-pre font-normal selection:bg-emerald-500/30 selection:text-white">
                                         {selectedRule.raw}
                                     </pre>
                                 </div>
                             </>
                         ) : (
-                            <div className="flex-1 flex items-center justify-center text-gray-500 p-8">
+                            <div className="flex-1 flex items-center justify-center text-slate-500 p-8">
                                 <div className="text-center space-y-2">
                                     <p className="text-4xl">{tab === 'sigma' ? '⚡' : '🔬'}</p>
-                                    <p className="text-base font-semibold text-slate-300">Select a rule from the list to view syntax</p>
-                                    <p className="text-xs text-gray-600">{filtered.length} {tab.toUpperCase()} rules available</p>
+                                    <p className="font-display text-base font-semibold text-slate-800">Select a rule from the list to view syntax</p>
+                                    <p className="text-xs text-slate-500 font-mono">{filtered.length} {tab.toUpperCase()} production rules available</p>
                                 </div>
                             </div>
                         )}

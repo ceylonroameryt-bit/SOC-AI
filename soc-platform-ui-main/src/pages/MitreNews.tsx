@@ -2,14 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { API_BASE } from '../config/api';
 import {
-    Shield,
     ExternalLink,
     Search,
     Layers,
-    ListFilter,
     Calendar,
     Radio,
-    Sparkles,
     ChevronRight,
     ChevronDown,
     Zap,
@@ -79,28 +76,28 @@ interface NewsApiResponse {
 
 const SEVERITY_STYLES: Record<string, { bg: string; text: string; border: string; glow: string }> = {
     Critical: {
-        bg: 'bg-red-950/60',
-        text: 'text-red-400',
-        border: 'border-red-600/50',
-        glow: 'shadow-red-500/20'
+        bg: 'bg-red-50',
+        text: 'text-red-700',
+        border: 'border-red-200',
+        glow: 'shadow-xs'
     },
     High: {
-        bg: 'bg-orange-950/60',
-        text: 'text-orange-400',
-        border: 'border-orange-600/50',
-        glow: 'shadow-orange-500/20'
+        bg: 'bg-orange-50',
+        text: 'text-orange-700',
+        border: 'border-orange-200',
+        glow: 'shadow-xs'
     },
     Medium: {
-        bg: 'bg-yellow-950/60',
-        text: 'text-yellow-400',
-        border: 'border-yellow-600/50',
-        glow: 'shadow-yellow-500/20'
+        bg: 'bg-yellow-50',
+        text: 'text-yellow-800',
+        border: 'border-yellow-200',
+        glow: 'shadow-xs'
     },
     Low: {
-        bg: 'bg-emerald-950/60',
-        text: 'text-emerald-400',
-        border: 'border-emerald-600/50',
-        glow: 'shadow-emerald-500/20'
+        bg: 'bg-emerald-50',
+        text: 'text-emerald-700',
+        border: 'border-emerald-200',
+        glow: 'shadow-xs'
     },
 };
 
@@ -177,43 +174,50 @@ export default function MitreNews() {
     const activeTacticObj = data?.tacticsSummary.find(t => t.id === selectedTacticParam || t.shortName === selectedTacticParam);
 
     return (
-        <div className="p-6 space-y-6 min-h-full max-w-7xl mx-auto">
+        <div className="p-6 space-y-6 min-h-full max-w-7xl mx-auto bg-white">
             {/* Header section */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
-                <div className="space-y-1.5">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-2 mb-1">
+                        <span className="section-label">ATT&CK News Matrix</span>
+                        <span className="availability-chip">
+                            <span className="chip-dot"></span>
+                            Live Threat Feeds
+                        </span>
+                    </div>
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-400">
+                        <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-[#1E3A8A]">
                             <Target className="w-7 h-7" />
                         </div>
                         <div>
-                            <h1 className="text-2xl lg:text-3xl font-bold text-slate-100 flex items-center gap-2">
-                                MITRE ATT&CK <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">News Matrix</span>
+                            <h1 className="text-2xl lg:text-3xl font-extrabold font-display text-slate-900 flex items-center gap-2">
+                                MITRE ATT&CK <span className="text-[#1E3A8A]">News Matrix</span>
                             </h1>
-                            <p className="text-slate-400 text-sm">
+                            <p className="text-slate-500 text-sm">
                                 Live threat intelligence categorized across 14 MITRE ATT&CK Enterprise Tactics &amp; Techniques
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2.5">
                     <button
                         onClick={() => navigate('/mitre')}
-                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-sm font-medium border border-slate-700 transition-all flex items-center gap-2"
+                        className="btn-secondary px-3.5 py-2 text-xs font-semibold flex items-center gap-2"
                     >
-                        <Layers className="w-4 h-4 text-cyan-400" />
+                        <Layers className="w-4 h-4 text-[#1E3A8A]" />
                         Heatmap View
                     </button>
                     <button
                         onClick={() => navigate('/enrich')}
-                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-sm font-medium border border-slate-700 transition-all flex items-center gap-2"
+                        className="btn-secondary px-3.5 py-2 text-xs font-semibold flex items-center gap-2"
                     >
-                        <Zap className="w-4 h-4 text-amber-400" />
+                        <Zap className="w-4 h-4 text-amber-600" />
                         IOC Enrichment
                     </button>
                     <button
                         onClick={fetchNews}
-                        className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-cyan-600/20"
+                        className="btn-accent px-4 py-2 text-xs font-semibold flex items-center gap-2"
                     >
                         ↺ Refresh Feed
                     </button>
@@ -222,63 +226,49 @@ export default function MitreNews() {
 
             {/* Quick Metrics Bar */}
             {data && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-                    <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-4 flex items-center gap-3.5">
-                        <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg text-cyan-400">
-                            <Shield className="w-5 h-5" />
+                <div className="stats-strip">
+                    <div className="stats-strip-inner">
+                        <div className="strip-stat">
+                            <div className="strip-num">{data.totalCategorized}<span className="strip-sup">MITRE</span></div>
+                            <div className="strip-label">Categorized Disclosures</div>
+                            <div className="strip-sub">Mapped to specific techniques</div>
                         </div>
-                        <div>
-                            <p className="text-xl lg:text-2xl font-bold text-slate-100">{data.totalCategorized}</p>
-                            <p className="text-xs text-slate-400">MITRE Categorized</p>
+                        <div className="strip-divider hidden md:block" />
+                        <div className="strip-stat">
+                            <div className="strip-num text-[#1E3A8A]">
+                                {data.coverageStats.activeTactics} <span className="text-xs font-semibold text-slate-400">/ 14</span>
+                            </div>
+                            <div className="strip-label">Active Tactics</div>
+                            <div className="strip-sub">Detected across current news</div>
                         </div>
-                    </div>
-
-                    <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-4 flex items-center gap-3.5">
-                        <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-400">
-                            <Layers className="w-5 h-5" />
+                        <div className="strip-divider hidden md:block" />
+                        <div className="strip-stat">
+                            <div className="strip-num text-emerald-600">{data.coverageStats.coveragePercent}%</div>
+                            <div className="strip-label">Matrix Coverage</div>
+                            <div className="strip-sub">Threat landscape distribution</div>
                         </div>
-                        <div>
-                            <p className="text-xl lg:text-2xl font-bold text-slate-100">
-                                {data.coverageStats.activeTactics} <span className="text-xs font-normal text-slate-500">/ 14</span>
-                            </p>
-                            <p className="text-xs text-slate-400">Active Tactics</p>
-                        </div>
-                    </div>
-
-                    <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-4 flex items-center gap-3.5">
-                        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400">
-                            <Sparkles className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <p className="text-xl lg:text-2xl font-bold text-emerald-400">{data.coverageStats.coveragePercent}%</p>
-                            <p className="text-xs text-slate-400">Matrix Coverage</p>
-                        </div>
-                    </div>
-
-                    <div className="bg-slate-900/70 border border-slate-800/80 rounded-xl p-4 flex items-center gap-3.5">
-                        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400">
-                            <Radio className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <p className="text-xl lg:text-2xl font-bold text-slate-100">{data.totalArticles}</p>
-                            <p className="text-xs text-slate-400">Total Ingested Articles</p>
+                        <div className="strip-divider hidden md:block" />
+                        <div className="strip-stat">
+                            <div className="strip-num text-slate-700">{data.totalArticles}</div>
+                            <div className="strip-label">Total Articles</div>
+                            <div className="strip-sub">Aggregated in pipeline</div>
                         </div>
                     </div>
                 </div>
             )}
 
             {/* 14 MITRE Tactics Navigation Ribbon */}
-            <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 space-y-3 shadow-lg">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 space-y-3 shadow-xs">
                 <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
                         <span>🛡️</span> Filter by MITRE Tactic
                     </span>
                     {selectedTacticParam !== 'all' && (
                         <button
                             onClick={() => updateFilter('tactic', 'all')}
-                            className="text-xs text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                            className="text-xs text-[#1E3A8A] hover:underline font-bold transition-colors"
                         >
-                            ✕ Reset Tactic
+                            ✕ Reset Tactic Filter
                         </button>
                     )}
                 </div>
@@ -288,17 +278,17 @@ export default function MitreNews() {
                         onClick={() => updateFilter('tactic', 'all')}
                         className={`p-2.5 rounded-xl border text-left transition-all ${
                             selectedTacticParam === 'all'
-                                ? 'bg-cyan-500/20 border-cyan-500/60 shadow-md shadow-cyan-500/10'
-                                : 'bg-slate-800/40 border-slate-800 hover:bg-slate-800/80 hover:border-slate-700'
+                                ? 'bg-blue-50 border-[#1E3A8A] shadow-xs'
+                                : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
                         }`}
                     >
                         <div className="flex items-center justify-between">
                             <span className="text-sm">🌐</span>
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-300">
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700">
                                 {data?.totalCategorized ?? 0}
                             </span>
                         </div>
-                        <p className="text-xs font-bold text-slate-200 mt-1.5 truncate">All Tactics</p>
+                        <p className="text-xs font-bold text-slate-900 mt-1.5 truncate">All Tactics</p>
                         <p className="text-[10px] text-slate-500 truncate">Entire Feed</p>
                     </button>
 
@@ -312,25 +302,25 @@ export default function MitreNews() {
                                 onClick={() => updateFilter('tactic', isSelected ? 'all' : tactic.id)}
                                 className={`p-2.5 rounded-xl border text-left transition-all relative overflow-hidden group ${
                                     isSelected
-                                        ? 'bg-slate-800 border-cyan-500 shadow-md shadow-cyan-500/20 ring-1 ring-cyan-500'
-                                        : 'bg-slate-800/40 border-slate-800 hover:bg-slate-800 hover:border-slate-700'
+                                        ? 'bg-blue-50 border-[#1E3A8A] shadow-xs ring-1 ring-[#1E3A8A]'
+                                        : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
                                 }`}
                             >
                                 <div
-                                    className="absolute top-0 left-0 right-0 h-0.5 transition-all opacity-80 group-hover:opacity-100"
+                                    className="absolute top-0 left-0 right-0 h-1 transition-all opacity-80 group-hover:opacity-100"
                                     style={{ backgroundColor: tactic.color }}
                                 />
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between mt-0.5">
                                     <span className="text-sm">{tactic.icon}</span>
                                     <span
                                         className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
-                                            count > 0 ? 'bg-slate-900 text-slate-200 border border-slate-700' : 'text-slate-600'
+                                            count > 0 ? 'bg-white text-slate-800 border border-slate-200' : 'text-slate-400'
                                         }`}
                                     >
                                         {count}
                                     </span>
                                 </div>
-                                <p className="text-xs font-bold text-slate-200 mt-1.5 truncate">{tactic.shortName}</p>
+                                <p className="text-xs font-bold text-slate-900 mt-1.5 truncate">{tactic.shortName}</p>
                                 <p className="text-[10px] text-slate-500 truncate">{tactic.id}</p>
                             </button>
                         );
@@ -339,23 +329,23 @@ export default function MitreNews() {
             </div>
 
             {/* Filter & Search Toolbar */}
-            <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 space-y-3 shadow-lg">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 space-y-3 shadow-xs">
                 <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
                     {/* Search box */}
                     <form onSubmit={handleSearchSubmit} className="flex-1 relative">
-                        <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                         <input
                             type="text"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
                             placeholder="Search threat reports, CVEs, techniques (e.g. ransomware, powershell, CVE-2024)..."
-                            className="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#1E3A8A] focus:bg-white transition-all shadow-xs"
                         />
                         {searchInput && (
                             <button
                                 type="button"
                                 onClick={() => { setSearchInput(''); updateFilter('q', ''); }}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
                             >
                                 ✕
                             </button>
@@ -367,36 +357,36 @@ export default function MitreNews() {
                         <select
                             value={selectedSeverityParam}
                             onChange={(e) => updateFilter('severity', e.target.value)}
-                            className="bg-slate-800/80 border border-slate-700/80 rounded-xl px-3 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-cyan-500"
+                            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 font-semibold focus:outline-none focus:border-[#1E3A8A]"
                         >
                             <option value="all">All Severities</option>
-                            <option value="Critical">🔴 Critical Only</option>
-                            <option value="High">🟠 High Only</option>
-                            <option value="Medium">🟡 Medium Only</option>
-                            <option value="Low">🟢 Low Only</option>
+                            <option value="Critical">🔴 Critical</option>
+                            <option value="High">🟠 High</option>
+                            <option value="Medium">🟡 Medium</option>
+                            <option value="Low">🟢 Low</option>
                         </select>
 
                         {/* View Mode Toggle */}
-                        <div className="flex bg-slate-800 rounded-xl p-0.5 border border-slate-700">
+                        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
                             <button
                                 onClick={() => setViewMode('feed')}
-                                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
-                                    viewMode === 'feed' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                    viewMode === 'feed'
+                                        ? 'bg-white text-slate-900 shadow-xs'
+                                        : 'text-slate-600 hover:text-slate-900'
                                 }`}
-                                title="Unified Feed View"
                             >
-                                <ListFilter className="w-3.5 h-3.5" />
-                                Feed
+                                Feed View
                             </button>
                             <button
                                 onClick={() => setViewMode('grouped')}
-                                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${
-                                    viewMode === 'grouped' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                    viewMode === 'grouped'
+                                        ? 'bg-white text-slate-900 shadow-xs'
+                                        : 'text-slate-600 hover:text-slate-900'
                                 }`}
-                                title="Grouped by MITRE Tactic"
                             >
-                                <Layers className="w-3.5 h-3.5" />
-                                Grouped
+                                Grouped by Tactic
                             </button>
                         </div>
                     </div>
@@ -404,7 +394,7 @@ export default function MitreNews() {
 
                 {/* Active filter badges */}
                 {(selectedTacticParam !== 'all' || selectedTechniqueParam !== 'all' || selectedSeverityParam !== 'all' || searchQueryParam) && (
-                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80 text-xs">
+                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#E2E8F0] text-xs">
                         <span className="text-slate-500">Active Filters:</span>
                         {selectedTacticParam !== 'all' && (
                             <span className="px-2.5 py-1 bg-cyan-950/60 border border-cyan-800 text-cyan-300 rounded-lg flex items-center gap-1.5">
@@ -523,11 +513,11 @@ export default function MitreNews() {
                         return (
                             <div
                                 key={tactic.id}
-                                className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-lg"
+                                className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-xs"
                             >
                                 <button
                                     onClick={() => toggleTacticCollapse(tactic.id)}
-                                    className="w-full p-4 flex items-center justify-between hover:bg-slate-800/40 transition-colors text-left"
+                                    className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left"
                                 >
                                     <div className="flex items-center gap-3">
                                         <div
@@ -537,10 +527,10 @@ export default function MitreNews() {
                                         <span className="text-2xl">{tactic.icon}</span>
                                         <div>
                                             <div className="flex items-center gap-2">
-                                                <h3 className="font-bold text-slate-100 text-base">
+                                                <h3 className="font-bold font-display text-slate-900 text-base">
                                                     {tactic.name}
                                                 </h3>
-                                                <span className="text-xs font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-2 py-0.5 rounded">
+                                                <span className="text-xs font-mono font-bold text-blue-900 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
                                                     {tactic.id}
                                                 </span>
                                             </div>
@@ -551,21 +541,21 @@ export default function MitreNews() {
                                     </div>
 
                                     <div className="flex items-center gap-3">
-                                        <span className="px-3 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded-full text-xs font-semibold">
+                                        <span className="px-3 py-1 bg-slate-100 text-slate-700 border border-slate-200 rounded-full text-xs font-semibold">
                                             {matchingArticles.length} Article{matchingArticles.length !== 1 ? 's' : ''}
                                         </span>
                                         {isCollapsed ? (
-                                            <ChevronRight className="w-5 h-5 text-slate-500" />
+                                            <ChevronRight className="w-5 h-5 text-slate-400" />
                                         ) : (
-                                            <ChevronDown className="w-5 h-5 text-slate-500" />
+                                            <ChevronDown className="w-5 h-5 text-slate-400" />
                                         )}
                                     </div>
                                 </button>
 
                                 {!isCollapsed && (
-                                    <div className="p-4 border-t border-slate-800/80 bg-slate-950/40 space-y-3">
+                                    <div className="p-4 border-t border-[#E2E8F0] bg-slate-50/50 space-y-3">
                                         {matchingArticles.length === 0 ? (
-                                            <p className="text-slate-500 text-xs italic py-2">
+                                            <p className="text-slate-400 text-xs italic py-2">
                                                 No current articles tagged with {tactic.name}.
                                             </p>
                                         ) : (
@@ -616,23 +606,23 @@ function NewsArticleCard({
     ];
 
     return (
-        <div className="bg-slate-900/90 border border-slate-800/90 hover:border-slate-700 rounded-2xl p-5 transition-all shadow-md hover:shadow-xl space-y-3.5">
+        <div className="metric-card space-y-3.5 bg-white">
             {/* Top row: Severity, Category, Source, Date */}
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${sev.bg} ${sev.text} ${sev.border} ${sev.glow}`}>
+                    <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${sev.bg} ${sev.text} ${sev.border}`}>
                         {item.severity}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                    <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                         {item.category}
                     </span>
-                    <span className="text-xs text-slate-400 flex items-center gap-1.5 bg-slate-800/60 px-2 py-0.5 rounded-md">
-                        <Radio className="w-3 h-3 text-cyan-400" />
+                    <span className="text-xs text-slate-600 flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md">
+                        <Radio className="w-3 h-3 text-[#1E3A8A]" />
                         {item.source}
                     </span>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                <div className="flex items-center gap-1.5 text-xs text-slate-400">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{formattedDate}</span>
                 </div>
@@ -644,38 +634,38 @@ function NewsArticleCard({
                     href={item.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-base lg:text-lg font-bold text-slate-100 hover:text-cyan-400 transition-colors inline-flex items-start gap-2 group leading-snug"
+                    className="text-base lg:text-lg font-bold font-display text-slate-900 hover:text-[#1E3A8A] transition-colors inline-flex items-start gap-2 group leading-snug"
                 >
                     <span>{item.title}</span>
-                    <ExternalLink className="w-4 h-4 opacity-50 group-hover:opacity-100 flex-shrink-0 mt-1 transition-opacity text-cyan-400" />
+                    <ExternalLink className="w-4 h-4 opacity-50 group-hover:opacity-100 flex-shrink-0 mt-1 transition-opacity text-[#1E3A8A]" />
                 </a>
             </div>
 
             {/* Snippet */}
             {item.contentSnippet && (
-                <p className="text-sm text-slate-400 leading-relaxed line-clamp-2">
+                <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">
                     {item.contentSnippet}
                 </p>
             )}
 
             {/* MITRE Badges Section */}
-            <div className="pt-2 border-t border-slate-800/80 space-y-2">
+            <div className="pt-2 border-t border-[#E2E8F0] space-y-2">
                 <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mr-1 flex items-center gap-1">
-                        <Target className="w-3 h-3 text-cyan-400" /> MITRE ATT&CK:
+                        <Target className="w-3 h-3 text-[#1E3A8A]" /> MITRE ATT&CK:
                     </span>
 
                     {item.mitreTechniques.length === 0 ? (
-                        <span className="text-xs text-slate-600 italic">General Threat Activity</span>
+                        <span className="text-xs text-slate-400 italic">General Threat Activity</span>
                     ) : (
                         item.mitreTechniques.map((tech) => (
                             <div
                                 key={tech.id}
-                                className="inline-flex items-center rounded-lg bg-slate-800/80 border border-slate-700/80 hover:border-cyan-500/60 text-xs overflow-hidden transition-all group"
+                                className="inline-flex items-center rounded-lg bg-slate-50 border border-slate-200 hover:border-blue-400 text-xs overflow-hidden transition-all group shadow-2xs"
                             >
                                 <button
                                     onClick={() => onSelectTactic(tech.tacticId)}
-                                    className="px-2 py-0.5 bg-slate-800 text-slate-300 group-hover:bg-cyan-950/80 group-hover:text-cyan-300 font-semibold border-r border-slate-700 transition-colors flex items-center gap-1"
+                                    className="px-2 py-0.5 bg-blue-50 text-blue-900 group-hover:bg-[#1E3A8A] group-hover:text-white font-bold border-r border-slate-200 transition-colors flex items-center gap-1"
                                     title={`Tactic: ${tech.tacticName}`}
                                 >
                                     <span>{tech.tacticIcon || '🛡️'}</span>
@@ -683,7 +673,7 @@ function NewsArticleCard({
                                 </button>
                                 <button
                                     onClick={() => onSelectTechnique(tech.id)}
-                                    className="px-2 py-0.5 text-slate-300 hover:text-white font-medium transition-colors"
+                                    className="px-2 py-0.5 text-slate-700 hover:text-[#1E3A8A] font-medium transition-colors"
                                     title={tech.name}
                                 >
                                     {tech.name}
@@ -692,7 +682,7 @@ function NewsArticleCard({
                                     href={tech.mitreUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="px-1.5 py-0.5 text-slate-500 hover:text-cyan-400 border-l border-slate-700 hover:bg-slate-700/50"
+                                    className="px-1.5 py-0.5 text-slate-400 hover:text-[#1E3A8A] border-l border-slate-200 hover:bg-slate-100"
                                     title="View technique on MITRE site"
                                 >
                                     ↗
@@ -706,13 +696,13 @@ function NewsArticleCard({
                 {allIOCs.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mr-1 flex items-center gap-1">
-                            <Zap className="w-3 h-3 text-amber-400" /> Detected IOCs:
+                            <Zap className="w-3 h-3 text-amber-600" /> Detected IOCs:
                         </span>
                         {allIOCs.slice(0, 5).map((ioc, idx) => (
                             <button
                                 key={idx}
                                 onClick={() => onEnrich(ioc)}
-                                className="px-2 py-0.5 rounded-md bg-amber-950/40 border border-amber-800/50 hover:border-amber-500 text-amber-300 font-mono text-[11px] transition-colors flex items-center gap-1"
+                                className="px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 hover:border-amber-400 text-amber-800 font-mono text-[11px] transition-colors flex items-center gap-1 shadow-2xs"
                                 title="Click to auto-enrich indicator"
                             >
                                 <span>{ioc}</span>
@@ -720,7 +710,7 @@ function NewsArticleCard({
                             </button>
                         ))}
                         {allIOCs.length > 5 && (
-                            <span className="text-[10px] text-slate-500">+{allIOCs.length - 5} more</span>
+                            <span className="text-[10px] text-slate-400 font-medium">+{allIOCs.length - 5} more</span>
                         )}
                     </div>
                 )}

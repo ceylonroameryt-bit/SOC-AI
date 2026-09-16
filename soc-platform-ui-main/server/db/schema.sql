@@ -109,6 +109,25 @@ CREATE INDEX IF NOT EXISTS idx_alert_logs_created ON alert_logs(created_at DESC)
 -- 7. HELPER VIEWS FOR REALTIME ANALYTICS & DASHBOARD
 -- ==============================================================================
 
+-- Severity breakdown for dashboard charts
+CREATE OR REPLACE VIEW v_severity_stats AS
+    SELECT severity AS name, COUNT(*)::int AS count
+    FROM threats
+    GROUP BY severity;
+
+-- Category breakdown for dashboard charts
+CREATE OR REPLACE VIEW v_category_stats AS
+    SELECT category AS name, COUNT(*)::int AS count
+    FROM threats
+    GROUP BY category;
+
+-- Recent threats summary (last 7 days)
+CREATE OR REPLACE VIEW v_recent_threats AS
+    SELECT id, title, severity, category, source_name, published_at
+    FROM threats
+    WHERE published_at >= NOW() - INTERVAL '7 days'
+    ORDER BY published_at DESC;
+
 -- ==============================================================================
 -- 8. ROW LEVEL SECURITY (RLS) POLICIES
 -- ==============================================================================
@@ -126,12 +145,13 @@ CREATE POLICY "Allow public read access on iocs" ON iocs FOR SELECT USING (true)
 CREATE POLICY "Allow public read access on threat_mitre_mapping" ON threat_mitre_mapping FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on incident_clusters" ON incident_clusters FOR SELECT USING (true);
 
--- Allow service_role (backend server) full read/write access
-CREATE POLICY "Allow service_role full access on threats" ON threats FOR ALL USING (auth.role() = 'service_role');
-CREATE POLICY "Allow service_role full access on iocs" ON iocs FOR ALL USING (auth.role() = 'service_role');
-CREATE POLICY "Allow service_role full access on threat_mitre_mapping" ON threat_mitre_mapping FOR ALL USING (auth.role() = 'service_role');
-CREATE POLICY "Allow service_role full access on incident_clusters" ON incident_clusters FOR ALL USING (auth.role() = 'service_role');
-CREATE POLICY "Allow service_role full access on alert_logs" ON alert_logs FOR ALL USING (auth.role() = 'service_role');
+-- Allow backend server (postgres role) full read/write access
+-- Using 'true' so that pg.Pool direct connections can INSERT/UPDATE without Supabase service_role JWT
+CREATE POLICY "Allow backend full access on threats" ON threats FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow backend full access on iocs" ON iocs FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow backend full access on threat_mitre_mapping" ON threat_mitre_mapping FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow backend full access on incident_clusters" ON incident_clusters FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow backend full access on alert_logs" ON alert_logs FOR ALL USING (true) WITH CHECK (true);
 
 -- Enable Realtime on Supabase (optional)
 -- ALTER PUBLICATION supabase_realtime ADD TABLE threats, alert_logs;

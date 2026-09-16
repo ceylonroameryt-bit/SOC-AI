@@ -40,7 +40,7 @@ function App() {
             <Route path="rules"      element={<RuleLibrary />} />
             <Route path="settings"   element={<Settings />} />
             <Route path="ai"         element={<AIBrief />} />
-            <Route path="metrics"    element={<div className="p-6 h-full flex flex-col"><h2 className="text-2xl font-bold text-white mb-6">Severity Metrics</h2><div className="flex-1 min-h-0"><SeverityChart /></div></div>} />
+            <Route path="metrics"    element={<div className="p-6 h-full flex flex-col bg-white"><h2 className="text-2xl font-bold font-display text-slate-900 mb-6">Severity Metrics</h2><div className="flex-1 min-h-0"><SeverityChart /></div></div>} />
             <Route path="*"          element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

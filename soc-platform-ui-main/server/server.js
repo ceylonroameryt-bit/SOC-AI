@@ -25,6 +25,8 @@ import { fetchAndProcessNews, getNews } from './services/newsService.js';
 import { sendPeriodicSummary }          from './services/emailService.js';
 import { broadcastAlert }               from './services/webhookService.js';
 import { processNewsForMitre }          from './services/mitreService.js';
+import { insertThreat, isDbConnected }  from './db/db.js';
+
 
 // ES module __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -219,6 +221,20 @@ app.post('/api/v1/alerts', async (req, res) => {
         existing.unshift(newAlert);
         fs.writeFileSync(threatsPath, JSON.stringify(existing.slice(0, 200), null, 2));
         console.log(`[INGEST] New external alert ingested: ${newAlert.id} (${severity} ${type})`);
+
+        // Also persist to PostgreSQL if connected
+        if (isDbConnected()) {
+            insertThreat({
+                title: newAlert.description || `${severity} ${type} Alert`,
+                contentSnippet: newAlert.description || '',
+                source: newAlert.source,
+                source_url: `alert://${newAlert.id}`,
+                link: `alert://${newAlert.id}`,
+                category: type,
+                severity: newAlert.severity,
+                pubDate: newAlert.timestamp,
+            }).catch(err => console.error('[INGEST] DB persist failed:', err.message));
+        }
 
         // Broadcast to ChatOps if Critical or High
         if (severity === 'Critical' || severity === 'High') {

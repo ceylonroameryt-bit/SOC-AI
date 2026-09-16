@@ -41,7 +41,9 @@ if (DATABASE_URL) {
         console.warn('[DB] Failed to initialize PostgreSQL pool:', err.message);
     }
 } else {
-    console.log('[DB] No DATABASE_URL found. Operating in local in-memory/JSON storage mode.');
+    console.warn('[DB] ⚠️  No DATABASE_URL / SUPABASE_DB_URL / POSTGRES_URL found in environment.');
+    console.warn('[DB] ⚠️  All records will be saved to local JSON files only (no PostgreSQL persistence).');
+    console.warn('[DB] ⚠️  To enable database saving: copy .env.example → .env and set DATABASE_URL.');
 }
 
 async function initDatabase() {
@@ -64,7 +66,8 @@ async function initDatabase() {
             client.release();
         }
     } catch (err) {
-        console.warn(`[DB] ⚠️ PostgreSQL connection failed (${err.message}). Falling back to local storage.`);
+        console.warn(`[DB] ⚠️  PostgreSQL connection failed: ${err.message} (code: ${err.code || 'N/A'})`);
+        console.warn('[DB] ⚠️  Check your DATABASE_URL in .env — ensure the password, host, and port are correct.');
         isConnected = false;
     }
 }

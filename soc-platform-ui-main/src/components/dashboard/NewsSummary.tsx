@@ -57,52 +57,55 @@ const NewsSummary = () => {
     };
 
     return (
-        <div className="h-full flex flex-col gap-4 p-4 lg:p-6 overflow-y-auto custom-scrollbar">
+        <div className="h-full flex flex-col gap-5 p-4 lg:p-6 overflow-y-auto custom-scrollbar bg-white">
 
             {/* Header / Stats Row */}
             <div className="flex-none grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center gap-4">
-                    <div className="p-3 rounded-full bg-blue-500/10 text-blue-400">
+                <div className="metric-card flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-blue-50 text-blue-700 border border-blue-100">
                         <Activity className="w-6 h-6" />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold text-slate-100">{totalAlerts}</div>
-                        <div className="text-xs text-slate-500">Total Intel Items</div>
+                        <div className="text-2xl font-bold font-display text-slate-900">{totalAlerts}</div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Intel Items</div>
                     </div>
                 </div>
-                <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center gap-4">
-                    <div className="p-3 rounded-full bg-red-500/10 text-red-400">
+                <div className="metric-card flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-red-50 text-red-700 border border-red-100">
                         <ShieldAlert className="w-6 h-6" />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold text-slate-100">{criticalItems.length + highItems.length}</div>
-                        <div className="text-xs text-slate-500">Critical & High Threats</div>
+                        <div className="text-2xl font-bold font-display text-slate-900">{criticalItems.length + highItems.length}</div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Critical & High Threats</div>
                     </div>
                 </div>
-                <Link to="/sources" className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center gap-4 hover:border-emerald-500/50 transition-colors cursor-pointer group">
-                    <div className="p-3 rounded-full bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
+                <Link to="/sources" className="metric-card flex items-center gap-4 hover:border-blue-400/50 transition-all cursor-pointer group">
+                    <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-100 transition-colors">
                         <Globe className="w-6 h-6" />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold text-slate-100">{uniqueSources.length}</div>
-                        <div className="text-xs text-slate-500 group-hover:text-emerald-400 transition-colors">Active Sources &rarr;</div>
+                        <div className="text-2xl font-bold font-display text-slate-900">{uniqueSources.length}</div>
+                        <div className="text-xs font-semibold text-slate-500 group-hover:text-blue-700 transition-colors">Active Sources &rarr;</div>
                     </div>
                 </Link>
             </div>
 
             {/* AI Summary Section */}
-            <div className="bg-slate-900/50 border border-cyan-500/20 rounded-xl p-6 relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500"></div>
-                <h3 className="text-lg font-bold text-cyan-400 flex items-center gap-2 mb-3">
-                    <FileText className="w-5 h-5" />
-                    Executive Summary
-                </h3>
-                <p className="text-slate-300 leading-relaxed text-sm md:text-base">
+            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 relative overflow-hidden shadow-sm">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#1E3A8A]"></div>
+                <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-bold font-display text-slate-900 flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-[#1E3A8A]" />
+                        Executive Intelligence Summary
+                    </h3>
+                    <span className="section-label">SOC Synthesis</span>
+                </div>
+                <p className="text-slate-700 leading-relaxed text-sm md:text-base font-sans">
                     {generateSummary()}
                 </p>
-                <div className="mt-4 flex gap-2">
+                <div className="mt-4 flex flex-wrap gap-2">
                     {uniqueSources.map(s => (
-                        <span key={s} className="text-[10px] uppercase font-bold text-slate-500 bg-slate-950 px-2 py-1 rounded">
+                        <span key={s} className="text-[11px] font-medium text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full">
                             {s}
                         </span>
                     ))}
@@ -111,26 +114,31 @@ const NewsSummary = () => {
 
             {/* Critical Breakdown */}
             {(criticalItems.length > 0 || highItems.length > 0) && (
-                <div className="flex-1 min-h-0 bg-red-950/10 border border-red-900/30 rounded-xl p-6">
-                    <h3 className="text-base font-bold text-red-400 mb-4 flex items-center gap-2">
-                        <ShieldAlert className="w-5 h-5" />
-                        Priority Incident Report
-                    </h3>
+                <div className="flex-1 min-h-0 bg-red-50/40 border border-red-200/80 rounded-2xl p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-base font-bold font-display text-red-900 flex items-center gap-2">
+                            <ShieldAlert className="w-5 h-5 text-red-600" />
+                            Priority Incident Escalation
+                        </h3>
+                        <span className="text-xs font-bold text-red-700 bg-red-100 px-2.5 py-0.5 rounded-full border border-red-200">
+                            {criticalItems.length + highItems.length} Urgent Items
+                        </span>
+                    </div>
                     <div className="space-y-3">
                         {[...criticalItems, ...highItems].map((item, idx) => (
-                            <div key={idx} className="bg-slate-950/50 border border-red-900/20 p-3 rounded-lg flex items-start justify-between gap-4">
-                                <div>
-                                    <h4 className="text-sm font-medium text-slate-200">{item.title}</h4>
-                                    <div className="text-xs text-slate-500 mt-1">
-                                        {item.contentSnippet && (
-                                            <p className="text-slate-400 mb-1 line-clamp-2 leading-relaxed opacity-90">{item.contentSnippet}</p>
-                                        )}
-                                        Source: <span className="text-slate-400">{item.source}</span> • {new Date(item.pubDate).toLocaleTimeString()}
+                            <div key={idx} className="bg-white border border-red-200/80 p-4 rounded-xl flex items-start justify-between gap-4 shadow-sm hover:shadow transition-shadow">
+                                <div className="space-y-1">
+                                    <h4 className="text-sm font-semibold text-slate-900">{item.title}</h4>
+                                    {item.contentSnippet && (
+                                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">{item.contentSnippet}</p>
+                                    )}
+                                    <div className="text-xs text-slate-400">
+                                        Source: <span className="text-slate-700 font-medium">{item.source}</span> • {new Date(item.pubDate).toLocaleTimeString()}
                                     </div>
                                 </div>
-                                <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase border ${item.severity === 'Critical'
-                                    ? 'border-red-500 text-red-500 bg-red-500/10'
-                                    : 'border-orange-500 text-orange-500 bg-orange-500/10'
+                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase shrink-0 border ${item.severity === 'Critical'
+                                    ? 'border-red-300 text-red-700 bg-red-50'
+                                    : 'border-orange-300 text-orange-700 bg-orange-50'
                                     }`}>
                                     {item.severity}
                                 </span>

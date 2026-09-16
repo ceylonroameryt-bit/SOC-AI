@@ -1,4 +1,4 @@
-import { Search, Download, Mail, Menu } from 'lucide-react';
+import { Search, Download, Mail, Menu, ExternalLink } from 'lucide-react';
 import { API_BASE } from '../../config/api';
 
 interface TopBarProps {
@@ -21,40 +21,54 @@ const TopBar = ({ onMenuClick }: TopBarProps) => {
     };
 
     return (
-        <header className="h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-3 sm:px-4 lg:px-6 flex-shrink-0 z-20">
+        <header className="h-16 bg-white/90 backdrop-blur-xl border-b border-[#E2E8F0] flex items-center justify-between px-3 sm:px-4 lg:px-6 flex-shrink-0 z-20">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 mr-2">
                 {/* Mobile Menu Button */}
                 <button
                     onClick={onMenuClick}
-                    className="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 lg:hidden flex-shrink-0 transition-colors"
+                    className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 lg:hidden flex-shrink-0 transition-colors border border-[#E2E8F0]"
                     aria-label="Open Navigation Menu"
                 >
-                    <Menu className="w-6 h-6 text-cyan-400" />
+                    <Menu className="w-5 h-5 text-blue-600" />
                 </button>
 
-                {/* Search Bar */}
+                {/* Search Bar with Portfolio Style */}
                 <div className="flex items-center flex-1 max-w-md min-w-0">
                     <div className="relative w-full">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <Search className="w-4 h-4 text-slate-500" />
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                            <Search className="w-4 h-4 text-slate-400" />
                         </span>
                         <input
                             type="text"
-                            placeholder="Search Intelligence..."
-                            className="w-full bg-slate-800/80 border border-slate-700/80 text-slate-200 text-xs sm:text-sm rounded-xl focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 block pl-9 pr-3 py-2 placeholder-slate-500 transition-colors"
+                            placeholder="Search threat intelligence, IOCs, CVEs..."
+                            className="w-full bg-slate-50 focus:bg-white border border-[#E2E8F0] text-slate-800 text-xs sm:text-sm rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 block pl-10 pr-12 py-2 placeholder-slate-400 transition-all shadow-sm"
                         />
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-[10px] font-mono font-semibold text-slate-400 bg-slate-100 my-1.5 mr-1.5 px-1.5 rounded border border-[#E2E8F0]">
+                            /
+                        </span>
                     </div>
                 </div>
             </div>
 
             {/* Quick Actions Buttons */}
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-shrink-0">
+                <a
+                    href="https://sujampathirathnayaka.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden sm:inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 px-3 py-2 rounded-xl border border-blue-200 text-xs font-semibold transition-all shadow-sm"
+                    title="Poorna Sujampathi Portfolio"
+                >
+                    <span>Portfolio</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+
                 <button
                     onClick={handleSendReport}
-                    className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 sm:px-3.5 py-2 rounded-xl border border-slate-700 transition-all font-medium text-xs sm:text-sm active:scale-95"
+                    className="btn-secondary flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs sm:text-sm active:scale-95"
                     title="Send Email Report"
                 >
-                    <Mail className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                    <Mail className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
                     <span className="hidden md:inline">Email Report</span>
                 </button>
 
@@ -62,11 +76,11 @@ const TopBar = ({ onMenuClick }: TopBarProps) => {
                     href={`${API_BASE}/api/reports/daily`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 px-2.5 sm:px-3.5 py-2 rounded-xl border border-slate-700 hover:border-cyan-500/50 transition-all font-medium text-xs sm:text-sm active:scale-95"
+                    className="btn-accent flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm active:scale-95"
                     title="Download Report"
                 >
-                    <Download className="w-4 h-4 flex-shrink-0" />
-                    <span className="hidden md:inline">Download</span>
+                    <Download className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Download Report</span>
                 </a>
             </div>
         </header>
