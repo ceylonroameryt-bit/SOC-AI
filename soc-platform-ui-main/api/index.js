@@ -274,7 +274,7 @@ export default async function handler(req, res) {
     }
 
     // 4. MITRE ATT&CK News Matrix & Categorization Endpoint
-    if (pathname === '/api/mitre/news') {
+    if (pathname === '/api/mitre/news' || pathname === '/api/mitre/categorized') {
         const news = await getCachedNews();
         const tacticFilter = searchParams.get('tactic');
         const techniqueFilter = searchParams.get('technique');
