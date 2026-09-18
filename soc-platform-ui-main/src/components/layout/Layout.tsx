@@ -1,38 +1,38 @@
 import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import NavBar from './NavBar';
 import TopBar from './TopBar';
-import { useState } from 'react';
+import SkipLink from './SkipLink';
+import AccessibilityModal from './AccessibilityModal';
+import { useAccessibility } from '../../context/AccessibilityContext';
 
 const Layout = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { isModalOpen, setIsModalOpen } = useAccessibility();
 
     return (
-        <div className="flex h-screen bg-white text-slate-900 font-sans selection:bg-blue-600/20 selection:text-blue-900 overflow-hidden">
-            {/* Mobile Sidebar Backdrop Overlay */}
-            {sidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden transition-opacity"
-                    onClick={() => setSidebarOpen(false)}
-                    aria-hidden="true"
-                />
-            )}
+        <div className="flex flex-col h-screen bg-white text-slate-900 font-sans selection:bg-blue-600/20 selection:text-blue-900 overflow-hidden">
+            {/* WCAG Skip Navigation Link */}
+            <SkipLink />
 
-            {/* Sidebar Container */}
-            <div
-                className={`fixed inset-y-0 left-0 z-50 transform lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out ${
-                    sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                }`}
-            >
-                <Sidebar onClose={() => setSidebarOpen(false)} />
-            </div>
+            {/* Accessibility Settings Modal */}
+            <AccessibilityModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
+
+            {/* Top Action Bar (Search, Download, Email, Accessibility) */}
+            <TopBar />
+
+            {/* Secondary Horizontal Navigation Bar */}
+            <NavBar />
 
             {/* Main Content Area */}
-            <main className="flex-1 flex flex-col min-w-0 bg-white relative overflow-hidden">
-                <TopBar onMenuClick={() => setSidebarOpen(true)} />
-                {/* Scrollable page container for all screen sizes */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 relative custom-scrollbar bg-white">
-                    <Outlet />
-                </div>
+            <main
+                id="main-content"
+                role="main"
+                tabIndex={-1}
+                className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 relative custom-scrollbar bg-white focus:outline-none"
+            >
+                <Outlet />
             </main>
         </div>
     );

@@ -52,7 +52,7 @@ app.use(helmet({
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
     noSniff: true,
-    xssFilter: true,
+    // xssFilter was removed in Helmet v7+; CSP is the modern replacement
 }));
 
 // 3. Custom Security Headers
@@ -248,46 +248,51 @@ app.post('/api/v1/alerts', async (req, res) => {
     }
 });
 
-// Debug endpoint - shows file paths on Azure (safe version, no env secrets)
-app.get('/api/debug/paths', (req, res) => {
-    const listDir = (dir) => {
-        try {
-            return fs.readdirSync(dir).map(f => {
-                const fullPath = path.join(dir, f);
-                const stat = fs.statSync(fullPath);
-                return {
-                    name: f,
-                    isDir: stat.isDirectory(),
-                    size: stat.size,
-                    children: stat.isDirectory() && f !== 'node_modules' && f !== '.git' ? listDir(fullPath) : undefined
-                };
-            });
-        } catch (e) {
-            return { error: e.message };
-        }
-    };
+// Debug endpoint - shows file paths (DEVELOPMENT ONLY — never expose in production)
+if (isDev) {
+    app.get('/api/debug/paths', (req, res) => {
+        const listDir = (dir) => {
+            try {
+                return fs.readdirSync(dir).map(f => {
+                    const fullPath = path.join(dir, f);
+                    const stat = fs.statSync(fullPath);
+                    return {
+                        name: f,
+                        isDir: stat.isDirectory(),
+                        size: stat.size,
+                        children: stat.isDirectory() && f !== 'node_modules' && f !== '.git' ? listDir(fullPath) : undefined
+                    };
+                });
+            } catch (e) {
+                return { error: e.message };
+            }
+        };
 
-    res.json({
-        cwd: process.cwd(),
-        nodeEnv: process.env.NODE_ENV || 'development',
-        distPathFromDirname,
-        distPathFromCwd,
-        resolvedDistPath,
-        fsTree: {
-            dirname: listDir(__dirname),
-            cwd: listDir(process.cwd()),
-            distInCwd: listDir(path.join(process.cwd(), 'dist')),
-            distInRoot: listDir(path.join(process.cwd(), '..', 'dist')),
-        }
+        res.json({
+            cwd: process.cwd(),
+            nodeEnv: process.env.NODE_ENV || 'development',
+            distPathFromDirname,
+            distPathFromCwd,
+            resolvedDistPath,
+            fsTree: {
+                dirname: listDir(__dirname),
+                cwd: listDir(process.cwd()),
+                distInCwd: listDir(path.join(process.cwd(), 'dist')),
+                distInRoot: listDir(path.join(process.cwd(), '..', 'dist')),
+            }
+        });
     });
-});
+}
 
 
 // Manual Email Trigger (with strict rate limit + input validation)
 app.post('/api/notifications/send', strictLimiter, async (req, res) => {
     try {
         const { email } = req.body;
-        const targetEmail = email || process.env.DEFAULT_EMAIL || 'poornasujampathi@gmail.com';
+        const targetEmail = email || process.env.DEFAULT_EMAIL;
+        if (!targetEmail) {
+            return res.status(400).json({ error: 'No email address provided and DEFAULT_EMAIL is not configured.' });
+        }
 
         // Email validation regex
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -314,6 +319,8 @@ app.post('/api/notifications/send', strictLimiter, async (req, res) => {
 // ==========================================
 // SPA FALLBACK (Serves index.html for frontend routing)
 // ==========================================
+// SPA catch-all — uses Express 5 path-to-regexp v8 wildcard syntax ({*path})
+// This requires Express >= 5.x on all deployment targets (Railway, Azure, etc.)
 app.get('{*path}', (req, res, next) => {
     // If request starts with /api, pass to 404 / error handler
     if (req.path.startsWith('/api')) {
@@ -363,11 +370,15 @@ app.listen(PORT, () => {
     });
 
     // Schedule email every 3 hours
-    const reportEmail = process.env.DEFAULT_EMAIL || 'poornasujampathi@gmail.com';
-    cron.schedule('0 */3 * * *', () => {
-        console.log(`[CRON] Running periodic email report...`);
-        sendPeriodicSummary(reportEmail);
-    });
+    const reportEmail = process.env.DEFAULT_EMAIL;
+    if (reportEmail) {
+        cron.schedule('0 */3 * * *', () => {
+            console.log(`[CRON] Running periodic email report to ${reportEmail}...`);
+            sendPeriodicSummary(reportEmail);
+        });
+    } else {
+        console.warn('[CRON] DEFAULT_EMAIL not set — periodic email reports disabled.');
+    }
 
     // Refresh news every 30 minutes + update MITRE heatmap
     setInterval(async () => {

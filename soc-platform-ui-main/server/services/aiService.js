@@ -52,15 +52,43 @@ const callOllama = async (prompt, maxTokens = 400) => {
     return data.response || '';
 };
 
+const callPythonAI = async (newsItems = []) => {
+    const serviceUrl = process.env.AI_SERVICE_URL;
+    if (!serviceUrl) return null;
+    try {
+        const resp = await fetch(`${serviceUrl}/api/v1/briefing`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                articles: newsItems.map(n => ({
+                    title: n.title,
+                    contentSnippet: n.contentSnippet || '',
+                    source: n.source || 'Unknown',
+                    severity: n.severity || 'Medium',
+                    category: n.category || 'General',
+                    link: n.link || '#',
+                })),
+                max_bullet_points: 5,
+            }),
+        });
+        if (!resp.ok) return null;
+        const data = await resp.json();
+        return `## Executive Summary\n${data.executive_summary}\n\n## Key Analyst Highlights\n${(data.key_threats || []).map(t => `- ${t}`).join('\n')}\n\n## Critical Vulnerabilities\n${(data.critical_vulnerabilities || []).map(v => `- ${v}`).join('\n')}\n\n## Recommended Actions\n${(data.recommended_actions || []).map((a, i) => `${i + 1}. ${a}`).join('\n')}`;
+    } catch {
+        return null;
+    }
+};
+
 const callLLM = async (prompt, maxTokens = 400) => {
     // Try OpenAI first, then Ollama, then gracefully fail
-    if (process.env.OPENAI_API_KEY) {
+    const openaiKey = process.env.OPENAI_API_KEY;
+    if (openaiKey && !openaiKey.includes('your-openai-api-key') && !openaiKey.startsWith('sk-your-')) {
         return callOpenAI(prompt, maxTokens);
     }
     if (process.env.OLLAMA_URL || process.env.USE_OLLAMA === 'true') {
         return callOllama(prompt, maxTokens);
     }
-    throw new Error('No LLM provider configured. Set OPENAI_API_KEY or OLLAMA_URL in .env');
+    throw new Error('No valid LLM provider configured.');
 };
 
 // Cache for daily brief
@@ -113,7 +141,13 @@ Format your response exactly as:
 3. [action 3]`;
 
     try {
-        const content = await callLLM(prompt, 600);
+        let content = null;
+        if (process.env.AI_SERVICE_URL) {
+            content = await callPythonAI(criticalNews);
+        }
+        if (!content) {
+            content = await callLLM(prompt, 600);
+        }
         briefCache = { content, generatedAt: Date.now(), cached: false };
         return briefCache;
     } catch (err) {
@@ -155,14 +189,8 @@ Start immediately — no preamble.`;
 };
 
 // ── TF-IDF Cosine Similarity De-duplication ───────────────────────────────────
-const tokenize = (text) => {
-    return (text || '')
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, ' ')
-        .split(/\s+/)
-        .filter(t => t.length > 3 && !STOP_WORDS.has(t));
-};
 
+// STOP_WORDS must be declared BEFORE tokenize to avoid Temporal Dead Zone crash
 const STOP_WORDS = new Set([
     'this', 'that', 'with', 'from', 'have', 'been', 'were', 'they',
     'their', 'them', 'there', 'then', 'than', 'will', 'would', 'could',
@@ -170,6 +198,14 @@ const STOP_WORDS = new Set([
     'also', 'after', 'over', 'such', 'some', 'each', 'most', 'both',
     'through', 'during', 'before', 'between', 'under', 'while',
 ]);
+
+const tokenize = (text) => {
+    return (text || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(t => t.length > 3 && !STOP_WORDS.has(t));
+};
 
 const computeTFIDF = (docs) => {
     const N = docs.length;
@@ -184,12 +220,19 @@ const computeTFIDF = (docs) => {
         }
     }
 
-    // Compute TF-IDF vectors
+    // Compute TF-IDF vectors — O(n) per document using a frequency map
     return tokenizedDocs.map(tokens => {
         const vec = new Map();
         const total = tokens.length || 1;
+
+        // Build frequency map in O(n) instead of O(n²)
+        const freqMap = new Map();
         for (const token of tokens) {
-            const tf = (tokens.filter(t => t === token).length) / total;
+            freqMap.set(token, (freqMap.get(token) || 0) + 1);
+        }
+
+        for (const [token, freq] of freqMap) {
+            const tf = freq / total;
             const idf = Math.log(N / (dfMap.get(token) || 1));
             vec.set(token, tf * idf);
         }

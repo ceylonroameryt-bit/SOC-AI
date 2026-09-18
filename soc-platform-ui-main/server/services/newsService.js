@@ -65,20 +65,19 @@ const determineCategory = (title, snippet) => {
 let NEWS_CACHE = [];
 
 const loadNewsData = () => {
-    if (NEWS_CACHE.length > 0) return NEWS_CACHE;
+    if (NEWS_CACHE && NEWS_CACHE.length > 0) return NEWS_CACHE;
 
     if (!fs.existsSync(DATA_FILE)) {
         return [];
     }
     try {
-        console.time('Disk Read');
         const data = fs.readFileSync(DATA_FILE, 'utf8');
+        if (!data || !data.trim()) return NEWS_CACHE || [];
         NEWS_CACHE = JSON.parse(data);
-        console.timeEnd('Disk Read');
         return NEWS_CACHE;
     } catch (err) {
-        console.error('Error reading news data:', err);
-        return [];
+        console.error('Error reading news data:', err.message);
+        return NEWS_CACHE || [];
     }
 };
 
@@ -86,10 +85,21 @@ const saveNewsData = (data) => {
     // Update Cache Immediately
     NEWS_CACHE = data;
 
-    // Write to disk asynchronously (don't block)
-    fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), (err) => {
-        if (err) console.error('Error saving news data to disk:', err);
-    });
+    // Atomic write via temp file prevents concurrent reads from hitting partial JSON
+    const tmpFile = `${DATA_FILE}.${process.pid}.tmp`;
+    try {
+        fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2));
+        fs.renameSync(tmpFile, DATA_FILE);
+    } catch (err) {
+        try {
+            fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+        } catch (writeErr) {
+            console.error('Error saving news data to disk:', writeErr.message);
+        }
+        if (fs.existsSync(tmpFile)) {
+            try { fs.unlinkSync(tmpFile); } catch {}
+        }
+    }
 };
 
 // Initialize Cache on Module Load
@@ -118,7 +128,8 @@ export const fetchAndProcessNews = async () => {
             let chunkNewItems = 0;
 
             validChunk.forEach(feed => {
-                feed.items.forEach(item => {
+                (feed.items || []).forEach(item => {
+                    if (!item || !item.link || !item.title) return;
                     const exists = existingNews.some(n => n.link === item.link);
                     if (!exists) {
                         const severity = determineSeverity(item.title, item.contentSnippet || '');
@@ -127,8 +138,8 @@ export const fetchAndProcessNews = async () => {
                             title: item.title,
                             link: item.link,
                             pubDate: item.pubDate || new Date().toISOString(),
-                            contentSnippet: item.contentSnippet,
-                            source: feed.title,
+                            contentSnippet: item.contentSnippet || '',
+                            source: feed.title || 'Unknown Source',
                             severity: severity,
                             category: category,
                             fetchedAt: new Date().toISOString()
@@ -152,9 +163,8 @@ export const fetchAndProcessNews = async () => {
             });
 
             if (chunkNewItems > 0) {
-                existingNews.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-                saveNewsData(existingNews);
-                console.log(`Saved ${chunkNewItems} items from chunk.`);
+                // Note: final sort + save happens once after all chunks complete
+                console.log(`Processed ${chunkNewItems} new items from chunk ${i / CHUNK_SIZE + 1}.`);
             }
         }
 
@@ -173,13 +183,14 @@ export const fetchAndProcessNews = async () => {
 };
 
 export const getNews = () => {
-    return NEWS_CACHE;
+    return NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
 };
 
 export const getSeverityStats = () => {
     const news = loadNewsData();
     const now = new Date();
-    const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+    // Fix: avoid mutating `now` with setDate(); compute 30 days ago safely
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
     const stats = {
         Critical: 0,

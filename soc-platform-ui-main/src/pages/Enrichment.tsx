@@ -33,12 +33,15 @@ interface EnrichmentResult {
         error?: string;
     };
     queries?: {
-        queries: {
+        queries?: {
             splunk: string;
             kql: string;
             sigma: string;
         };
-        iocType: string;
+        splunk?: string;
+        kql?: string;
+        sigma?: string;
+        iocType?: string;
     };
     extracted?: { ips: string[]; hashes: string[]; cves: string[]; domains: string[] };
     enriched?: { ips: unknown[]; hashes: unknown[]; cves: unknown[] };
@@ -157,7 +160,7 @@ export default function Enrichment() {
         }
     }, [bulkText]);
 
-    const queries = result?.queries?.queries;
+    const queries = result?.queries?.queries || (result?.queries?.splunk ? (result.queries as { splunk: string; kql: string; sigma: string }) : undefined);
 
     return (
         <div className="p-6 space-y-6 min-h-full bg-white max-w-7xl mx-auto">

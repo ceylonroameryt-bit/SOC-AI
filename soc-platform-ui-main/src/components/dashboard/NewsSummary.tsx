@@ -18,13 +18,17 @@ const NewsSummary = () => {
 
     useEffect(() => {
         fetch(`${API_BASE}/api/news`)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
             .then(data => {
-                setNews(data);
+                setNews(Array.isArray(data) ? data : (Array.isArray(data?.news) ? data.news : []));
                 setLoading(false);
             })
             .catch(err => {
                 console.error('Error fetching news:', err);
+                setNews([]);
                 setLoading(false);
             });
     }, []);

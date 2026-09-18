@@ -260,3 +260,214 @@ h1, h2, h3, h4, h5, h6,
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;
 }
+
+/* Radar & Pulse Animations */
+@keyframes pulse-radar {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.radar-ping {
+  animation: pulse-radar 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.ioc-code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #0F172A;
+}
+
+.glass-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05), 0 10px 25px -5px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s ease;
+}
+
+.glass-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.07), 0 20px 30px -10px rgba(15, 23, 42, 0.04);
+}
+
+/* ==========================================================================
+   ACCESSIBILITY & WCAG 2.1 AA/AAA COMPLIANCE STYLES
+   ========================================================================== */
+
+/* Universal Accessible Focus Ring for Keyboard Users */
+:focus-visible {
+  outline: 2.5px solid #1D4ED8 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+}
+
+/* Ensure mouse clicks don't show focus rings if not keyboard initiated */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Text Scaling via Root */
+html.text-scale-normal {
+  font-size: 100%;
+}
+
+html.text-scale-large {
+  font-size: 115%;
+}
+
+html.text-scale-xlarge {
+  font-size: 130%;
+}
+
+/* High Legibility / Dyslexia-Friendly Mode */
+html.high-legibility,
+html.high-legibility body,
+html.high-legibility p,
+html.high-legibility span,
+html.high-legibility div,
+html.high-legibility button,
+html.high-legibility a {
+  letter-spacing: 0.035em !important;
+  word-spacing: 0.05em !important;
+  line-height: 1.7 !important;
+}
+
+/* Reduced Motion Mode */
+html.reduced-motion *,
+html.reduced-motion *::before,
+html.reduced-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+html.reduced-motion .radar-ping,
+html.reduced-motion .chip-dot,
+html.reduced-motion .animate-pulse,
+html.reduced-motion .animate-spin {
+  animation: none !important;
+}
+
+/* ==========================================================================
+   HIGH CONTRAST MODE (WCAG AAA - Ratio > 7:1)
+   ========================================================================== */
+html.theme-high-contrast {
+  --bg: #FFFFFF;
+  --ink: #000000;
+  --border: #000000;
+  --border-dark: #000000;
+  color-scheme: light;
+}
+
+html.theme-high-contrast body,
+html.theme-high-contrast [class*="bg-white"],
+html.theme-high-contrast [class*="bg-slate-50"] {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+html.theme-high-contrast [class*="text-slate-"],
+html.theme-high-contrast [class*="text-gray-"],
+html.theme-high-contrast [class*="text-zinc-"] {
+  color: #000000 !important;
+}
+
+html.theme-high-contrast [class*="border-"] {
+  border-color: #000000 !important;
+  border-width: 1.5px !important;
+}
+
+html.theme-high-contrast a,
+html.theme-high-contrast button {
+  text-decoration: underline !important;
+  text-decoration-thickness: 1.5px !important;
+  text-underline-offset: 3px !important;
+}
+
+html.theme-high-contrast .btn-accent,
+html.theme-high-contrast button[class*="bg-blue-"] {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #000000 !important;
+  text-decoration: none !important;
+}
+
+html.theme-high-contrast :focus-visible {
+  outline: 3.5px solid #000000 !important;
+  outline-offset: 3px !important;
+}
+
+/* ==========================================================================
+   DARK SOC MODE
+   ========================================================================== */
+html.theme-dark {
+  --bg: #0B132B;
+  --ink: #F8FAFC;
+  --border: #1E293B;
+  color-scheme: dark;
+}
+
+html.theme-dark body {
+  background-color: #0B132B !important;
+  color: #F8FAFC !important;
+}
+
+html.theme-dark aside,
+html.theme-dark header,
+html.theme-dark main,
+html.theme-dark div[class*="bg-white"],
+html.theme-dark div[class*="bg-slate-50"] {
+  background-color: #0F172A !important;
+  color: #F8FAFC !important;
+  border-color: #1E293B !important;
+}
+
+html.theme-dark [class*="text-slate-800"],
+html.theme-dark [class*="text-slate-900"],
+html.theme-dark [class*="text-[#0F172A]"] {
+  color: #F8FAFC !important;
+}
+
+html.theme-dark [class*="text-slate-500"],
+html.theme-dark [class*="text-slate-600"],
+html.theme-dark [class*="text-slate-400"] {
+  color: #94A3B8 !important;
+}
+
+html.theme-dark [class*="border-[#E2E8F0]"],
+html.theme-dark [class*="border-slate-200"],
+html.theme-dark [class*="border-slate-100"] {
+  border-color: #334155 !important;
+}
+
+html.theme-dark input {
+  background-color: #1E293B !important;
+  color: #FFFFFF !important;
+  border-color: #475569 !important;
+}
+
+html.theme-dark input::placeholder {
+  color: #94A3B8 !important;
+}
+
+html.theme-dark .metric-card,
+html.theme-dark .glass-card,
+html.theme-dark .stats-strip {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+}

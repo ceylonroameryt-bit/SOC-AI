@@ -36,6 +36,7 @@ export default function RuleLibrary() {
     const [sigmaRules, setSigmaRules] = useState<Rule[]>([]);
     const [yaraRules, setYaraRules] = useState<Rule[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const [levelFilter, setLevelFilter] = useState('');
     const [selectedRule, setSelectedRule] = useState<Rule | null>(null);
@@ -43,17 +44,22 @@ export default function RuleLibrary() {
 
     const loadRules = async () => {
         setLoading(true);
+        setError(null);
         try {
             const [sigmaResp, yaraResp] = await Promise.all([
                 fetch(`${API_BASE}/api/rules/sigma`),
                 fetch(`${API_BASE}/api/rules/yara`),
             ]);
+            if (!sigmaResp.ok || !yaraResp.ok) {
+                throw new Error(`Server returned ${!sigmaResp.ok ? sigmaResp.status : yaraResp.status}`);
+            }
             const sigmaData = await sigmaResp.json();
             const yaraData  = await yaraResp.json();
             setSigmaRules(sigmaData.rules || []);
             setYaraRules(yaraData.rules || []);
         } catch (err) {
             console.error('Failed to load rules:', err);
+            setError('Failed to load detection rules. Please check the server and try again.');
         } finally {
             setLoading(false);
         }
@@ -186,6 +192,17 @@ export default function RuleLibrary() {
             {loading ? (
                 <div className="flex items-center justify-center h-64">
                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+                </div>
+            ) : error ? (
+                <div className="flex flex-col items-center justify-center h-64 text-center gap-3">
+                    <p className="text-4xl">⚠️</p>
+                    <p className="font-display text-slate-800 font-semibold">{error}</p>
+                    <button
+                        onClick={loadRules}
+                        className="btn-accent px-4 py-2 text-sm mt-1"
+                    >
+                        Retry
+                    </button>
                 </div>
             ) : (
                 <div className="flex flex-col lg:flex-row gap-4">

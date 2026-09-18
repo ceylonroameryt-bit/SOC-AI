@@ -36,14 +36,16 @@ const CriticalThreatsView = () => {
                     fetch(`${API_BASE}/api/news`),
                     fetch(`${API_BASE}/api/news/stats`)
                 ]);
-                const newsData = await newsRes.json();
-                const statsData = await statsRes.json();
+                const newsData = newsRes.ok ? await newsRes.json() : [];
+                const statsData = statsRes.ok ? await statsRes.json() : [];
 
-                setNews(newsData);
-                setChartData(statsData);
+                setNews(Array.isArray(newsData) ? newsData : (Array.isArray(newsData?.news) ? newsData.news : []));
+                setChartData(Array.isArray(statsData) ? statsData : []);
                 setLoading(false);
             } catch (err) {
                 console.error('Error fetching data:', err);
+                setNews([]);
+                setChartData([]);
                 setLoading(false);
             }
         };

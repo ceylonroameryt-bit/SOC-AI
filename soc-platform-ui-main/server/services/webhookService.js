@@ -45,7 +45,8 @@ export const sendSlackAlert = async (threat) => {
                     : []),
             ],
             footer: 'NO ENTRY SOC Platform',
-            footer_icon: 'https://emoji.slack-edge.com/T0/shield/shield.png',
+            // Use a stable public shield icon (Slack emoji CDN URLs require a valid workspace ID)
+            footer_icon: 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f6e1.png',
             ts: Math.floor(Date.now() / 1000),
         }]
     };
@@ -144,7 +145,8 @@ export const sendDiscordAlert = async (threat) => {
 
     const payload = {
         username: 'NO ENTRY SOC',
-        avatar_url: 'https://cdn.discordapp.com/emojis/shield.png',
+        // Using a stable Twemoji shield icon (Discord CDN emoji URLs require snowflake IDs)
+        avatar_url: 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f6e1.png',
         embeds: [{
             title: `${emoji} ${threat.severity} Threat: ${threat.type}`,
             description: threat.description || 'No description available.',

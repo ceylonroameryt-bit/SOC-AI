@@ -4,8 +4,9 @@
  * Integrates with: VirusTotal, AbuseIPDB, FIRST EPSS, and CISA KEV catalog.
  */
 
-// ── In-Memory LRU Cache (1-hour TTL) ─────────────────────────────────────────
+// ── In-Memory LRU Cache (1-hour TTL, max 1000 entries) ──────────────────────
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const CACHE_MAX_SIZE = 1000;          // Prevent unbounded memory growth
 const enrichmentCache = new Map();
 
 const getCached = (key) => {
@@ -19,6 +20,11 @@ const getCached = (key) => {
 };
 
 const setCache = (key, data) => {
+    // Evict oldest entry if cache is full (simple LRU: Map preserves insertion order)
+    if (enrichmentCache.size >= CACHE_MAX_SIZE) {
+        const oldestKey = enrichmentCache.keys().next().value;
+        enrichmentCache.delete(oldestKey);
+    }
     enrichmentCache.set(key, { data, timestamp: Date.now() });
 };
 
@@ -66,11 +72,28 @@ export const extractIOCs = (text) => {
     const ips = [...new Set((clean.match(IOC_PATTERNS.ipv4) || [])
         .filter(ip => !PRIVATE_IP_REGEX.test(ip)))];
 
-    const hashes = [...new Set([
-        ...(clean.match(IOC_PATTERNS.sha256) || []),
-        ...(clean.match(IOC_PATTERNS.sha1) || []),
-        ...(clean.match(IOC_PATTERNS.md5) || []),
-    ])];
+    // Extract hashes in priority order (longest first) to prevent shorter patterns
+    // from re-matching substrings that are already captured as longer hashes.
+    const sha256Matches = new Set(clean.match(IOC_PATTERNS.sha256) || []);
+
+    // Remove SHA-256 matches from text before applying shorter patterns
+    let remainingText = clean;
+    for (const h of sha256Matches) {
+        remainingText = remainingText.replaceAll(h, ' '.repeat(h.length));
+    }
+    const sha1Matches = new Set(remainingText.match(IOC_PATTERNS.sha1) || []);
+
+    // Remove SHA-1 matches before applying MD5
+    for (const h of sha1Matches) {
+        remainingText = remainingText.replaceAll(h, ' '.repeat(h.length));
+    }
+    const md5Matches = new Set(remainingText.match(IOC_PATTERNS.md5) || []);
+
+    const hashes = [
+        ...sha256Matches,
+        ...sha1Matches,
+        ...md5Matches,
+    ];
 
     const cves = [...new Set((clean.match(IOC_PATTERNS.cve) || [])
         .map(c => c.toUpperCase()))];

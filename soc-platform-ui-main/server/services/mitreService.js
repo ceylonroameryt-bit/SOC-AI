@@ -165,7 +165,7 @@ const TECHNIQUE_KEYWORD_MAP = [
     { id: 'T1543', tactic: 'TA0003', name: 'Create or Modify System Process', keywords: ['service installation', 'systemd service', 'launchd', 'windows service creation'] },
     { id: 'T1547', tactic: 'TA0003', name: 'Boot or Logon Autostart', keywords: ['registry run key', 'autostart', 'startup folder', 'registry persistence', 'runonce'] },
     { id: 'T1136', tactic: 'TA0003', name: 'Create Account', keywords: ['backdoor account', 'admin account created', 'rogue account', 'shadow account'] },
-    { id: 'T1505', tactic: 'TA0003', name: 'Server Software Component', keywords: ['web shell', 'webshell', 'godzilla', 'beBehind', 'chopper webshell'] },
+    { id: 'T1505', tactic: 'TA0003', name: 'Server Software Component', keywords: ['web shell', 'webshell', 'godzilla', 'behinder', 'chopper webshell'] },
 
     // Privilege Escalation (TA0004)
     { id: 'T1068', tactic: 'TA0004', name: 'Exploitation for Privilege Escalation', keywords: ['privilege escalation', 'local privilege', 'kernel exploit', 'lpe', 'elevation of privilege', 'root access', 'system privilege'] },
@@ -222,19 +222,23 @@ console.log(`[MITRE] Loaded ${techniqueCatalogue.length} technique mappings.`);
 /**
  * Map a piece of text to ATT&CK techniques and increment hit counters.
  */
-export const mapTextToTechniques = (text, newsItemId = null) => {
+export const mapTextToTechniques = (text, newsItemId = null, recordHit = true) => {
     if (!text) return [];
     const lower = text.toLowerCase();
     const matched = [];
 
     for (const technique of techniqueCatalogue) {
         if (technique.keywords.some(kw => lower.includes(kw))) {
-            const current = techniqueHits.get(technique.id) || { count: 0, items: [] };
-            current.count += 1;
-            if (newsItemId && !current.items.includes(newsItemId)) {
-                current.items.push(newsItemId);
+            if (recordHit) {
+                const current = techniqueHits.get(technique.id) || { count: 0, items: [] };
+                current.count += 1;
+                if (newsItemId && !current.items.includes(newsItemId)) {
+                    // Cap items array to last 500 entries to prevent unbounded memory growth
+                    if (current.items.length >= 500) current.items.shift();
+                    current.items.push(newsItemId);
+                }
+                techniqueHits.set(technique.id, current);
             }
-            techniqueHits.set(technique.id, current);
             matched.push(technique.id);
         }
     }
@@ -308,35 +312,35 @@ export const getCategorizedNews = (options = {}) => {
             totalCategorized: 0,
             totalArticles: 0,
             pagination: { page, limit, totalPages: 0, totalCount: 0 },
-            coverageStats: { totalTactics: MITRE_TACTICS.length, activeTactics: 0 }
+            coverageStats: { totalTactics: MITRE_TACTICS.length, activeTactics: 0, coveragePercent: 0 }
         };
     }
 
     // Process and enrich each article with MITRE details & IOCs
+    // Reuses mapTextToTechniques() to avoid duplicating keyword-matching logic
     const categorizedArticles = allNews.map((item, idx) => {
         const text = `${item.title || ''} ${item.contentSnippet || ''}`;
-        const lower = text.toLowerCase();
 
-        // Match techniques
-        const matchedTechniques = [];
-        const matchedTacticIds = new Set();
+        // Use the single source-of-truth matching function (read-only, don't increment counter on GET)
+        const matchedIds = mapTextToTechniques(text, item.link || item.id, false);
 
-        for (const tech of techniqueCatalogue) {
-            if (tech.keywords.some(kw => lower.includes(kw))) {
-                matchedTechniques.push({
-                    id: tech.id,
-                    name: tech.name,
-                    tacticId: tech.tactic,
-                    tacticName: MITRE_TACTICS.find(t => t.id === tech.tactic)?.name || 'Unknown',
-                    tacticColor: MITRE_TACTICS.find(t => t.id === tech.tactic)?.color || '#38bdf8',
-                    tacticIcon: MITRE_TACTICS.find(t => t.id === tech.tactic)?.icon || '🛡️',
-                    mitreUrl: `https://attack.mitre.org/techniques/${tech.id}/`
-                });
-                matchedTacticIds.add(tech.tactic);
-            }
-        }
+        // Resolve full technique details from matched IDs
+        const matchedTechniques = matchedIds.map(techId => {
+            const tech = techniqueCatalogue.find(t => t.id === techId);
+            const tactic = MITRE_TACTICS.find(t => t.id === tech?.tactic);
+            return {
+                id: techId,
+                name: tech?.name || techId,
+                tacticId: tech?.tactic || 'Unknown',
+                tacticName: tactic?.name || 'Unknown',
+                tacticColor: tactic?.color || '#38bdf8',
+                tacticIcon: tactic?.icon || '🛡️',
+                mitreUrl: `https://attack.mitre.org/techniques/${techId}/`
+            };
+        });
 
-        // Map tactic objects
+        // Unique tactic objects
+        const matchedTacticIds = new Set(matchedTechniques.map(t => t.tacticId));
         const matchedTactics = Array.from(matchedTacticIds).map(id => {
             const found = MITRE_TACTICS.find(t => t.id === id);
             return found || { id, name: id, shortName: id, icon: '🛡️', color: '#38bdf8' };

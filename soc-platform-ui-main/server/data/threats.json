@@ -1,5 +1,107 @@
 [
   {
+    "id": "TRT-2026-2494",
+    "type": "Zero-Day",
+    "severity": "Medium",
+    "source": "Dark Web Monitor",
+    "description": "Zero-day in browser rendering engine being exploited in watering hole campaign against defense contractors.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "185.220.101.47"
+      ],
+      "domains": [
+        "malicious-613.com"
+      ]
+    },
+    "timestamp": "2026-09-18T20:32:24.727Z"
+  },
+  {
+    "id": "TRT-2026-7505",
+    "type": "Phishing",
+    "severity": "Medium",
+    "source": "Internal SOC",
+    "description": "Quishing (QR code phishing) campaign targeting mobile users with fake DocuSign requests.",
+    "ioc": {
+      "ip_addresses": [
+        "194.165.16.11"
+      ],
+      "domains": [
+        "malicious-586.com"
+      ]
+    },
+    "timestamp": "2026-09-18T20:32:24.727Z"
+  },
+  {
+    "id": "TRT-2026-6108",
+    "type": "Zero-Day",
+    "severity": "Low",
+    "source": "Dark Web Monitor",
+    "description": "Zero-day in browser rendering engine being exploited in watering hole campaign against defense contractors.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "144.172.73.15"
+      ],
+      "domains": [
+        "malicious-541.com"
+      ]
+    },
+    "timestamp": "2026-09-18T20:32:24.727Z"
+  },
+  {
+    "id": "TRT-2026-8414",
+    "type": "Dark Web Leak",
+    "severity": "Critical",
+    "source": "Onion Forum Monitor",
+    "description": "Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "5.188.206.14"
+      ],
+      "domains": [
+        "hidden-service.onion"
+      ]
+    },
+    "timestamp": "2026-09-18T20:32:24.727Z"
+  },
+  {
+    "id": "TRT-2026-2062",
+    "type": "Phishing",
+    "severity": "Low",
+    "source": "Internal SOC",
+    "description": "Large-scale credential phishing campaign impersonating Microsoft 365 login. Targeting corporate email users.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "5.188.206.14"
+      ],
+      "domains": [
+        "malicious-473.com"
+      ]
+    },
+    "timestamp": "2026-09-18T20:32:24.727Z"
+  },
+  {
+    "id": "TRT-2026-3590",
+    "type": "Dark Web Leak",
+    "severity": "Critical",
+    "source": "Onion Forum Monitor",
+    "description": "Corporate VPN credentials listed for sale on RAMP forum. Source appears to be infostealer log.",
+    "ioc": {
+      "md5": "5e884898da28047151d0e56f8dc62927",
+      "ip_addresses": [
+        "194.165.16.11"
+      ],
+      "domains": [
+        "hidden-service.onion"
+      ]
+    },
+    "timestamp": "2026-09-18T20:32:24.727Z"
+  },
+  {
     "id": "TRT-2026-6200",
     "type": "Dark Web Leak",
     "severity": "Critical",

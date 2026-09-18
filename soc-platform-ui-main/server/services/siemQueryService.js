@@ -88,6 +88,7 @@ export const generateSigmaRule = (ioc, iocType = 'auto', context = {}) => {
     const type = iocType === 'auto' ? detectIOCType(ioc) : iocType;
     const { title, description, severity = 'high', tags = [] } = context;
 
+    const ruleAuthor = process.env.SIGMA_AUTHOR || 'NO ENTRY SOC Platform (auto-generated)';
     const ruleTitle = title || `Detected IOC: ${ioc}`;
     const ruleDesc = description || `Auto-generated rule to detect IOC ${ioc} (${type}) in security logs.`;
     const ruleId = generateUUID();
@@ -147,7 +148,7 @@ description: ${ruleDesc}
 references:
     - https://www.virustotal.com
 date: ${date}
-author: NO ENTRY SOC Platform (auto-generated)
+author: ${ruleAuthor}
 tags:
 ${baseTags.map(t => `    - ${t}`).join('\n')}
 logsource:
