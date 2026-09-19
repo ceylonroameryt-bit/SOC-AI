@@ -18,6 +18,8 @@ import {
     Archive,
     Flame,
     Layers,
+    Globe,
+    Bookmark,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -55,7 +57,12 @@ const PRIMARY_NAV_ITEMS: NavSection[] = [
         path: '/intelligence',
         icon: Newspaper,
         description: 'Category-based threat intelligence workspace',
-        activePaths: ['/', '/intelligence'],
+        activePaths: ['/', '/intelligence', '/news', '/global-news'],
+        subLinks: [
+            { label: 'Threat Categories', path: '/intelligence?view=categories', icon: Layers },
+            { label: 'Global Live News', path: '/intelligence?view=global-news', icon: Globe },
+            { label: 'Saved Articles', path: '/intelligence?view=saved', icon: Bookmark },
+        ],
     },
     {
         label: 'Indicators',
