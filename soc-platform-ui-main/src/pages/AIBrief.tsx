@@ -39,14 +39,34 @@ const SEVERITY_COLORS: Record<string, string> = {
 // Markdown-ish renderer for LLM output
 const MarkdownText = ({ text }: { text: string }) => {
     const lines = text.split('\n');
+    const renderSpan = (str: string) => {
+        const parts = str.split(/(\*\*[^*]+\*\*)/g);
+        return parts.map((part, idx) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={idx} className="font-semibold text-slate-900">{part.slice(2, -2)}</strong>;
+            }
+            return part;
+        });
+    };
+
     return (
         <div className="space-y-3 font-sans">
             {lines.map((line, i) => {
-                if (line.startsWith('## ')) return <h3 key={i} className="text-[#1E3A8A] font-bold font-display text-lg mt-5 first:mt-0">{line.replace('## ', '')}</h3>;
-                if (line.startsWith('- ') || line.match(/^\d+\./)) {
-                    return <div key={i} className="flex gap-2 text-slate-700 text-sm leading-relaxed"><span className="text-[#1E3A8A] font-bold mt-0.5 flex-shrink-0">▸</span><span>{line.replace(/^- /, '').replace(/^\d+\.\s/, '')}</span></div>;
+                if (line.startsWith('## ')) {
+                    return <h3 key={i} className="text-[#1E3A8A] font-bold font-display text-lg mt-5 first:mt-0">{renderSpan(line.replace('## ', ''))}</h3>;
                 }
-                if (line.trim()) return <p key={i} className="text-slate-700 text-sm leading-relaxed">{line}</p>;
+                if (line.startsWith('- ') || line.match(/^\d+\./)) {
+                    const content = line.replace(/^- /, '').replace(/^\d+\.\s/, '');
+                    return (
+                        <div key={i} className="flex gap-2 text-slate-700 text-sm leading-relaxed">
+                            <span className="text-[#1E3A8A] font-bold mt-0.5 flex-shrink-0">▸</span>
+                            <span>{renderSpan(content)}</span>
+                        </div>
+                    );
+                }
+                if (line.trim()) {
+                    return <p key={i} className="text-slate-700 text-sm leading-relaxed">{renderSpan(line)}</p>;
+                }
                 return null;
             })}
         </div>
@@ -96,7 +116,7 @@ export default function AIBrief() {
             {/* Header */}
             <div className="pb-4 border-b border-[#E2E8F0]">
                 <div className="flex items-center gap-2 mb-1.5">
-                    <span className="section-label">AI Neural Synthesis</span>
+                    <span className="section-label">AI Threat Synthesis</span>
                     <span className="availability-chip">
                         <span className="chip-dot"></span>
                         Automated Sitrep

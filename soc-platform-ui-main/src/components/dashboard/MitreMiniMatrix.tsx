@@ -45,7 +45,7 @@ const MitreMiniMatrix = () => {
                             shortName: t.shortName || t.name.split(' ')[0],
                             icon: t.icon || '🛡️',
                             color: t.color || '#3b82f6',
-                            hitCount: totalHits || 5,
+                            hitCount: totalHits ?? 0,
                         };
                     });
                     if (mapped.length > 0) setTactics(mapped);

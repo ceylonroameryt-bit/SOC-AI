@@ -1,39 +1,99 @@
+import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import NavBar from './NavBar';
+import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import CollectionStatusBar from './CollectionStatusBar';
 import SkipLink from './SkipLink';
 import AccessibilityModal from './AccessibilityModal';
 import { useAccessibility } from '../../context/AccessibilityContext';
+import { API_BASE } from '../../config/api';
 
-const Layout = () => {
+export const Layout: React.FC = () => {
     const { isModalOpen, setIsModalOpen } = useAccessibility();
+    const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+    const [isDemoEnabled, setIsDemoEnabled] = useState(false);
+
+    useEffect(() => {
+        fetch(`${API_BASE}/api/dashboard/snapshot`)
+            .then(res => (res.ok ? res.json() : null))
+            .then(s => {
+                if (s?.environment?.isDemoEnabled) {
+                    setIsDemoEnabled(true);
+                }
+            })
+            .catch(() => {});
+    }, []);
+
+    // Close mobile drawer on Escape key
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && mobileDrawerOpen) {
+                setMobileDrawerOpen(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [mobileDrawerOpen]);
 
     return (
-        <div className="flex flex-col h-screen bg-white text-slate-900 font-sans selection:bg-blue-600/20 selection:text-blue-900 overflow-hidden">
-            {/* WCAG Skip Navigation Link */}
+        <div className="flex h-screen bg-[#F7F9FC] text-[#0F172A] font-sans selection:bg-[#0665F9]/20 selection:text-[#0665F9] overflow-hidden">
+            {/* WCAG Skip Link */}
             <SkipLink />
 
-            {/* Accessibility Settings Modal */}
+            {/* Accessibility Modal */}
             <AccessibilityModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
             />
 
-            {/* Top Action Bar (Search, Download, Email, Accessibility) */}
-            <TopBar />
+            {/* Left Sidebar (Desktop: Static 232px, Mobile: Drawer) */}
+            <div className="hidden lg:block h-full">
+                <Sidebar isDemoEnabled={isDemoEnabled} />
+            </div>
 
-            {/* Secondary Horizontal Navigation Bar */}
-            <NavBar />
+            {/* Mobile Drawer Overlay */}
+            {mobileDrawerOpen && (
+                <div
+                    className="fixed inset-0 z-50 lg:hidden flex"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Navigation drawer"
+                >
+                    {/* Backdrop */}
+                    <div
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+                        onClick={() => setMobileDrawerOpen(false)}
+                        aria-hidden="true"
+                    />
 
-            {/* Main Content Area */}
-            <main
-                id="main-content"
-                role="main"
-                tabIndex={-1}
-                className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 relative custom-scrollbar bg-white focus:outline-none"
-            >
-                <Outlet />
-            </main>
+                    {/* Drawer Content */}
+                    <div className="relative flex-1 flex flex-col max-w-xs w-full bg-[#101F35] shadow-xl z-50">
+                        <Sidebar
+                            onClose={() => setMobileDrawerOpen(false)}
+                            isDemoEnabled={isDemoEnabled}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Right Main Column (TopBar + Workspace + CollectionStatusBar) */}
+            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-[#F7F9FC]">
+                {/* 64px Top Bar */}
+                <TopBar onMenuToggle={() => setMobileDrawerOpen(true)} />
+
+                {/* Main Viewport Content Area */}
+                <main
+                    id="main-content"
+                    role="main"
+                    tabIndex={-1}
+                    className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 relative custom-scrollbar focus:outline-none"
+                >
+                    <Outlet />
+                </main>
+
+                {/* Bottom Measured Collection Status Bar */}
+                <CollectionStatusBar />
+            </div>
         </div>
     );
 };

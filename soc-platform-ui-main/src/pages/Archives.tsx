@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Database, FileText, Search, ShieldAlert, Globe } from 'lucide-react';
 import { API_BASE } from '../config/api';
 
@@ -20,11 +21,19 @@ interface NewsItem {
 }
 
 const Archives = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const queryParam = searchParams.get('q') || '';
+
     const [activeTab, setActiveTab] = useState<'threats' | 'news'>('threats');
     const [threats, setThreats] = useState<ThreatItem[]>([]);
     const [news, setNews] = useState<NewsItem[]>([]);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(queryParam);
     const [loading, setLoading] = useState(true);
+
+    // Synchronize search term if URL query parameter changes (e.g., browser back/forward or global search redirect)
+    useEffect(() => {
+        setSearchTerm(queryParam);
+    }, [queryParam]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -36,8 +45,24 @@ const Archives = () => {
                 ]);
                 const threatsData = await threatsRes.json();
                 const newsData = await newsRes.json();
-                setThreats(Array.isArray(threatsData) ? threatsData : []);
-                setNews(Array.isArray(newsData) ? newsData : (Array.isArray(newsData?.news) ? newsData.news : []));
+                const loadedThreats = Array.isArray(threatsData) ? threatsData : [];
+                const loadedNews = Array.isArray(newsData) ? newsData : (Array.isArray(newsData?.news) ? newsData.news : []);
+                setThreats(loadedThreats);
+                setNews(loadedNews);
+
+                // If initial query has results in news but none in threats, auto-switch tab
+                if (queryParam) {
+                    const qLower = queryParam.toLowerCase();
+                    const hasThreats = loadedThreats.some((t: ThreatItem) =>
+                        t.type?.toLowerCase().includes(qLower) || t.description?.toLowerCase().includes(qLower)
+                    );
+                    const hasNews = loadedNews.some((n: NewsItem) =>
+                        n.title?.toLowerCase().includes(qLower) || n.source?.toLowerCase().includes(qLower)
+                    );
+                    if (!hasThreats && hasNews) {
+                        setActiveTab('news');
+                    }
+                }
             } catch (error) {
                 console.error('Error loading archives:', error);
             } finally {
@@ -47,6 +72,17 @@ const Archives = () => {
 
         fetchData();
     }, []);
+
+    const handleSearchChange = (val: string) => {
+        setSearchTerm(val);
+        const newParams = new URLSearchParams(searchParams);
+        if (val.trim()) {
+            newParams.set('q', val);
+        } else {
+            newParams.delete('q');
+        }
+        setSearchParams(newParams, { replace: true });
+    };
 
     const getSeverityColor = (severity?: string) => {
         switch (severity) {
@@ -59,12 +95,14 @@ const Archives = () => {
     };
 
     const filteredThreats = threats.filter(t =>
-        t.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.description.toLowerCase().includes(searchTerm.toLowerCase())
+        (t.type || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (t.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (t.source || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const filteredNews = news.filter(n =>
-        n.title.toLowerCase().includes(searchTerm.toLowerCase())
+        (n.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (n.source || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -93,7 +131,7 @@ const Archives = () => {
                             type="text"
                             placeholder="Search archives..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => handleSearchChange(e.target.value)}
                             className="bg-white border border-[#CBD5E1] text-slate-800 text-sm rounded-xl pl-10 pr-4 py-2 focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] outline-none w-full sm:w-64 shadow-sm"
                         />
                     </div>
@@ -111,7 +149,7 @@ const Archives = () => {
                     }`}
                 >
                     <ShieldAlert className="w-4 h-4" />
-                    Threat History ({threats.length})
+                    <span>Threat Detections ({filteredThreats.length})</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('news')}
@@ -122,7 +160,7 @@ const Archives = () => {
                     }`}
                 >
                     <Globe className="w-4 h-4" />
-                    News Logs ({news.length})
+                    <span>Intelligence Stream ({filteredNews.length})</span>
                 </button>
             </div>
 

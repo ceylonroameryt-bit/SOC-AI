@@ -3,27 +3,28 @@
 @tailwind utilities;
 
 :root {
-  /* Portfolio Clean Editorial Palette (sujampathirathnayaka.com) */
-  --font-display: 'Syne', system-ui, -apple-system, sans-serif;
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+
+  /* Analyst Workspace Design Tokens */
+  --sidebar: #101F35;
+  --bg-main: #F7F9FC;
+  --panel: #FFFFFF;
+  --primary: #0665F9;
+  --row-selected: #EAF2FF;
 
   --ink: #0F172A;
   --ink-light: #334155;
   --ink-muted: #64748B;
   --ink-subtle: #94A3B8;
 
-  --bg: #FFFFFF;
-  --bg-light: #FFFFFF;
-  --bg-subtle: #F8FAFC;
   --border: #E2E8F0;
   --border-dark: #CBD5E1;
 
-  --accent: #1E3A8A;
-  --accent-light: #3B82F6;
-  --accent-soft: rgba(30, 58, 138, 0.06);
-  --accent-border: rgba(30, 58, 138, 0.2);
-  --success: #059669;
+  --success: #138A68;
+  --warning: #B96B00;
+  --critical: #B42318;
 
   font-family: var(--font-sans);
   line-height: 1.5;
@@ -36,7 +37,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #FFFFFF;
+  background-color: #F7F9FC;
   color: #0F172A;
   font-family: var(--font-sans);
 }

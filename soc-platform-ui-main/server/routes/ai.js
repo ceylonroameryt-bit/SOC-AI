@@ -1,27 +1,23 @@
 import express from 'express';
-import { generateExecutiveBrief, generateRemediationSteps, clusterSimilarItems } from '../services/aiService.js';
+import { generateExecutiveBrief, generateRemediationSteps } from '../services/aiService.js';
+import { clusterArticles } from '../services/clusteringEngine.js';
 import { getNews } from '../services/newsService.js';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
-const THREATS_FILE = path.join(__dirname, '../data/threats.json');
+import { loadThreats, DEMO_THREATS } from './threats.js';
 
 const router = express.Router();
-
-const loadThreats = () => {
-    try { return JSON.parse(fs.readFileSync(THREATS_FILE, 'utf8')); }
-    catch { return []; }
-};
 
 // GET /api/ai/brief — Daily executive briefing
 router.get('/brief', async (req, res) => {
     try {
-        const news    = getNews().slice(0, 50);
-        const threats = loadThreats().slice(0, 20);
-        const result  = await generateExecutiveBrief(news, threats);
+        const news = getNews().slice(0, 50);
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+        const rawThreats = loadThreats();
+        const threats = isDemoEnabled
+            ? [...rawThreats.filter(t => !t.isSimulated), ...DEMO_THREATS]
+            : rawThreats.filter(t => !t.isSimulated);
+
+        const result = await generateExecutiveBrief(news, threats);
+        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
         res.json(result);
     } catch (err) {
         res.status(500).json({ error: 'Failed to generate executive briefing.', details: err.message });
@@ -42,19 +38,22 @@ router.post('/remediate', async (req, res) => {
     }
 });
 
-// GET /api/ai/clusters — De-duplicated incident clusters from recent news
+// GET /api/ai/clusters — Multi-factor hybrid deduplicated incident clusters
 router.get('/clusters', (req, res) => {
     try {
-        const news     = getNews().slice(0, 200);
-        const clusters = clusterSimilarItems(news, 0.30);
+        const news = getNews().slice(0, 200);
+        const clusteringResult = clusterArticles(news, 2);
+
+        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
         res.json({
-            clusters,
-            totalArticles: news.length,
-            clustersFound: clusters.length,
-            deduplicationRate: news.length > 0
-                ? Math.round(((news.length - clusters.length) / news.length) * 100)
-                : 0,
-            generatedAt: new Date().toISOString(),
+            clusters: clusteringResult.clusters,
+            rawArticleCount: clusteringResult.rawArticleCount,
+            uniqueArticleCount: clusteringResult.uniqueArticleCount,
+            duplicatesSuppressed: clusteringResult.duplicatesSuppressed,
+            deduplicationRate: clusteringResult.deduplicationRate,
+            clustersFound: clusteringResult.clusters.length,
+            totalArticles: clusteringResult.rawArticleCount,
+            generatedAt: clusteringResult.generatedAt,
         });
     } catch (err) {
         res.status(500).json({ error: 'Clustering failed.', details: err.message });

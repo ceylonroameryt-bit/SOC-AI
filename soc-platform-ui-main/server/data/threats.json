@@ -1,5 +1,70 @@
 [
   {
+    "id": "TRT-2026-7451",
+    "type": "Dark Web Leak",
+    "severity": "Critical",
+    "source": "Onion Forum Monitor",
+    "description": "Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.",
+    "ioc": {
+      "ip_addresses": [
+        "103.75.201.2"
+      ],
+      "domains": [
+        "hidden-service.onion"
+      ]
+    },
+    "timestamp": "2026-09-19T11:04:51.429Z"
+  },
+  {
+    "id": "TRT-2026-3669",
+    "type": "Botnet",
+    "severity": "High",
+    "source": "HoneyPot Network",
+    "description": "Mirai variant performing DDoS amplification attacks. C2 infrastructure tied to known bulletproof hosting.",
+    "ioc": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ip_addresses": [
+        "185.243.96.10"
+      ],
+      "domains": [
+        "malicious-143.com"
+      ]
+    },
+    "timestamp": "2026-09-19T11:04:51.429Z"
+  },
+  {
+    "id": "TRT-2026-2146",
+    "type": "Botnet",
+    "severity": "Low",
+    "source": "Threat Intel Feed",
+    "description": "Qakbot botnet resurging with new persistence mechanism exploiting scheduled tasks.",
+    "ioc": {
+      "ip_addresses": [
+        "144.172.73.15"
+      ],
+      "domains": [
+        "malicious-891.com"
+      ]
+    },
+    "timestamp": "2026-09-19T11:04:51.429Z"
+  },
+  {
+    "id": "TRT-2026-5708",
+    "type": "Phishing",
+    "severity": "Medium",
+    "source": "Internal SOC",
+    "description": "Quishing (QR code phishing) campaign targeting mobile users with fake DocuSign requests.",
+    "ioc": {
+      "ip_addresses": [
+        "185.243.96.10"
+      ],
+      "domains": [
+        "malicious-784.com"
+      ]
+    },
+    "timestamp": "2026-09-19T11:04:51.429Z"
+  },
+  {
     "id": "TRT-2026-2494",
     "type": "Zero-Day",
     "severity": "Medium",
@@ -14,7 +79,9 @@
         "malicious-613.com"
       ]
     },
-    "timestamp": "2026-09-18T20:32:24.727Z"
+    "timestamp": "2026-09-18T20:32:24.727Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-7505",
@@ -30,7 +97,9 @@
         "malicious-586.com"
       ]
     },
-    "timestamp": "2026-09-18T20:32:24.727Z"
+    "timestamp": "2026-09-18T20:32:24.727Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-6108",
@@ -47,7 +116,9 @@
         "malicious-541.com"
       ]
     },
-    "timestamp": "2026-09-18T20:32:24.727Z"
+    "timestamp": "2026-09-18T20:32:24.727Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-8414",
@@ -57,7 +128,7 @@
     "description": "Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.",
     "ioc": {
       "md5": "5e884898da28047151d0e56f8dc62927",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc",
       "ip_addresses": [
         "5.188.206.14"
       ],
@@ -65,7 +136,9 @@
         "hidden-service.onion"
       ]
     },
-    "timestamp": "2026-09-18T20:32:24.727Z"
+    "timestamp": "2026-09-18T20:32:24.727Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-2062",
@@ -82,7 +155,9 @@
         "malicious-473.com"
       ]
     },
-    "timestamp": "2026-09-18T20:32:24.727Z"
+    "timestamp": "2026-09-18T20:32:24.727Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-3590",
@@ -99,7 +174,9 @@
         "hidden-service.onion"
       ]
     },
-    "timestamp": "2026-09-18T20:32:24.727Z"
+    "timestamp": "2026-09-18T20:32:24.727Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-6200",
@@ -109,7 +186,7 @@
     "description": "Corporate VPN credentials listed for sale on RAMP forum. Source appears to be infostealer log.",
     "ioc": {
       "md5": "5e884898da28047151d0e56f8dc62927",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc",
       "ip_addresses": [
         "62.210.103.244"
       ],
@@ -117,7 +194,9 @@
         "hidden-service.onion"
       ]
     },
-    "timestamp": "2026-09-16T10:08:38.691Z"
+    "timestamp": "2026-09-16T10:08:38.691Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-5896",
@@ -127,7 +206,7 @@
     "description": "Zero-day in browser rendering engine being exploited in watering hole campaign against defense contractors.",
     "ioc": {
       "md5": "5e884898da28047151d0e56f8dc62927",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc",
       "ip_addresses": [
         "89.187.191.12"
       ],
@@ -135,7 +214,9 @@
         "malicious-655.com"
       ]
     },
-    "timestamp": "2026-09-16T10:08:38.691Z"
+    "timestamp": "2026-09-16T10:08:38.691Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-5717",
@@ -151,7 +232,9 @@
         "malicious-652.com"
       ]
     },
-    "timestamp": "2026-09-16T10:08:38.691Z"
+    "timestamp": "2026-09-16T10:08:38.691Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-6069",
@@ -167,7 +250,9 @@
         "malicious-176.com"
       ]
     },
-    "timestamp": "2026-09-16T10:08:38.691Z"
+    "timestamp": "2026-09-16T10:08:38.691Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-7639",
@@ -176,7 +261,7 @@
     "source": "HoneyPot Network",
     "description": "Mirai variant performing DDoS amplification attacks. C2 infrastructure tied to known bulletproof hosting.",
     "ioc": {
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc",
       "ip_addresses": [
         "77.91.100.255"
       ],
@@ -184,7 +269,9 @@
         "malicious-471.com"
       ]
     },
-    "timestamp": "2026-09-16T10:08:38.691Z"
+    "timestamp": "2026-09-16T10:08:38.691Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-5766",
@@ -201,7 +288,9 @@
         "malicious-78.com"
       ]
     },
-    "timestamp": "2026-08-23T17:28:11.594Z"
+    "timestamp": "2026-08-23T17:28:11.594Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-6718",
@@ -218,7 +307,9 @@
         "malicious-114.com"
       ]
     },
-    "timestamp": "2026-08-23T17:28:11.594Z"
+    "timestamp": "2026-08-23T17:28:11.594Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-4603",
@@ -235,7 +326,9 @@
         "malicious-950.com"
       ]
     },
-    "timestamp": "2026-08-23T17:28:11.594Z"
+    "timestamp": "2026-08-23T17:28:11.594Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-3361",
@@ -252,7 +345,9 @@
         "malicious-219.com"
       ]
     },
-    "timestamp": "2026-02-12T17:26:34.852Z"
+    "timestamp": "2026-02-12T17:26:34.852Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-6899",
@@ -269,7 +364,9 @@
         "hidden-service.onion"
       ]
     },
-    "timestamp": "2026-02-12T17:26:34.852Z"
+    "timestamp": "2026-02-12T17:26:34.852Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-4804",
@@ -278,7 +375,7 @@
     "source": "Threat Intel Feed",
     "description": "Active Malware campaign detected via network sensors. IOCs indicate targeting financial sector.",
     "ioc": {
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc",
       "ip_addresses": [
         "192.168.88.237"
       ],
@@ -286,7 +383,9 @@
         "malicious-76.com"
       ]
     },
-    "timestamp": "2026-02-12T17:26:34.852Z"
+    "timestamp": "2026-02-12T17:26:34.852Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-9360",
@@ -302,7 +401,9 @@
         "hidden-service.onion"
       ]
     },
-    "timestamp": "2026-02-12T17:26:34.852Z"
+    "timestamp": "2026-02-12T17:26:34.852Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-7962",
@@ -319,7 +420,9 @@
         "malicious-875.com"
       ]
     },
-    "timestamp": "2026-02-12T17:26:34.852Z"
+    "timestamp": "2026-02-12T17:26:34.852Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-896",
@@ -329,7 +432,7 @@
     "description": "Active Phishing campaign detected via network sensors. IOCs indicate targeting financial sector.",
     "ioc": {
       "md5": "5e884898da28047151d0e56f8dc62927",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc",
       "ip_addresses": [
         "192.168.181.172"
       ],
@@ -337,7 +440,9 @@
         "malicious-992.com"
       ]
     },
-    "timestamp": "2026-02-11T22:07:10.072Z"
+    "timestamp": "2026-02-11T22:07:10.072Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-6836",
@@ -347,7 +452,7 @@
     "description": "Active Zero-Day campaign detected via network sensors. IOCs indicate targeting financial sector.",
     "ioc": {
       "md5": "5e884898da28047151d0e56f8dc62927",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc",
       "ip_addresses": [
         "192.168.191.193"
       ],
@@ -355,7 +460,9 @@
         "malicious-425.com"
       ]
     },
-    "timestamp": "2026-02-11T22:07:10.072Z"
+    "timestamp": "2026-02-11T22:07:10.072Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-1607",
@@ -364,7 +471,7 @@
     "source": "Internal SOC",
     "description": "Active Botnet campaign detected via network sensors. IOCs indicate targeting financial sector.",
     "ioc": {
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc",
       "ip_addresses": [
         "192.168.142.3"
       ],
@@ -372,7 +479,9 @@
         "malicious-969.com"
       ]
     },
-    "timestamp": "2026-02-11T22:07:10.072Z"
+    "timestamp": "2026-02-11T22:07:10.072Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-4028",
@@ -388,7 +497,9 @@
         "malicious-297.com"
       ]
     },
-    "timestamp": "2026-02-11T22:07:10.072Z"
+    "timestamp": "2026-02-11T22:07:10.072Z",
+    "isSimulated": true,
+    "environment": "demo"
   },
   {
     "id": "TRT-2026-5755",
@@ -398,7 +509,7 @@
     "description": "Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.",
     "ioc": {
       "md5": "5e884898da28047151d0e56f8dc62927",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc",
       "ip_addresses": [
         "192.168.127.20"
       ],
@@ -406,6 +517,8 @@
         "hidden-service.onion"
       ]
     },
-    "timestamp": "2026-02-11T22:07:10.072Z"
+    "timestamp": "2026-02-11T22:07:10.072Z",
+    "isSimulated": true,
+    "environment": "demo"
   }
 ]

@@ -31,9 +31,9 @@ jobs:
         working-directory: soc-platform-ui-main
         run: npm run lint
 
-      - name: Run Build
+      - name: Run Test Suite & Build
         working-directory: soc-platform-ui-main
-        run: npm run build
+        run: npm test
 
   python-microservice:
     name: Validate Python AI Microservice

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { LayoutDashboard, Newspaper, Flame, BarChart3, Filter, Radio, ShieldAlert } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { LayoutDashboard, Newspaper, Flame, BarChart3, Filter, Radio, ShieldAlert, AlertOctagon } from 'lucide-react';
 import TelemetryCards from '../components/dashboard/TelemetryCards';
 import NewsFeed from '../components/dashboard/NewsFeed';
 import SeverityChart from '../components/dashboard/SeverityChart';
@@ -7,6 +7,7 @@ import CveTrackerWidget from '../components/dashboard/CveTrackerWidget';
 import MitreMiniMatrix from '../components/dashboard/MitreMiniMatrix';
 import AiExecutiveWidget from '../components/dashboard/AiExecutiveWidget';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { API_BASE } from '../config/api';
 
 type DashboardTab = 'overview' | 'news' | 'critical' | 'metrics';
 
@@ -14,7 +15,19 @@ const Dashboard = () => {
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
     const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+    const [isDemoEnabled, setIsDemoEnabled] = useState<boolean>(false);
     const { announceMessage } = useAccessibility();
+
+    useEffect(() => {
+        fetch(`${API_BASE}/api/dashboard/snapshot`)
+            .then(res => (res.ok ? res.json() : null))
+            .then(snapshot => {
+                if (snapshot?.environment?.isDemoEnabled) {
+                    setIsDemoEnabled(true);
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     const handleTabChange = (tab: DashboardTab, label: string) => {
         setActiveTab(tab);
@@ -33,6 +46,19 @@ const Dashboard = () => {
 
     return (
         <div className="h-full flex flex-col overflow-y-auto custom-scrollbar p-4 lg:p-6 space-y-5 max-w-7xl mx-auto w-full">
+            {/* Demo Environment Banner */}
+            {isDemoEnabled && (
+                <div className="bg-amber-400 border border-amber-500 text-slate-950 px-4 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-bold shadow-xs">
+                    <div className="flex items-center gap-2">
+                        <AlertOctagon className="w-4 h-4 text-slate-950 flex-shrink-0" />
+                        <span>DEMO ENVIRONMENT — Contains simulated threat intelligence</span>
+                    </div>
+                    <span className="bg-black/15 px-2 py-0.5 rounded text-[10px] tracking-wider uppercase">
+                        Simulation Mode
+                    </span>
+                </div>
+            )}
+
             {/* Header & Mission Control Switcher */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-200">
                 <div>
@@ -41,17 +67,17 @@ const Dashboard = () => {
                         <div
                             className="availability-chip text-[10px] py-0.5 px-2"
                             role="status"
-                            aria-label="Threat Radar status: Live"
+                            aria-label="Threat Radar status: Active"
                         >
                             <span className="chip-dot" aria-hidden="true"></span>
-                            <span className="font-semibold text-emerald-800">Threat Radar Live</span>
+                            <span className="font-semibold text-emerald-800">Threat Radar Monitored</span>
                         </div>
                     </div>
                     <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
                         Security Operations &amp; Intelligence Dashboard
                     </h1>
                     <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
-                        Real-time intelligence aggregation across 102 dark web, vendor labs, and CISA feeds.
+                        Precomputed operational intelligence aggregated across monitored vendor labs, advisories, and CISA feeds.
                     </p>
                 </div>
 

@@ -1,5 +1,470 @@
 [
   {
+    "title": "Forget the AI Slowdown—the Vulnerability Explosion Is Already Happening",
+    "link": "https://www.wired.com/story/kernel-panic-ai-vulnerability-explosion/",
+    "pubDate": "Sat, 19 Sep 2026 11:00:00 +0000",
+    "contentSnippet": "AI labs are toying with an industry-wide pact to slow development. Meanwhile, widely available AI chatbots are already helping uncover a tidal wave of security flaws.",
+    "source": "Security Latest",
+    "severity": "Low",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T11:10:28.974Z"
+  },
+  {
+    "title": "🏴‍☠️ Auditteam has just published a new victim : td***up",
+    "link": "https://www.ransomware.live/id/dGQqKip1cEBBdWRpdFRlYW0=",
+    "pubDate": "Sat, 19 Sep 2026 10:50:28 +0000",
+    "contentSnippet": "",
+    "source": "Ransomware.live RSS Feed",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T11:02:08.382Z"
+  },
+  {
+    "title": "maigret v0.6.6",
+    "link": "https://kitploit.com/en/posts/github-soxoj-maigret-v066",
+    "pubDate": "Sat, 19 Sep 2026 09:59:26 +0000",
+    "contentSnippet": "🕵️‍♂️ Collect a dossier on a person by username from 3000+ sites",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T11:10:28.975Z"
+  },
+  {
+    "title": "wolfCOSE v2.0.0",
+    "link": "https://kitploit.com/en/posts/github-wolfssl-wolfcose-v200",
+    "pubDate": "Sat, 19 Sep 2026 09:08:55 +0000",
+    "contentSnippet": "A fast, portable, and lightweight COSE + CBOR implementation for embedded systems. Supports PQC, FIPS 140-3, DO-178, and MISRA C. Powered by wolfSSL.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T10:01:59.268Z"
+  },
+  {
+    "title": "North Korean WaterPlum Hackers Target IT Professionals With Fake Job Interviews to Steal Crypto",
+    "link": "https://gbhackers.com/north-korean-waterplum-hackers-target-it-professionals/",
+    "pubDate": "Sat, 19 Sep 2026 09:01:16 +0000",
+    "contentSnippet": "North Korean threat actors, known as WaterPlum (also referred to as Contagious Interview), have infected at least 30,000 devices in over 100 countries by luring software developers and IT professionals into malicious job interviews.   This campaign specifically targets web developers, freelancers, blockchain specialists, and cryptocurrency professionals. The attackers use persuasive recruitment messages that mimic legitimate […]\nThe post North Korean WaterPlum Hackers Target IT Professionals With Fake Job Interviews to Steal Crypto appeared first on GBHackers Security | #1 Globally Trusted Cyber Security News Platform.",
+    "source": "GBHackers Security | #1 Globally Trusted Cyber Security News Platform",
+    "severity": "High",
+    "category": "Government",
+    "fetchedAt": "2026-09-19T09:32:00.553Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "6 Best VPN Services (2026), Tested and Reviewed",
+    "link": "https://www.wired.com/gallery/best-vpn/",
+    "pubDate": "Sat, 19 Sep 2026 09:00:00 +0000",
+    "contentSnippet": "Every VPN says it’s the best, but only some of them are telling the truth.",
+    "source": "Security Latest",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T09:32:00.548Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "AI-Powered RatHat Android Trojan Steals Bank Credentials, PINs and MFA Codes",
+    "link": "https://gbhackers.com/ai-powered-rathat-android-trojan-steals-bank-credentials/",
+    "pubDate": "Sat, 19 Sep 2026 08:29:06 +0000",
+    "contentSnippet": "Researchers have identified a new Android banking Trojan called RatHat that utilizes artificial intelligence to automate device compromise and steal financial credentials, PINs, and one-time passcodes. Zimperium’s zLabs researchers analyzed this malware, which represents a significant evolution in Android threats. AI-Powered RatHat Android Trojan Unlike traditional malware that relies on fixed scripts, RatHat offers a […]\nThe post AI-Powered RatHat Android Trojan Steals Bank Credentials, PINs and MFA Codes appeared first on GBHackers Security | #1 Globally Trusted Cyber Security News Platform.",
+    "source": "GBHackers Security | #1 Globally Trusted Cyber Security News Platform",
+    "severity": "High",
+    "category": "Malware",
+    "fetchedAt": "2026-09-19T09:32:00.553Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "Critical Pre-Auth RCE in Orkes Conductor Workflow Platform Exploited in the Wild",
+    "link": "https://thehackernews.com/2026/09/critical-pre-auth-rce-in-orkes.html",
+    "pubDate": "Sat, 19 Sep 2026 13:48:54 +0530",
+    "contentSnippet": "A critical vulnerability impacting Orkes Conductor is being actively exploited in the wild, according to Fortinet.\n\nThe vulnerability in question is CVE-2026-58138 (CVSS v3.1 score: 9.8/CVSS v4 score: 9.3), which relates to a case of unauthenticated remote code execution.\n\n\"Orkes Conductor 3.21.21 before 3.30.2 contains an unauthenticated remote code execution vulnerability that allows remote",
+    "source": "The Hacker News",
+    "severity": "Critical",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T09:31:31.013Z",
+    "mitreTechniques": [
+      "T1190"
+    ]
+  },
+  {
+    "title": "OpenAM v16.1.3",
+    "link": "https://kitploit.com/en/posts/github-openidentityplatform-openam-1613",
+    "pubDate": "Sat, 19 Sep 2026 08:18:16 +0000",
+    "contentSnippet": "Open-source access management platform offering single sign-on, adaptive authentication, authorization, and federation for secure access to web, mobile, and cloud applications.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Critical",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T10:01:59.268Z"
+  },
+  {
+    "title": "🏴‍☠️ Vexy ransomware has just published a new victim : Quy Nhon University",
+    "link": "https://www.ransomware.live/id/UXV5IE5ob24gVW5pdmVyc2l0eUBWZXh5IFJhbnNvbXdhcmU=",
+    "pubDate": "Sat, 19 Sep 2026 07:54:22 +0000",
+    "contentSnippet": "Quy Nhon University (QNU) is a public, multidisciplinary university located in Quy Nhon City, Binh Dinh Province, Vietnam. Established in 1977, the university has a long-standing tradition in teacher education and has developed into a comprehensive institution offering a wide range of academic programs.",
+    "source": "Ransomware.live RSS Feed",
+    "severity": "High",
+    "category": "Ransomware",
+    "fetchedAt": "2026-09-19T09:31:31.010Z",
+    "mitreTechniques": [
+      "T1486"
+    ]
+  },
+  {
+    "title": "Google Gemini Broke Into Real Company Systems After Security Test Domain Mix-Up",
+    "link": "https://thehackernews.com/2026/09/google-gemini-broke-into-real-company.html",
+    "pubDate": "Sat, 19 Sep 2026 13:21:34 +0530",
+    "contentSnippet": "Google's Gemini model has become the latest artificial intelligence (AI) system to access the internet and break into other companies during a cybersecurity evaluation. The development was first reported by The Wall Street Journal.\n\nThe incidents occurred in May 2026 as part of a test run conducted by Israeli company Irregular. The evaluation partner was also involved in similar hacks disclosed",
+    "source": "The Hacker News",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T09:31:31.013Z",
+    "mitreTechniques": [
+      "T1566"
+    ]
+  },
+  {
+    "title": "🏴‍☠️ Emperador has just published a new victim : Cassias MG Government",
+    "link": "https://www.ransomware.live/id/Q2Fzc2lhcyBNRyBHb3Zlcm5tZW50QGVtcGVyYWRvcg==",
+    "pubDate": "Sat, 19 Sep 2026 07:50:51 +0000",
+    "contentSnippet": "network commitment, from government credentials to justice panels, such as access to the financial sector, police, personal data, medical (SUS), RG(CIN), BIRTH CERTIFICATE, CPF (identity number in Brazil) among other data from CASSIAS.MG.GOV departments, we will give you a deadline to negotiate with us! [Size: 720.0 MB | Sector: Medical, Government, Finance]",
+    "source": "Ransomware.live RSS Feed",
+    "severity": "Low",
+    "category": "Phishing",
+    "fetchedAt": "2026-09-19T09:31:31.010Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "bunkerweb v1.6.15-rc3",
+    "link": "https://kitploit.com/en/posts/github-bunkerity-bunkerweb-v1615-rc3",
+    "pubDate": "Sat, 19 Sep 2026 07:32:48 +0000",
+    "contentSnippet": "🛡️ Open-source and cloud-native Web Application Firewall (WAF)",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Critical",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T09:32:00.553Z",
+    "mitreTechniques": [
+      "T1190"
+    ]
+  },
+  {
+    "title": "CrowdSec Says TanStack npm Attack Led to Copy of 170 Private GitHub Repositories",
+    "link": "https://thehackernews.com/2026/09/crowdsec-says-tanstack-npm-attack-led.html",
+    "pubDate": "Sat, 19 Sep 2026 12:44:54 +0530",
+    "contentSnippet": "An attacker copied about 170 of CrowdSec's private GitHub repositories on May 22 using the account of an employee who had just left, CrowdSec said on September 18.\n\nThe French security company had kept his GitHub access open. CrowdSec says his laptop was compromised in May's supply chain attack on TanStack, in which malicious versions of TanStack's npm packages stole credentials from",
+    "source": "The Hacker News",
+    "severity": "High",
+    "category": "Phishing",
+    "fetchedAt": "2026-09-19T09:31:31.013Z",
+    "mitreTechniques": [
+      "T1195"
+    ]
+  },
+  {
+    "title": "PowerShell Malware Abuses Registry and DNS TXT Records to Deploy XMRig Crypto Miner",
+    "link": "https://gbhackers.com/powershell-malware-abuses-registry-and-dns-txt-records/",
+    "pubDate": "Sat, 19 Sep 2026 07:11:04 +0000",
+    "contentSnippet": "A sophisticated cryptomining campaign is employing multiple layers of obfuscation to conceal malicious PowerShell payloads and ultimately deploy an XMRig-based cryptocurrency miner. This obfuscation includes Windows Registry entries, DNS TXT records, PNG images, and WAV audio files. The infection was detected after repeated security alerts indicated suspicious PowerShell activity. The initial execution command launched PowerShell […]\nThe post PowerShell Malware Abuses Registry and DNS TXT Records to Deploy XMRig Crypto Miner appeared first on GBHackers Security | #1 Globally Trusted Cyber Security News Platform.",
+    "source": "GBHackers Security | #1 Globally Trusted Cyber Security News Platform",
+    "severity": "High",
+    "category": "Data Breach",
+    "fetchedAt": "2026-09-19T09:32:00.553Z",
+    "mitreTechniques": [
+      "T1059",
+      "T1027",
+      "T1496"
+    ]
+  },
+  {
+    "title": "volatility3 v2.28.2",
+    "link": "https://kitploit.com/en/posts/github-volatilityfoundation-volatility3-v2282",
+    "pubDate": "Sat, 19 Sep 2026 06:47:37 +0000",
+    "contentSnippet": "Advanced framework for extracting digital artifacts from volatile memory (RAM) samples, enabling deep forensic analysis of system runtime state across Windows, Linux, and macOS.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "Government",
+    "fetchedAt": "2026-09-19T09:32:00.554Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "CISA Flags Three Linux Kernel Vulnerabilities Exploited in the Wild",
+    "link": "https://thehackernews.com/2026/09/cisa-flags-three-linux-kernel.html",
+    "pubDate": "Sat, 19 Sep 2026 11:54:10 +0530",
+    "contentSnippet": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) on Friday added three security flaws impacting the Linux kernel to its Known Exploited Vulnerabilities (KEV) catalog, citing evidence of active exploitation.\n\nThe vulnerabilities are listed below -\n\n\n  CVE-2025-39682 (CVSS score: 9.8) - An improper check for unusual or exceptional conditions vulnerability in the TLS receive path",
+    "source": "The Hacker News",
+    "severity": "Critical",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T09:31:31.013Z",
+    "mitreTechniques": [
+      "T1190"
+    ]
+  },
+  {
+    "title": "checkov v3.3.19",
+    "link": "https://kitploit.com/en/posts/github-bridgecrewio-checkov-3319",
+    "pubDate": "Sat, 19 Sep 2026 06:02:29 +0000",
+    "contentSnippet": "Static analysis tool for infrastructure as code that detects cloud misconfigurations, vulnerabilities, and secrets across Terraform, Kubernetes, CloudFormation, and container images during build-time.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T09:32:00.554Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "proxmark3 v4.23346",
+    "link": "https://kitploit.com/en/posts/github-rfidresearchgroup-proxmark3-v423346",
+    "pubDate": "Sat, 19 Sep 2026 04:37:00 +0000",
+    "contentSnippet": "Hardware tool for RFID/NFC analysis, emulation, sniffing, and cloning. Supports multiple protocols (MIFARE, iClass, ISO14443, ISO15693) with extensive LUA scripting for automated security testing and tag interaction.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "Government",
+    "fetchedAt": "2026-09-19T09:32:00.554Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "frida-ssl-bypass",
+    "link": "https://kitploit.com/en/tools/github/danieldev23/frida-ssl-bypass",
+    "pubDate": "Sat, 19 Sep 2026 03:56:48 +0000",
+    "contentSnippet": "Frida toolkit that bypasses SSL/TLS certificate pinning on Android apps, hooking Java TrustManager, OkHttp, Conscrypt, and native OpenSSL/BoringSSL layers.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T09:32:00.554Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "Veridiff",
+    "link": "https://kitploit.com/en/tools/github/veridiff/veridiff",
+    "pubDate": "Sat, 19 Sep 2026 03:16:38 +0000",
+    "contentSnippet": "Dynamic branch-divergence finder for native code -- traces two Frida executions and finds the exact instruction where they diverge.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "Government",
+    "fetchedAt": "2026-09-19T09:32:00.554Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "js-x-ray @nodesecure/js-x-ray@16.1.0",
+    "link": "https://kitploit.com/en/posts/github-nodesecure-js-x-ray-nodesecurejs-x-ray1610",
+    "pubDate": "Sat, 19 Sep 2026 02:36:05 +0000",
+    "contentSnippet": "JavaScript & Node.js open-source SAST scanner. A static analyser for detecting most common malicious patterns 🔬.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Critical",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T09:32:00.554Z",
+    "mitreTechniques": [
+      "T1190"
+    ]
+  },
+  {
+    "title": "Flock Offers Employees Buyouts as Customers Flee",
+    "link": "https://www.wired.com/story/flock-is-offering-voluntary-buyouts-to-employees/",
+    "pubDate": "Sat, 19 Sep 2026 02:22:54 +0000",
+    "contentSnippet": "As dozens of cities end contracts for its controversial license plate readers, Flock is rolling out a voluntary severance program, WIRED has learned.",
+    "source": "Security Latest",
+    "severity": "Low",
+    "category": "Government",
+    "fetchedAt": "2026-09-19T09:32:00.548Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "evmbench-certora-agent-harness",
+    "link": "https://kitploit.com/en/tools/github/gmh5225/evmbench-certora-agent-harness",
+    "pubDate": "Sat, 19 Sep 2026 01:55:56 +0000",
+    "contentSnippet": "EVMBench + Certora iterative agent harness",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "Dark Web",
+    "fetchedAt": "2026-09-19T02:02:25.552Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "sslscan v2.2.3",
+    "link": "https://kitploit.com/en/posts/github-rbsec-sslscan-223",
+    "pubDate": "Sat, 19 Sep 2026 01:15:56 +0000",
+    "contentSnippet": "Fast SSL/TLS scanner that discovers supported cipher suites, protocols, and vulnerabilities (Heartbleed, POODLE, CRIME) with certificate chain analysis and key exchange enumeration.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T02:02:25.553Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "faraday v5.24.2",
+    "link": "https://kitploit.com/en/posts/github-infobyte-faraday-v5242",
+    "pubDate": "Sat, 19 Sep 2026 00:35:26 +0000",
+    "contentSnippet": "Open Source Vulnerability Management Platform",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Critical",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T02:02:25.553Z",
+    "mitreTechniques": [
+      "T1190"
+    ]
+  },
+  {
+    "title": "🏴‍☠️ Anubis has just published a new victim : Quest Group",
+    "link": "https://www.ransomware.live/id/UXVlc3QgR3JvdXBAYW51Ymlz",
+    "pubDate": "Fri, 18 Sep 2026 23:55:10 +0000",
+    "contentSnippet": "Employee data, internal files, and a few unexpected discoveries.",
+    "source": "Ransomware.live RSS Feed",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T02:01:51.648Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "SmartScanner-Source",
+    "link": "https://kitploit.com/en/tools/github/fauxrougee/smartscanner-source",
+    "pubDate": "Fri, 18 Sep 2026 23:55:00 +0000",
+    "contentSnippet": "Web vulnerability scanner built with C++17 and Qt 6, featuring a GUI, CLI, configurable crawling, and JSON reports. Reconstructed for educational purposes.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Critical",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T02:02:25.554Z",
+    "mitreTechniques": [
+      "T1595",
+      "T1190"
+    ]
+  },
+  {
+    "title": "EFF Statement on California Governor's Executive Order on AI",
+    "link": "https://www.eff.org/deeplinks/2026/09/eff-statement-california-governors-executive-order-ai",
+    "pubDate": "Fri, 18 Sep 2026 23:25:44 +0000",
+    "contentSnippet": "California Gov. Gavin Newsom's executive order is an opportunity for a needed, thoughtful conversation about artificial intelligence and its potential harms. Everyday Californians are feeling real anxiety about the risks of artificial intelligence, and as an organization that works to ensure technology empowers people, EFF welcomes this order as a way for the state of California to lead a much-needed dialogue that addresses these concerns. \nNonetheless, the most immediate and current concerns with this technology are not about sci-fi scenarios concerning rogue super-intelligence. They are happening right now through biased algorithmic decision-making for employment or government benefits, AI-powered surveillance systems such as Flock cameras, and artificially inflated personalized pricing. People want state and federal leaders to act, and we urge Gov. Newsom to develop thoughtful policies to address those concerns. Today’s EO is a good start. \nTo that end, EFF supports the focus on expanding the reporting requirements under SB 53 (2025) for loss-of-control incidents, alongside third-party investigations. We urge the administration to consider how to make these third-party investigations available for smaller developers. As the Government Operations Agency prepares its recommendations for the governor, we urge leaders to also realize that the effectiveness of kill switches in advanced AI systems remains an area of active research. As such, they should ensure that - as we’ve previously mentioned - any technology regulation targeting cybersecurity practices at AI labs must be careful, precise, and practical. Moreover, we also caution that government-controlled kill switches run the risk of being used as a form of retaliation against protected speech, as demonstrated by the Trump Administration’s retaliatory actions against Anthropic earlier this year.\nUltimately, true safety requires California to focus on concrete, immediate, and urgent harms of AI technologies by ensuring that algorithmic decision-making in both the government and private sectors respects people’s rights and well-being. We urge Gov. Newsom and the state of California to develop thoughtful policy in collaboration with those most at risk of harm to address these and other concerns.",
+    "source": "Deeplinks",
+    "severity": "Low",
+    "category": "Government",
+    "fetchedAt": "2026-09-19T02:02:39.706Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "syft v1.52.0",
+    "link": "https://kitploit.com/en/posts/github-anchore-syft-v1520",
+    "pubDate": "Fri, 18 Sep 2026 23:14:48 +0000",
+    "contentSnippet": "CLI tool and library for generating a Software Bill of Materials from container images and filesystems",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T02:02:25.554Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "ShadowNet v11.4.0",
+    "link": "https://kitploit.com/en/posts/github-antisurveillanceagency-shadownet-v1140",
+    "pubDate": "Fri, 18 Sep 2026 22:34:35 +0000",
+    "contentSnippet": "ShadowNet is an anonymous routing protocol that forces all connections (system-wide) to go through Tor while implementing Mixnet-like techniques/Hardening of the OS",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Critical",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T02:02:25.554Z",
+    "mitreTechniques": [
+      "T1190"
+    ]
+  },
+  {
+    "title": "🏴‍☠️ Panzer has just published a new victim : K3G Solutions Brazil",
+    "link": "https://www.ransomware.live/id/SzNHIFNvbHV0aW9ucyBCcmF6aWxAUGFuemVy",
+    "pubDate": "Fri, 18 Sep 2026 22:23:09 +0000",
+    "contentSnippet": "K3G Solutions is a Brazilian telecom/IT consulting company based in Manaus, providing network engineering, ISP support, monitoring, call-center, CDN, and colocation services.",
+    "source": "Ransomware.live RSS Feed",
+    "severity": "Low",
+    "category": "Dark Web",
+    "fetchedAt": "2026-09-19T02:01:51.648Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "New CISA-hosted VINCE-NT system revealed for coordinated vulnerability disclosure",
+    "link": "https://www.scworld.com/news/new-cisa-hosted-vince-nt-system-revealed-for-coordinated-vulnerability-disclosure",
+    "pubDate": "2026-09-18T22:01:00.000Z",
+    "contentSnippet": "",
+    "source": "SCM feed for Latest",
+    "severity": "High",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T02:02:24.901Z",
+    "mitreTechniques": [
+      "T1190"
+    ]
+  },
+  {
+    "title": "How to Limit What Apple’s New Siri AI Can Access in iOS 27",
+    "link": "https://www.eff.org/deeplinks/2026/09/how-limit-what-apples-new-siri-ai-can-access-ios-27",
+    "pubDate": "Fri, 18 Sep 2026 21:55:16 +0000",
+    "contentSnippet": "Apple’s new operating system is here, and along with it comes a new version of Siri, dubbed with two very familiar letters: AI. As the name suggests, this Siri power-up resembles an AI chatbot more than the often derided voice assistant you might be used to. It has even evolved from a blob you invoke with a verbal command or a button press to a whole app. This update comes with a slew of privacy complications, but you can take some control over what this new Siri can access and use. \nThere’s no denying that the new version of Siri is far more powerful than it used to be, and arguably more useful at surfacing details on your phone. But that comes at the cost of deeper access. Once enabled, Siri and Spotlight are combined, unifying the interface. Where you may have once just pulled down on the screen to search for an app or contact, you’re now also invoking Siri. \n\n\n\nSpotlight and Siri are now visually one and the same.\n\n\nBy default, ask Siri a question and it’ll search through your Apple apps, like Notes, Messages, emails, and more. As time goes on, if the developer chooses to let it, Siri will gain access to more and more third-party apps. If an app developer doesn’t add that support, then Siri AI won’t be able to access the contents of that app (unless it’s shared screenshot-style via a new feature called “on-screen awareness,” which we’ll talk about more in a moment). \nFor example, if Signal doesn’t choose to implement Siri AI support and you only talk to Bill on Signal, you won’t get an answer when you ask Siri AI, “What was the last photo Bill sent me?” But if you talk to Bill on Apple Messages and ask that same question, Siri AI will summarize what it thinks the photo is.\nSometimes Siri processes this data on your device. Sometimes it uses Apple’s Private Cloud Compute (PCC), which means the data is sent off your device to a cloud server. While you can try digging through the Apple Intelligence Report to figure out what’s sent to PCC, there’s no immediate visual indication from the user’s point of view when data leaves the device or when AI can handle it on the phone, iPad, or Mac itself. In practice, ask Siri AI a question and you’ll never really know if it’s being computed on device or off.\nApple claims what’s sent to PCC is not stored by the company after it is processed, but there are certain types of data or certain apps you might have on your phone that are not worth the risk. That’s especially true if you’re using a feature like Advanced Data Protection, which turns on end-to-end encryption for much of what’s stored in iCloud. Sending data that’s stored with end-to-end encryption off your device and into the cloud—no matter the privacy promises—is a fundamental change to the risk assessment you should make. “Private” means the system is engineered so that Apple shouldn’t be able to see or store the data, but it doesn’t mean it’s encrypted or doesn’t leave the device.\nThis leaves the privacy of certain apps up to a strange combination of an app developer’s choices and your own. You can, of course, disable Siri entirely (Settings > Siri > \"Turn Off Siri\"), or choose not to invoke Siri to ask questions, but perhaps you don’t want to fully disable or disengage with the system. Thankfully, you can put some guardrails on Siri AI’s access. Once you’ve updated to iOS 27, here are the steps to take. \nNote: only iPhone 15 Pro/Pro Max, as well as all models of the iPhone 16 and newer support Apple’s AI features. Siri AI is currently only available in English, and not available worldwide.\nHow to Restrict Siri’s Access to the Content Inside Apps\n\nBy default, how (and if) Siri AI can access data inside apps is up to the app developer. If an app developer chooses to index the contents of their app, then it may appear in search, and thus be made available to Siri AI. This means the content may pop up during general or direct searches, like “What are my plans for November\" might cull information from your calendar, Messages, Notes, and, as they update, third-party apps.\nIf you do not want Siri to look through certain apps to consider the contents in results, you can tell it not to:\nOpen Settings > Apps > [the app you don’t want Siri to look through] > Search\nDisable the option to “Show Content in Search.” \nWith this setting disabled, when you ask Siri general questions, it will not surface details from the app you selected. For example, if you disable “Show Content in Search” for Messages, it will not be able to read your Messages conversations. \n\n\n\nLeft: Asking Siri to summarize a message thread with Show Content in Search enabled. Right: With the setting disabled.\n\n\nThere is also an “App Access” setting where you can configure some of the ways Siri interacts with apps. You’d think this is where we’d have gone to revoke access to the content of an app, but alas, this settings page is more about some basic functionality with device personalization, not Siri’s access to the contents of the app.\nOpen Settings > Siri > App Access\nTap an app where you’d like to change Siri’s settings.\nOn this screen, you’ll find a variety of options, depending on what an app supports. “Learn from this App” sounds nefarious, but is mostly about tracking usage, like how often you open an app, and if a developer supports it, what you interact with.\nThe rest of the options are mostly about the personalization tweaks that Siri makes, where it suggests apps it thinks you want at the moment in various places, like when searching or sharing. “Show on Home Screen,” “Suggest App,” and “Suggest Notifications” are just about whether you see apps in those places. \nFor example, if you have a widget of Siri-suggested apps on the home screen, that’s the “Show on Home Screen” toggle. If you see an app recommended in another app, like adding a date to your calendar from an email, that’s “Suggest App.” Apple claims these features all use on-device processing and the data is not stored on servers.\nFor anything not covered here, refer to this documentation for steps to disable certain features.\nThe On-Screen Awareness Capability May Be Concerning for Some People\nThere is one Siri AI feature you (and app developers) can’t do as much about: on-screen awareness, a feature you can invoke at any point to prompt Siri and ask it to explain what you’re looking at and perform certain actions. For example, you can ask it to summarize a web page, cut a recipe you’re reading in half, add an event to your calendar, or try to figure out where a photo was taken. All potentially useful features.\nBut you can also ask it to summarize or explain a Signal group chat that you're looking at, or a meme in a WhatsApp chat, and the data from that on-screen interaction may be sent to PCC. There is currently no way for you or app developers to block this feature, so it’s up to you, and those you chat with, to simply not use it if you’re concerned about the content of conversations potentially leaving your device. It would be a large improvement to privacy, especially secure chat apps, if Apple provided developers a means to block access to Siri AI’s on-screen awareness tool. Even better if they gave you a single control to block all Siri AI features from an app entirely.\nRevoke Access to Training Data\nBy default, Siri AI won’t collect and use data from your interactions with it for training AI features. But during the setup process, Apple provides a way to opt in, which you might have tapped without thinking about it. If you’d rather your data not get used for training, you can opt out:\nOpen Settings > Privacy & Security > Analytics & Improvements\nDisable the option for “Improve Siri & Dictation.” \nAccording to Apple’s privacy documentation, disabling this option should revoke training access to the audio and text from the Siri app.\nGo Back to the Old Version of Siri (and Disable Other AI Features)\n\nWant nothing to do with any of this but still find Siri useful enough to keep around (or you just have to keep it turned on in order to use CarPlay)? For the time being, you can get the old Siri back, though the process is a bit odd.\nOpen up Settings > Screen Time > Content & Privacy Restrictions\nIf you have never done so, enable the toggle for “Content & Privacy Restrictions.”\nTap the Siri option, then “Allowed Siri Version.” \nSelect “Siri Classic.”\nYou can no longer easily disable Apple Intelligence entirely with one tap in the Settings, but on this screen you can also configure other AI features, like disabling the writing and math assistance prompts, turning off image creation, and disallowing the use of extensions. Follow this guide on Apple's site for everything else.\nFor the most part, Apple’s handling of AI features is far less in-your-face than others, and because of that the privacy implications are easier to untangle. But even still, it’s difficult to know what’s processed on device and what’s sent off, and so the privacy trade-offs are never spelled out as clearly as they should be. \nApple could improve on this by offering an on-device only option for Siri AI and providing a clear, single setting toggle to prevent all AI features in a specific app (it looks like Apple is planning a single privacy toggle in a future update. We'll update if and when it does). In general, Siri’s power-up has also made it blurry and difficult to really figure out what sorts of privacy options exist. “Siri” means many things, both on device and off, ranging from “searching the entire internet for an answer” to “setting a timer,” and users have no straightforward ways to wrangle that data to suit their needs. As it stands, it’s a confusing collection of different toggles that never feel exactly right and which many users might struggle to grasp.",
+    "source": "Deeplinks",
+    "severity": "Medium",
+    "category": "Ransomware",
+    "fetchedAt": "2026-09-19T02:02:39.706Z",
+    "mitreTechniques": [
+      "T1566",
+      "T1486"
+    ]
+  },
+  {
+    "title": "brpc v1.18.0",
+    "link": "https://kitploit.com/en/posts/github-apache-brpc-1180",
+    "pubDate": "Fri, 18 Sep 2026 21:54:35 +0000",
+    "contentSnippet": "Industrial-grade C++ RPC framework for building high-performance distributed systems, supporting multiple protocols (HTTP, gRPC, Redis, Thrift) with built-in load balancing, naming services, and RAFT consensus.",
+    "source": "KitPloit - PenTest Tools!",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T02:02:25.555Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "Secure Messaging and AI Remain In Conflict Despite the Promise of TEEs",
+    "link": "https://www.eff.org/deeplinks/2026/09/secure-messaging-and-ai-remain-conflict-despite-promise-tees",
+    "pubDate": "Fri, 18 Sep 2026 21:53:55 +0000",
+    "contentSnippet": "Secure messaging platforms, like Signal, WhatsApp, and recently, encrypted RCS, operate on a straightforward assumption: the content at each end of a conversation is private to the participants in the conversation. End-to-end encryption helps provide the mathematical guarantees that the companies who operate these messaging platforms cannot access the contents of messages. But there’s no way to guarantee what happens once the message arrives on a phone. As more devices and services introduce more artificial intelligence (AI) features into messaging apps, that line begins to blur. \nWhen AI features are computed entirely on device, it’s less concerning. Yet sometimes the computing requirements are heavy enough that the computation has to be done on a company server. Tech companies tell us they have a solution for this: trusted execution environments (TEEs). But do server-side TEEs really solve the problem?\nTEEs exist to serve many different functions, ranging from digital rights management (DRM) content protections to securely storing information in your phone's mobile wallet, but for our purposes, we’ll be focusing on how tech companies use them for their AI tools. \nThe basic idea is straightforward: most consumer devices aren’t powerful enough to handle the sorts of AI features companies want to offer, so sometimes they send data off your device to more powerful cloud servers to do the computing, then display the results on your device. Since your data is leaving your device, there’s a privacy compromise. For example, if you ask for a messaging app to summarize a conversation, it may offload that computing power to a cloud server, sending the entire contents of your messages to the cloud, then back to your phone.\nTEEs supposedly offer a way to keep those requests private. There are several implementations out there, like Apple’s Private Cloud Compute, Google’s Private AI Compute, and WhatsApp’s Private Processing. It’s not just the big tech players, we’ve seen chatbots built with TEEs as well.\nTEEs can provide more security and privacy than simply running in the clear, but they are fundamentally different from actual encryption or running locally. Despite the promises of some tech companies, they will never be able to match that level of security and privacy. Because of that, a user’s device should never automatically send data to a TEE. Let’s dig through the reasons why.\nWhat Exactly Is a TEE, Anyway?\nA TEE is a hardened section of the computer that runs software in a way that’s supposed to be secret even from other processes running on the machine. TEEs also let users check that the code being run is the code that they think is running, and not backdoored code instead, using a process called “attestation.” You may have also heard this referred to as a “secure enclave,” or heard the brand names SGX or TrustZone.\nThe intention of a cloud-based TEE is simple: a company can run a server in their data center, but still process data that you provide on your behalf without being able to see that information themselves.\nIs a TEE Secure?\nIn practice, we've seen multiple cracks and hacks every year that show that it is possible to get at that data. That’s because while encryption relies on math, TEEs rely on engineering to provide their security. Standard encryption algorithms are created by years-long processes collaboratively produced by mathematicians around the world and are based on problems that have been studied for decades. The math is reliable, and there is no shortcut to breaking it that would not also upend fundamental understandings of mathematics as a field. \nThe collective understanding of every mathematician in the world is that standard encryption algorithms are not breakable to the best of the world’s collective knowledge. No responsible engineer builds a system based on a new encryption method until after it’s been offered up for prodding.\nEngineering, on the other hand, doesn’t work like that. Every individual system is the product of a group of engineers who put it out into the world, and each product will have its own quirks and bugs that have to be individually discovered and patched. These bugs are found after the system is built, not before. No one has yet built a system that is unbreakable. On the contrary, there is new research all the time that finds new ways to break into TEE systems. They’re patched as they come up, but they’re unlikely to ever become perfect, and certainly not any time soon. \nTEEs in particular are a hard engineering problem because the encryption key is physically right there on the device. Building a TEE means keeping a key fully separate and inaccessible while it’s on the same physical device as parts of the system that shouldn’t have access to the key.\nMany attacks on TEEs involve “side channels.” In a side channel attack, the attacker measures the electrical impulses or other effects to figure out the timing of operations inside the TEE, then uses that to figure out the key being used. Once they have the key, they can read all the data. Compare that to end-to-end encryption, where the key is never on that machine in the first place, so an attacker would have to also run a similar attack on the user’s device.\nCompanies who turn to TEEs to protect data want to both have the key on the server and have it protected while still performing complex operations like running an LLM, which makes it much more difficult to protect those keys.\nThat being said, a TEE versus plaintext on a server is the difference between being able to easily read the data and having to do a bunch of specialized work to get at the data. That work often involves accessing the physical machine. This is most relevant for protecting against mass surveillance, and for many people, that might just be enough security.\nBut that's the core of the problem. “Secure enough for most cases” and “encrypted as in math” are not the same thing, and it’s important not to conflate the two. And services that currently offer “encryption as in math” have a real downgrade in security when they switch to security based on TEEs. \nIf you want to dive into the myriad security issues and limitations of TEEs we’ve seen so far, they’re well documented here, here, here, and here.\nWhat Does This Have To Do With LLMs and AI?\nSometimes organizations want to offer an LLM that can respond to queries in a private manner. On-device LLMs exist, but they’re limited in size. So, when organizations want to offer the ability to answer queries without being able to see the conversation, they turn to TEEs. That’s a useful way to run a chatbot that’s reasonably private. This is what Apple, Google, WhatsApp, and others are doing.\nWhy not turn to encryption? After all, LLM inference is just a bunch of math like any other things a computer does. It takes input to a (really big) function and gives an output. We have the math to do that computation in a way that hides the inputs and outputs from the one running the computation, it's just super expensive. It’s called homomorphic encryption, and no one’s figured out how to do it fast enough that it makes sense for this sort of computation.\nInstead, the allure of a TEE is that it will run that computation for you inside of a special opaque section of a server. TEE manufacturers try to make it as hard as possible for the person running the TEE to peek inside. But you still have to trust the operator to not put a stethoscope to the box to try to figure out what's happening inside. \nIn this case, it’s reasonable to consider these systems “privacy-preserving,” but not “encrypted.” That distinction is important, especially when we talk about how the TEEs interact with secure messaging. When someone using an end-to-end encrypted chat app asks an LLM to summarize, review, or store those messages, the content of those messages is leaving the device and going to an unencrypted third-party server somewhere. That’s a major threat to the privacy of secure chat apps, and one that’s increasingly hard for users to take control of.\nHow Does This Translate to Practical Advice?\nThe answer to this is going to vary based on an individual’s threat model, but a good rule of thumb is that a user’s device should never automatically send data to a TEE. When the person holding a phone can choose what information is sent, even if it’s a chunk of data like “unread messages,” they have the opportunity to pause and consider if that data might be too sensitive to risk sending.\nIn contrast, when data is sent automatically, the automatic sending becomes a feature of the system as a whole. If the system was previously end-to-end encrypted, adding automatic exfiltration makes the whole system no longer end-to-end encrypted.\nDevelopers: don’t build systems that automatically send data off a device to a TEE, especially when it’s coming from an app that is otherwise end-to-end encrypted.\nUsers: if developers ignore us and build that system, turn off any automatic data sending features. Take a second to think about how much you’re willing to risk sending data when you choose to send it off the device.\nSo, What Should I Be Concerned About?\nTEEs are useful for security in a number of circumstances. Your phone likely has a TEE where it keeps the key that encrypts your biometric unlock data and the base of the keychain where passwords are stored. It also enables certain backup systems, like how you can restore a phone with your passcode or restore WhatsApp or Signal backups.\nBut when we’re talking about cloud processing, it’s important to be clear this isn’t the same as end-to-end encryption and doesn’t offer the same level of privacy. \nMost of our private lives are on our phones and in our messages. We’ve worked for years to secure those messages, with major wins like encrypted RCS, and the continued user experience improvements of Signal and WhatsApp. We’ve even seen real improvements to backup security with features like Advanced Data Protection that bring end-to-end encryption for a variety of data outside of messaging, like notes and photos. \nBut as companies roll out AI features that interact with these encrypted services, pulling data off devices and into a cloud-based TEE, they’re eroding the privacy protections of end-to-end encryption and risk causing serious confusion around what data is protected and what isn’t.",
+    "source": "Deeplinks",
+    "severity": "High",
+    "category": "Ransomware",
+    "fetchedAt": "2026-09-19T02:02:39.706Z",
+    "mitreTechniques": [
+      "T1566",
+      "T1555",
+      "T1048",
+      "T1486"
+    ]
+  },
+  {
+    "title": "🏴‍☠️ Lockbit5 has just published a new victim : hygear.com",
+    "link": "https://www.ransomware.live/id/aHlnZWFyLmNvbUBsb2NrYml0NQ==",
+    "pubDate": "Fri, 18 Sep 2026 21:49:22 +0000",
+    "contentSnippet": "yGear specializes in providing reliable and affordable on-site and on-demand hydrogen and industrial...",
+    "source": "Ransomware.live RSS Feed",
+    "severity": "Low",
+    "category": "Ransomware",
+    "fetchedAt": "2026-09-19T02:01:51.648Z",
+    "mitreTechniques": [
+      "T1486"
+    ]
+  },
+  {
+    "title": "🏴‍☠️ Lockbit5 has just published a new victim : forus.cl",
+    "link": "https://www.ransomware.live/id/Zm9ydXMuY2xAbG9ja2JpdDU=",
+    "pubDate": "Fri, 18 Sep 2026 21:48:40 +0000",
+    "contentSnippet": "Founded in 1980 and headquartered in Santiago, Chile, Forus is a provider of apparel. The company pr...",
+    "source": "Ransomware.live RSS Feed",
+    "severity": "Low",
+    "category": "Ransomware",
+    "fetchedAt": "2026-09-19T02:01:51.649Z",
+    "mitreTechniques": [
+      "T1486"
+    ]
+  },
+  {
+    "title": "Brevo Supply-Chain Attack Infected Over 100,000 Websites",
+    "link": "https://securityaffairs.com/199355/hacking/brevo-supply-chain-attack-infected-over-100000-websites.html",
+    "pubDate": "Fri, 18 Sep 2026 21:38:15 +0000",
+    "contentSnippet": "A Brevo supply-chain attack used compromised Cloudflare access to inject malware into websites, potentially affecting over 100,000 sites. Brevo, formerly known as Sendinblue, is a French cloud-based marketing and customer communication platform whose clients include eBay, Louis Vuitton and Michelin. The company was first compromised on September 10, when attackers exploited a vulnerability in its […]",
+    "source": "Security Affairs",
+    "severity": "Critical",
+    "category": "Vulnerability",
+    "fetchedAt": "2026-09-19T02:02:25.540Z",
+    "mitreTechniques": [
+      "T1190"
+    ]
+  },
+  {
     "title": "Friday Squid Blogging: On Squid Egg Sacs",
     "link": "https://www.schneier.com/blog/archives/2026/09/friday-squid-blogging-on-squid-egg-sacs.html",
     "pubDate": "2026-09-18T21:06:00.000Z",
@@ -7,7 +472,32 @@
     "source": "Schneier on Security",
     "severity": "Low",
     "category": "Dark Web",
-    "fetchedAt": "2026-09-18T21:11:30.134Z"
+    "fetchedAt": "2026-09-18T21:11:30.134Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "Closing the AI control gap: From shadow AI to continuous protection",
+    "link": "https://www.scworld.com/resource/closing-the-ai-control-gap-from-shadow-ai-to-continuous-protection",
+    "pubDate": "2026-09-18T21:04:53.000Z",
+    "contentSnippet": "",
+    "source": "SCM feed for Latest",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-18T21:41:29.283Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "Bacteria, Spartans, AI gone wild, Cisco, WordPress, Settra, Plugin4Shell, Josh Marpet - SWN #617",
+    "link": "https://www.scworld.com/podcast-segment/15302-bacteria-spartans-ai-gone-wild-cisco-wordpress-settra-plugin4shell-josh-marpet-swn-617",
+    "pubDate": "2026-09-18T21:00:00.000Z",
+    "contentSnippet": "",
+    "source": "SCM feed for Latest",
+    "severity": "Low",
+    "category": "Government",
+    "fetchedAt": "2026-09-18T21:41:29.283Z",
+    "mitreTechniques": [
+      "T1133"
+    ]
   },
   {
     "title": "🏴‍☠️ Play has just published a new victim : Vista Plastic Solutions",
@@ -17,7 +507,8 @@
     "source": "Ransomware.live RSS Feed",
     "severity": "Low",
     "category": "General Info",
-    "fetchedAt": "2026-09-18T21:11:07.727Z"
+    "fetchedAt": "2026-09-18T21:11:07.727Z",
+    "mitreTechniques": []
   },
   {
     "title": "🏴‍☠️ Play has just published a new victim : Inglewood Golf",
@@ -27,7 +518,8 @@
     "source": "Ransomware.live RSS Feed",
     "severity": "Low",
     "category": "General Info",
-    "fetchedAt": "2026-09-18T21:11:07.727Z"
+    "fetchedAt": "2026-09-18T21:11:07.727Z",
+    "mitreTechniques": []
   },
   {
     "title": "🏴‍☠️ Play has just published a new victim : Barrett Mahony Consulting Engineers",
@@ -37,7 +529,8 @@
     "source": "Ransomware.live RSS Feed",
     "severity": "Low",
     "category": "General Info",
-    "fetchedAt": "2026-09-18T21:11:07.728Z"
+    "fetchedAt": "2026-09-18T21:11:07.728Z",
+    "mitreTechniques": []
   },
   {
     "title": "[Virtual Event] Cybersecurity Outlook 2027",
@@ -1604,6 +2097,17 @@
     "mitreTechniques": []
   },
   {
+    "title": "AI agents can modify themselves, raising security concerns",
+    "link": "https://www.scworld.com/brief/ai-agents-can-modify-themselves-raising-security-concerns",
+    "pubDate": "2026-09-18T14:38:46.000Z",
+    "contentSnippet": "",
+    "source": "SCM feed for Latest",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T02:02:24.901Z",
+    "mitreTechniques": []
+  },
+  {
     "title": "Nations take action on North Korean IT workers after UN report",
     "link": "https://therecord.media/nations-take-action-on-north-korean-it-worker-schemes",
     "pubDate": "Fri, 18 Sep 2026 14:29:00 GMT",
@@ -2290,6 +2794,17 @@
     "mitreTechniques": [
       "T1195"
     ]
+  },
+  {
+    "title": "‘Nudify’ apps: What to do if someone makes a fake nude of you",
+    "link": "https://www.welivesecurity.com/en/privacy/nudify-apps-fake-nude-you/",
+    "pubDate": "Fri, 18 Sep 2026 09:00:00 +0000",
+    "contentSnippet": "Whether you’re a victim, the parent of a victim, or just concerned, here’s what you can do about fake nude images",
+    "source": "WeLiveSecurity",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T09:31:55.262Z",
+    "mitreTechniques": []
   },
   {
     "title": "Arcjet brings security controls and audit trails to AI agents",
@@ -13588,6 +14103,17 @@
     "severity": "Medium",
     "category": "Vulnerability",
     "fetchedAt": "2026-09-18T20:41:36.176Z",
+    "mitreTechniques": []
+  },
+  {
+    "title": "KlueセキュリティインシデントとRecorded Futureへの影響",
+    "link": "https://www.recordedfuture.com/blog/klue-security-incident-jp",
+    "pubDate": "Wed, 12 Aug 2026 00:00:00 GMT",
+    "contentSnippet": "透明性は私たちの企業運営の根幹をなすものです。最近発生したサードパーティベンダーによるセキュリティインシデントに関する声明をご覧ください。調査結果および、お客様の情報を保護するために講じた対策について記載しております。",
+    "source": "Recorded Future",
+    "severity": "Low",
+    "category": "General Info",
+    "fetchedAt": "2026-09-19T02:02:21.731Z",
     "mitreTechniques": []
   },
   {

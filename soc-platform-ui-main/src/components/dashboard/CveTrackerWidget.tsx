@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShieldAlert, ExternalLink, ArrowUpRight, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { API_BASE } from '../../config/api';
 
 interface CveItem {
     id: string;
@@ -62,8 +63,20 @@ const FEATURED_CVES: CveItem[] = [
 
 const CveTrackerWidget = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [cves, setCves] = useState<CveItem[]>(FEATURED_CVES);
 
-    const filteredCves = FEATURED_CVES.filter(
+    useEffect(() => {
+        fetch(`${API_BASE}/api/dashboard/snapshot`)
+            .then(res => (res.ok ? res.json() : null))
+            .then(snapshot => {
+                if (snapshot?.kev?.featured && Array.isArray(snapshot.kev.featured) && snapshot.kev.featured.length > 0) {
+                    setCves(snapshot.kev.featured);
+                }
+            })
+            .catch(() => {});
+    }, []);
+
+    const filteredCves = cves.filter(
         cve =>
             cve.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
             cve.description.toLowerCase().includes(searchTerm.toLowerCase()) ||

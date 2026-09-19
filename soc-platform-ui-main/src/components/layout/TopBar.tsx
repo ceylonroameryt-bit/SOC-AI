@@ -1,27 +1,30 @@
-import { useState, useRef, useEffect } from 'react';
-import { Search, Download, Mail, ExternalLink, CheckCircle2, Eye } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Calendar, FileDown, User, Menu, ExternalLink, Eye } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { API_BASE } from '../../config/api';
 import { useAccessibility } from '../../context/AccessibilityContext';
 
+interface TopBarProps {
+    onMenuToggle?: () => void;
+}
 
-
-const TopBar = () => {
+export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle }) => {
     const navigate = useNavigate();
-    const { setIsModalOpen, contrast } = useAccessibility();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [sendingEmail, setSendingEmail] = useState(false);
-    const [emailStatus, setEmailStatus] = useState<string | null>(null);
-    const searchInputRef = useRef<HTMLInputElement>(null);
+    const location = useLocation();
+    const { setIsModalOpen } = useAccessibility();
 
-    // Global keyboard shortcut: pressing '/' focuses the search input
+    const [searchQuery, setSearchQuery] = useState('');
+    const [timeRange, setTimeRange] = useState('24h');
+    const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+    const [downloading, setDownloading] = useState(false);
+
+    const searchInputRef = useRef<HTMLInputElement>(null);
+    const userMenuRef = useRef<HTMLDivElement>(null);
+
+    // Keyboard shortcut: Ctrl+K or Cmd+K to focus search input
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (
-                e.key === '/' &&
-                document.activeElement?.tagName !== 'INPUT' &&
-                document.activeElement?.tagName !== 'TEXTAREA'
-            ) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 searchInputRef.current?.focus();
             }
@@ -31,161 +34,182 @@ const TopBar = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && searchQuery.trim()) {
-            const query = searchQuery.trim();
-            // If it looks like an IP, CVE, or Hash, navigate to IOC Enrichment
-            if (
-                query.toLowerCase().startsWith('cve-') ||
-                /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(query) ||
-                /^[a-fA-F0-9]{32,64}$/.test(query)
-            ) {
-                navigate(`/enrich?ioc=${encodeURIComponent(query)}`);
-            } else {
-                navigate(`/archives?q=${encodeURIComponent(query)}`);
+    // Close user dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+                setUserDropdownOpen(false);
             }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSearchSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const q = searchQuery.trim();
+        if (!q) return;
+
+        // Route IOC identifiers directly to Enrichment, otherwise search Archives or Intelligence
+        if (
+            q.toLowerCase().startsWith('cve-') ||
+            /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(q) ||
+            /^[a-fA-F0-9]{32,64}$/.test(q)
+        ) {
+            navigate(`/enrich?ioc=${encodeURIComponent(q)}`);
+        } else {
+            navigate(`/intelligence?q=${encodeURIComponent(q)}`);
         }
     };
 
-    const handleSendReport = async () => {
-        setSendingEmail(true);
-        setEmailStatus(null);
+    const handleTimeRangeChange = (val: string) => {
+        setTimeRange(val);
+        // Dispatch time range to current page searchParams if on intelligence or archives
+        const params = new URLSearchParams(location.search);
+        params.set('range', val);
+        navigate({ search: params.toString() }, { replace: true });
+    };
+
+    const handleQuickExport = async () => {
+        setDownloading(true);
         try {
-            const res = await fetch(`${API_BASE}/api/notifications/send`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({}),
-            });
-            const data = await res.json();
-            if (data.success) {
-                setEmailStatus('Report dispatched successfully!');
-            } else {
-                setEmailStatus('Failed to send. Server configured.');
-            }
-        } catch {
-            setEmailStatus('Server unreachable.');
+            const res = await fetch(`${API_BASE}/api/reports/daily`);
+            if (!res.ok) throw new Error('Report generation failed');
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `no-entry-daily-report-${new Date().toISOString().split('T')[0]}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Download report error:', err);
         } finally {
-            setSendingEmail(false);
-            setTimeout(() => setEmailStatus(null), 4000);
+            setDownloading(false);
         }
     };
 
     return (
-        <header role="banner" className="h-16 bg-white/95 backdrop-blur-xl border-b border-[#E2E8F0] flex items-center justify-between px-3 sm:px-4 lg:px-6 flex-shrink-0 z-20">
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 mr-2">
+        <header className="h-16 bg-white border-b border-[#E2E8F0] px-4 lg:px-6 flex items-center justify-between gap-4 sticky top-0 z-20 shadow-2xs">
+            {/* Mobile Hamburger & Global Search */}
+            <div className="flex items-center gap-3 flex-1 max-w-xl">
+                {onMenuToggle && (
+                    <button
+                        onClick={onMenuToggle}
+                        className="lg:hidden p-2 text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-md focus:outline-none"
+                        aria-label="Open mobile navigation drawer"
+                    >
+                        <Menu className="w-5 h-5" />
+                    </button>
+                )}
 
-                {/* Search Bar with Smart Routing & Semantic Form */}
-                <form
-                    role="search"
-                    onSubmit={e => e.preventDefault()}
-                    className="flex items-center flex-1 max-w-md min-w-0"
-                >
-                    <label htmlFor="global-soc-search" className="sr-only">
-                        Quick search indicators, CVEs, threats, or press slash key
-                    </label>
-                    <div className="relative w-full">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none" aria-hidden="true">
-                            <Search className="w-4 h-4 text-slate-500" />
-                        </span>
-                        <input
-                            ref={searchInputRef}
-                            id="global-soc-search"
-                            type="search"
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            onKeyDown={handleSearch}
-                            placeholder="Quick search IOCs, CVEs, threats (Press / or Enter)..."
-                            className="w-full bg-slate-50 focus:bg-white border border-[#E2E8F0] text-slate-900 text-xs sm:text-sm rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 block pl-10 pr-12 py-2 placeholder-slate-500 transition-all shadow-2xs font-sans focus:outline-none"
-                            aria-label="Search intelligence, CVEs, and IOCs"
-                        />
-                        <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-[10px] font-mono font-bold text-slate-600 bg-slate-100 my-1.5 mr-1.5 px-1.5 rounded border border-[#E2E8F0]" title="Press Enter to search" aria-hidden="true">
-                            ↵
-                        </span>
-                    </div>
+                <form onSubmit={handleSearchSubmit} className="relative w-full">
+                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
+                    <input
+                        ref={searchInputRef}
+                        type="text"
+                        placeholder="Search CVEs, IOCs, threats, or keywords..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-9 pr-14 py-2 bg-[#F8FAFC] border border-[#E2E8F0] focus:border-[#0665F9] focus:bg-white rounded-md text-xs text-[#0F172A] placeholder-[#94A3B8] outline-none transition-colors"
+                        aria-label="Global intelligence search"
+                    />
+                    <kbd className="hidden sm:inline-flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center px-1.5 py-0.5 text-[10px] font-mono text-[#64748B] bg-white border border-[#E2E8F0] rounded shadow-2xs">
+                        Ctrl+K
+                    </kbd>
                 </form>
-
-                {/* 24/7 SOC Radar Status Chip relocated from Sidebar */}
-                <div
-                    className="availability-chip text-[11px] py-1 px-3 hidden sm:inline-flex items-center gap-2 flex-shrink-0"
-                    role="status"
-                    aria-label="System status: 24/7 SOC Radar Active"
-                >
-                    <span className="chip-dot" aria-hidden="true"></span>
-                    <span className="font-semibold text-emerald-900 tracking-tight">24/7 SOC Radar Active</span>
-                </div>
-
-                {/* Status Indicator */}
-                <div
-                    className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100/90 border border-slate-200/90 text-[11px] font-semibold text-slate-700 flex-shrink-0"
-                    role="status"
-                    aria-label="Telemetry feed status: 102 Feeds Connected"
-                >
-                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" aria-hidden="true"></span>
-                    <span>102 Feeds Connected</span>
-                </div>
             </div>
 
-            {/* Quick Actions & Accessibility Buttons */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-                {/* Live Announcement for Email Dispatch */}
-                <div aria-live="polite" className="contents">
-                    {emailStatus && (
-                        <span className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-300 animate-fade-in" role="alert">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
-                            {emailStatus}
-                        </span>
-                    )}
+            {/* Right Controls: Time Range, Quick Export & User Menu */}
+            <div className="flex items-center gap-2.5">
+                {/* Time Range Selector */}
+                <div className="hidden md:flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md px-2.5 py-1.5 text-xs text-[#0F172A]">
+                    <Calendar className="w-3.5 h-3.5 text-[#64748B]" aria-hidden="true" />
+                    <select
+                        value={timeRange}
+                        onChange={(e) => handleTimeRangeChange(e.target.value)}
+                        className="bg-transparent text-xs text-[#0F172A] font-medium outline-none cursor-pointer pr-1"
+                        aria-label="Filter intelligence by time range"
+                    >
+                        <option value="24h">Last 24 Hours</option>
+                        <option value="7d">Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                        <option value="all">All Time</option>
+                    </select>
                 </div>
 
-                {/* Accessibility Preferences Trigger Button */}
+                {/* Quick PDF Report Download */}
                 <button
-                    type="button"
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs rounded-xl border border-blue-200 bg-blue-50/80 hover:bg-blue-100 text-blue-900 font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    aria-label="Open Accessibility and Display Preferences (Shortcut: Alt+A)"
-                    title="Accessibility Preferences (Alt+A)"
+                    onClick={handleQuickExport}
+                    disabled={downloading}
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#0F172A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#0665F9]"
+                    title="Download daily PDF sitrep report"
                 >
-                    <Eye className="w-4 h-4 text-blue-700 flex-shrink-0" aria-hidden="true" />
-                    <span className="hidden md:inline">Accessibility</span>
-                    {contrast === 'high-contrast' && (
-                        <span className="w-2 h-2 rounded-full bg-blue-700" title="High contrast mode active" aria-label="High contrast mode active"></span>
+                    <FileDown className="w-3.5 h-3.5 text-[#64748B]" aria-hidden="true" />
+                    <span>{downloading ? 'Exporting...' : 'Daily Report'}</span>
+                </button>
+
+                {/* Authenticated / Guest User Menu */}
+                <div className="relative" ref={userMenuRef}>
+                    <button
+                        onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                        className="flex items-center gap-2 p-1.5 pl-2.5 rounded-md hover:bg-[#F8FAFC] border border-transparent hover:border-[#E2E8F0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#0665F9]"
+                        aria-expanded={userDropdownOpen}
+                        aria-haspopup="true"
+                        aria-label="User account menu"
+                    >
+                        <div className="text-right hidden sm:block">
+                            <span className="text-xs font-semibold text-[#0F172A] block leading-tight">
+                                Guest
+                            </span>
+                            <span className="text-[10px] text-[#64748B] block font-normal">
+                                Security Analyst
+                            </span>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-[#EAF2FF] border border-[#BFDBFE] text-[#0665F9] flex items-center justify-center font-bold text-xs">
+                            <User className="w-4 h-4" />
+                        </div>
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {userDropdownOpen && (
+                        <div
+                            role="menu"
+                            className="absolute right-0 mt-1.5 w-56 bg-white border border-[#E2E8F0] rounded-md shadow-lg py-1.5 text-xs z-50 text-[#0F172A]"
+                        >
+                            <div className="px-3 py-2 border-b border-[#F1F5F9]">
+                                <span className="font-semibold block text-[#0F172A]">Security Operations</span>
+                                <span className="text-[11px] text-[#64748B]">Session: Guest Analyst</span>
+                            </div>
+
+                            <button
+                                role="menuitem"
+                                onClick={() => {
+                                    setIsModalOpen(true);
+                                    setUserDropdownOpen(false);
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-2 text-[#334155]"
+                            >
+                                <Eye className="w-3.5 h-3.5 text-[#64748B]" />
+                                <span>Accessibility & Contrast</span>
+                            </button>
+
+                            <a
+                                role="menuitem"
+                                href="https://sujampathirathnayaka.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => setUserDropdownOpen(false)}
+                                className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center justify-between text-[#334155]"
+                            >
+                                <span>About Platform & Creator</span>
+                                <ExternalLink className="w-3 h-3 text-[#94A3B8]" />
+                            </a>
+                        </div>
                     )}
-                </button>
-
-                <a
-                    href="https://sujampathirathnayaka.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hidden sm:inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold transition-all shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    title="Poorna Sujampathi Portfolio (opens in new tab)"
-                    aria-label="Poorna Sujampathi Portfolio (opens in new tab)"
-                >
-                    <span>Portfolio</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-600" aria-hidden="true" />
-                </a>
-
-                <button
-                    onClick={handleSendReport}
-                    disabled={sendingEmail}
-                    className="btn-secondary flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs sm:text-sm active:scale-95 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    title="Send Email Report to analyst"
-                    aria-label={sendingEmail ? 'Dispatching email report' : 'Send daily email report'}
-                >
-                    <Mail className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" aria-hidden="true" />
-                    <span className="hidden md:inline">{sendingEmail ? 'Dispatching...' : 'Email Report'}</span>
-                </button>
-
-                <a
-                    href={`${API_BASE}/api/reports/daily`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-accent flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    title="Download Executive Daily Intelligence PDF/DOCX (opens in new tab)"
-                    aria-label="Download Executive Daily Intelligence Report PDF or DOCX"
-                >
-                    <Download className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-                    <span>Download Report</span>
-                </a>
+                </div>
             </div>
         </header>
     );

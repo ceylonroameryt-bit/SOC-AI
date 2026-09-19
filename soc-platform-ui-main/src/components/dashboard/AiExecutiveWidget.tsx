@@ -29,7 +29,7 @@ const AiExecutiveWidget = () => {
                         .split('\n')
                         .filter(l => l.trim().startsWith('- **') || l.trim().startsWith('- '))
                         .slice(0, 3)
-                        .map(l => l.replace(/^[-\s*#]+/, '').trim());
+                        .map(l => l.replace(/^[-\s*#]+/, '').replace(/\*\*/g, '').replace(/`/g, '').trim());
                     if (lines.length > 0) setPoints(lines);
                 }
             })
@@ -52,11 +52,11 @@ const AiExecutiveWidget = () => {
                             </h3>
                             <span className="flex items-center gap-0.5 text-[9px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200 font-mono">
                                 <Sparkles className="w-2.5 h-2.5 text-blue-500" />
-                                NEURAL
+                                AI SYNTHESIS
                             </span>
                         </div>
                         <p className="text-[11px] text-slate-500 line-clamp-1">
-                            {headline}
+                            {headline.replace(/\*\*/g, '')}
                         </p>
                     </div>
                 </div>

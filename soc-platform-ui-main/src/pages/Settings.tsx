@@ -22,59 +22,96 @@ interface TestResult {
     };
 }
 
+type PageState = 'loading' | 'success' | 'empty' | 'error';
+
 const PlatformCard = ({
     name, icon, color, status, envKey, testResult
 }: {
-    name: string; icon: string; color: string; status: WebhookStatus;
+    name: string; icon: string; color: string; status?: WebhookStatus;
     envKey: string; testResult?: { success: boolean; error?: string; reason?: string };
-}) => (
-    <div className={`metric-card space-y-3.5 ${status.configured ? 'border-emerald-300' : 'border-slate-200'}`}>
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                <span className="text-3xl">{icon}</span>
-                <div>
-                    <h3 className={`font-bold font-display text-base ${color}`}>{name}</h3>
-                    <p className="text-slate-500 text-xs font-medium">ChatOps Webhook Channel</p>
+}) => {
+    const isConfigured = status?.configured ?? false;
+    const masked = status?.maskedUrl;
+
+    return (
+        <div className={`metric-card space-y-3.5 ${isConfigured ? 'border-emerald-300' : 'border-slate-200'}`}>
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <span className="text-3xl">{icon}</span>
+                    <div>
+                        <h3 className={`font-bold font-display text-base ${color}`}>{name}</h3>
+                        <p className="text-slate-500 text-xs font-medium">ChatOps Webhook Channel</p>
+                    </div>
+                </div>
+                <div className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${isConfigured ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+                    {isConfigured ? '✓ Configured' : 'Not Configured'}
                 </div>
             </div>
-            <div className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${status.configured ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
-                {status.configured ? '✓ Configured' : 'Not Configured'}
-            </div>
+
+            {isConfigured && masked && (
+                <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-mono text-xs text-slate-700 truncate">
+                    {masked}
+                </div>
+            )}
+
+            {!isConfigured && (
+                <div className="bg-slate-50 rounded-xl p-3 border border-dashed border-slate-300">
+                    <p className="text-slate-500 text-xs">
+                        Add <code className="text-[#1E3A8A] font-bold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">{envKey}</code> to your <code className="text-slate-800 bg-slate-200 px-1 py-0.5 rounded">.env</code> file.
+                    </p>
+                </div>
+            )}
+
+            {testResult && (
+                <div className={`rounded-lg px-3 py-2 text-xs font-medium border ${testResult.success ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-800 border-red-200'}`}>
+                    {testResult.success ? '✓ Test alert sent successfully!' : `✗ ${testResult.reason || testResult.error || 'Failed'}`}
+                </div>
+            )}
         </div>
-
-        {status.configured && status.maskedUrl && (
-            <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-mono text-xs text-slate-700 truncate">
-                {status.maskedUrl}
-            </div>
-        )}
-
-        {!status.configured && (
-            <div className="bg-slate-50 rounded-xl p-3 border border-dashed border-slate-300">
-                <p className="text-slate-500 text-xs">
-                    Add <code className="text-[#1E3A8A] font-bold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">{envKey}</code> to your <code className="text-slate-800 bg-slate-200 px-1 py-0.5 rounded">.env</code> file.
-                </p>
-            </div>
-        )}
-
-        {testResult && (
-            <div className={`rounded-lg px-3 py-2 text-xs font-medium border ${testResult.success ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-800 border-red-200'}`}>
-                {testResult.success ? '✓ Test alert sent successfully!' : `✗ ${testResult.reason || testResult.error || 'Failed'}`}
-            </div>
-        )}
-    </div>
-);
+    );
+};
 
 export default function Settings() {
     const [config, setConfig] = useState<WebhookConfig | null>(null);
+    const [pageState, setPageState] = useState<PageState>('loading');
+    const [lastSuccessfulCheck, setLastSuccessfulCheck] = useState<string | null>(() => {
+        return localStorage.getItem('soc_last_webhook_check') || null;
+    });
     const [testResult, setTestResult] = useState<TestResult | null>(null);
     const [testing, setTesting] = useState(false);
     const [ingestKey] = useState(Math.random().toString(36).slice(2, 18).toUpperCase());
 
+    const loadConfig = async () => {
+        setPageState('loading');
+        try {
+            const resp = await fetch(`${API_BASE}/api/webhooks/config`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            
+            // Validate response structure
+            if (data && typeof data === 'object' && !data.error) {
+                const validatedConfig: WebhookConfig = {
+                    slack: { configured: !!data.slack?.configured, maskedUrl: data.slack?.maskedUrl ?? null },
+                    teams: { configured: !!data.teams?.configured, maskedUrl: data.teams?.maskedUrl ?? null },
+                    discord: { configured: !!data.discord?.configured, maskedUrl: data.discord?.maskedUrl ?? null },
+                };
+                setConfig(validatedConfig);
+                const nowStr = new Date().toLocaleString();
+                setLastSuccessfulCheck(nowStr);
+                localStorage.setItem('soc_last_webhook_check', nowStr);
+
+                const hasAnyConfigured = validatedConfig.slack.configured || validatedConfig.teams.configured || validatedConfig.discord.configured;
+                setPageState(hasAnyConfigured ? 'success' : 'empty');
+            } else {
+                setPageState('error');
+            }
+        } catch {
+            setPageState('error');
+        }
+    };
+
     useEffect(() => {
-        fetch(`${API_BASE}/api/webhooks/config`)
-            .then(r => r.json())
-            .then(setConfig)
-            .catch(console.error);
+        loadConfig();
     }, []);
 
     const runTest = async () => {
@@ -139,14 +176,41 @@ INGEST_API_KEY=${ingestKey}`;
                     <h2 className="text-slate-900 font-bold font-display text-xl flex items-center gap-2">
                         <span>🔔</span> ChatOps Webhooks
                     </h2>
-                    <button
-                        onClick={runTest}
-                        disabled={testing}
-                        className="btn-accent px-5 py-2 text-xs font-semibold flex items-center gap-2"
-                    >
-                        {testing ? '⏳ Dispatching...' : '🚀 Send Test Alert'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={loadConfig}
+                            disabled={pageState === 'loading'}
+                            className="btn-secondary px-3 py-2 text-xs font-semibold"
+                            title="Retry connection to integration status endpoint"
+                        >
+                            ↻ Check Status
+                        </button>
+                        <button
+                            onClick={runTest}
+                            disabled={testing || pageState === 'error'}
+                            className="btn-accent px-5 py-2 text-xs font-semibold flex items-center gap-2 disabled:opacity-50"
+                        >
+                            {testing ? '⏳ Dispatching...' : '🚀 Send Test Alert'}
+                        </button>
+                    </div>
                 </div>
+
+                {pageState === 'error' && (
+                    <div className="rounded-xl p-4 bg-amber-50 border border-amber-200 text-amber-900 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div>
+                            <p className="font-semibold">Integration status is temporarily unavailable.</p>
+                            <p className="text-xs text-amber-700 mt-0.5">
+                                Last successful check: {lastSuccessfulCheck || 'Never recorded in this session'}
+                            </p>
+                        </div>
+                        <button
+                            onClick={loadConfig}
+                            className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all"
+                        >
+                            Retry Check
+                        </button>
+                    </div>
+                )}
 
                 {testResult && (
                     <div className={`rounded-xl p-4 border text-sm font-medium ${testResult.success ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
@@ -154,23 +218,28 @@ INGEST_API_KEY=${ingestKey}`;
                     </div>
                 )}
 
-                <div className="grid md:grid-cols-3 gap-4">
-                    {config ? (
-                        <>
-                            <PlatformCard name="Slack" icon="💬" color="text-emerald-700"
-                                status={config.slack} envKey="SLACK_WEBHOOK_URL"
-                                testResult={testResult?.results?.slack} />
-                            <PlatformCard name="Microsoft Teams" icon="💼" color="text-blue-700"
-                                status={config.teams} envKey="TEAMS_WEBHOOK_URL"
-                                testResult={testResult?.results?.teams} />
-                            <PlatformCard name="Discord" icon="🎮" color="text-indigo-700"
-                                status={config.discord} envKey="DISCORD_WEBHOOK_URL"
-                                testResult={testResult?.results?.discord} />
-                        </>
-                    ) : (
-                        <div className="col-span-3 text-center py-10 text-slate-400 font-medium">Loading configuration...</div>
-                    )}
-                </div>
+                {pageState === 'loading' ? (
+                    <div className="grid md:grid-cols-3 gap-4">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="metric-card p-6 animate-pulse bg-slate-50 border-slate-200">
+                                <div className="h-5 bg-slate-200 rounded w-1/2 mb-3"></div>
+                                <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid md:grid-cols-3 gap-4">
+                        <PlatformCard name="Slack" icon="💬" color="text-emerald-700"
+                            status={config?.slack} envKey="SLACK_WEBHOOK_URL"
+                            testResult={testResult?.results?.slack} />
+                        <PlatformCard name="Microsoft Teams" icon="💼" color="text-blue-700"
+                            status={config?.teams} envKey="TEAMS_WEBHOOK_URL"
+                            testResult={testResult?.results?.teams} />
+                        <PlatformCard name="Discord" icon="🎮" color="text-indigo-700"
+                            status={config?.discord} envKey="DISCORD_WEBHOOK_URL"
+                            testResult={testResult?.results?.discord} />
+                    </div>
+                )}
             </section>
 
             {/* SIEM Ingestion */}
@@ -209,7 +278,7 @@ INGEST_API_KEY=${ingestKey}`;
     "description": "Suspicious file encryption detected on WORKSTATION-04",
     "ioc": {
       "ip_addresses": ["192.168.1.50"],
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb924..."
+      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc"
     }
   }'`}</pre>
                         </div>

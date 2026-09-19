@@ -3,12 +3,15 @@ import { Radio, AlertTriangle, ShieldCheck, Activity, Target, RefreshCw } from '
 import { API_BASE } from '../../config/api';
 
 interface TelemetryData {
-    totalIntel: number;
-    criticalCount: number;
-    highCount: number;
-    activeTechniques: number;
-    kevCount: number;
-    sourcesCount: number;
+    totalIntel: number | null;
+    criticalCount: number | null;
+    highCount: number | null;
+    activeTechniques: number | null;
+    kevCount: number | null;
+    sourcesConfigured: number | null;
+    sourcesHealthy: number | null;
+    sourcesDegraded: number | null;
+    isStale: boolean;
 }
 
 interface TelemetryCardsProps {
@@ -18,77 +21,77 @@ interface TelemetryCardsProps {
 
 const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
     const [stats, setStats] = useState<TelemetryData>({
-        totalIntel: 0,
-        criticalCount: 0,
-        highCount: 0,
-        activeTechniques: 52,
-        kevCount: 1710,
-        sourcesCount: 102,
+        totalIntel: null,
+        criticalCount: null,
+        highCount: null,
+        activeTechniques: null,
+        kevCount: null,
+        sourcesConfigured: null,
+        sourcesHealthy: null,
+        sourcesDegraded: null,
+        isStale: false,
     });
-    const [lastUpdated, setLastUpdated] = useState<string>('Just now');
+    const [lastUpdated, setLastUpdated] = useState<string>('Syncing...');
+    const [hasError, setHasError] = useState<boolean>(false);
 
     const fetchStats = useCallback(() => {
-        Promise.allSettled([
-            fetch(`${API_BASE}/api/news`).then(r => (r.ok ? r.json() : null)),
-            fetch(`${API_BASE}/api/threats`).then(r => (r.ok ? r.json() : null)),
-            fetch(`${API_BASE}/api/mitre/heatmap`).then(r => (r.ok ? r.json() : null)),
-        ]).then(([newsRes, threatsRes, mitreRes]) => {
-            let total = 0;
-            let crit = 0;
-            let high = 0;
-
-            if (newsRes.status === 'fulfilled' && newsRes.value) {
-                const items = Array.isArray(newsRes.value) ? newsRes.value : (newsRes.value.news || []);
-                total = items.length;
-                crit += items.filter((n: { severity?: string }) => n.severity === 'Critical').length;
-                high += items.filter((n: { severity?: string }) => n.severity === 'High').length;
-            }
-
-            if (threatsRes.status === 'fulfilled' && Array.isArray(threatsRes.value)) {
-                crit += threatsRes.value.filter((t: { severity?: string }) => t.severity === 'Critical').length;
-                high += threatsRes.value.filter((t: { severity?: string }) => t.severity === 'High').length;
-            }
-
-            let techniques = 52;
-            if (mitreRes.status === 'fulfilled' && mitreRes.value?.activeTechniques) {
-                techniques = mitreRes.value.activeTechniques;
-            }
-
-            setStats({
-                totalIntel: total || 420,
-                criticalCount: crit || 18,
-                highCount: high || 34,
-                activeTechniques: techniques,
-                kevCount: 1710,
-                sourcesCount: 102,
+        fetch(`${API_BASE}/api/dashboard/snapshot`)
+            .then(res => {
+                if (!res.ok) throw new Error(`Snapshot failed: ${res.status}`);
+                return res.json();
+            })
+            .then(snapshot => {
+                setStats({
+                    totalIntel: snapshot.news?.total24h ?? null,
+                    criticalCount: snapshot.news?.critical ?? null,
+                    highCount: snapshot.news?.high ?? null,
+                    activeTechniques: snapshot.mitre?.activeTechniques ?? null,
+                    kevCount: snapshot.kev?.total ?? null,
+                    sourcesConfigured: snapshot.sources?.configured ?? null,
+                    sourcesHealthy: snapshot.sources?.healthy ?? null,
+                    sourcesDegraded: snapshot.sources?.degraded ?? null,
+                    isStale: Boolean(snapshot.isStale),
+                });
+                setHasError(false);
+                const syncTime = snapshot.generatedAt 
+                    ? new Date(snapshot.generatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                setLastUpdated(syncTime);
+            })
+            .catch(err => {
+                console.warn('Dashboard snapshot telemetry unavailable:', err);
+                setHasError(true);
             });
-            setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-        }).catch(() => {});
     }, []);
 
     useEffect(() => {
         fetchStats();
     }, [fetchStats]);
 
+    const formatValue = (val: number | null, fallbackLabel = 'Unavailable') => {
+        if (val === null || val === undefined) return fallbackLabel;
+        return val.toLocaleString();
+    };
+
     const cards = [
         {
             title: 'Critical Threat Radar',
-            value: stats.criticalCount,
-            sub: `${stats.highCount} High Priority Alerts`,
+            value: formatValue(stats.criticalCount),
+            sub: stats.highCount !== null ? `${stats.highCount} High Priority Alerts` : 'Telemetry pending',
             icon: AlertTriangle,
             tag: 'SLA Response < 15m',
             color: 'from-rose-500/10 to-red-500/5',
             border: 'border-red-200/80',
             badgeBg: 'bg-red-50 text-red-700 border-red-200',
             accent: 'text-red-600',
-            ping: true,
+            ping: (stats.criticalCount ?? 0) > 0,
         },
         {
             title: 'Total Ingested Intel',
-            value: stats.totalIntel > 0 ? stats.totalIntel.toLocaleString() : '500+',
-            sub: 'Across 102 Curated Feeds',
+            value: formatValue(stats.totalIntel),
+            sub: stats.sourcesConfigured !== null ? `Across ${stats.sourcesConfigured} Monitored Feeds` : 'Verifying sources...',
             icon: Activity,
-            tag: 'Real-time Streaming',
+            tag: stats.isStale ? 'Stale Snapshot' : 'Validated Telemetry',
             color: 'from-blue-500/10 to-indigo-500/5',
             border: 'border-blue-200/80',
             badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
@@ -97,8 +100,8 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         },
         {
             title: 'ATT&CK Techniques',
-            value: stats.activeTechniques,
-            sub: '14 Active Tactics Mapped',
+            value: formatValue(stats.activeTechniques),
+            sub: 'Active Tactics Correlated',
             icon: Target,
             tag: 'v16 ATT&CK Framework',
             color: 'from-purple-500/10 to-violet-500/5',
@@ -109,10 +112,10 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         },
         {
             title: 'CISA KEV Database',
-            value: stats.kevCount.toLocaleString(),
-            sub: 'Zero-Days & Active Exploits',
+            value: formatValue(stats.kevCount),
+            sub: 'Known Exploited Vulnerabilities',
             icon: ShieldCheck,
-            tag: 'EPSS Correlated',
+            tag: 'CISA Catalog Verified',
             color: 'from-emerald-500/10 to-teal-500/5',
             border: 'border-emerald-200/80',
             badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -121,13 +124,15 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         },
         {
             title: 'Ingestion Pipeline',
-            value: `${stats.sourcesCount}/102`,
-            sub: 'Dark Web + CISA + Labs',
+            value: stats.sourcesConfigured !== null ? `${stats.sourcesHealthy ?? 0}/${stats.sourcesConfigured}` : 'Unavailable',
+            sub: stats.sourcesDegraded ? `${stats.sourcesDegraded} degraded feeds` : 'Measured source health',
             icon: Radio,
-            tag: 'Health: 100% Operational',
+            tag: stats.sourcesHealthy && stats.sourcesConfigured && stats.sourcesHealthy === stats.sourcesConfigured 
+                ? 'Healthy' 
+                : (stats.sourcesHealthy ?? 0) > 0 ? 'Measured Collection' : 'Offline',
             color: 'from-amber-500/10 to-yellow-500/5',
             border: 'border-amber-200/80',
-            badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            badgeBg: 'bg-slate-50 text-slate-700 border-slate-200',
             accent: 'text-amber-600',
             ping: false,
         },
@@ -135,13 +140,35 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
 
     return (
         <div className="space-y-2.5">
+            {/* Telemetry Stale or Error Alert */}
+            {(hasError || stats.isStale) && (
+                <div className="p-2.5 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 text-xs flex items-center justify-between gap-2 shadow-2xs">
+                    <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                        <span>
+                            {hasError
+                                ? "Unable to retrieve current telemetry. Showing data from the last successful snapshot."
+                                : "Telemetry snapshot is currently cached or stale. Background refresh queued."}
+                        </span>
+                    </div>
+                    <button
+                        onClick={fetchStats}
+                        className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-200 hover:bg-amber-300 text-amber-900 transition-colors"
+                    >
+                        Retry
+                    </button>
+                </div>
+            )}
+
             {/* Top Bar with Live Telemetry Ticker & Fast Sync */}
             <div className="flex flex-wrap items-center justify-between gap-3 px-1">
                 <div className="flex items-center gap-2">
                     <span className="section-label">SOC Telemetry</span>
                     <div className="availability-chip text-[11px] py-0.5 px-2.5">
                         <span className="chip-dot"></span>
-                        <span className="font-semibold text-emerald-800">24/7 Live Monitoring Active</span>
+                        <span className="font-semibold text-emerald-800">
+                            {stats.isStale ? "Cached Snapshot Active" : "Live Telemetry Active"}
+                        </span>
                     </div>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">

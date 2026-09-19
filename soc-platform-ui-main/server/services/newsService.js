@@ -4,6 +4,8 @@ import Parser from 'rss-parser';
 import { fileURLToPath } from 'url';
 import { insertThreat, insertIOCs, isDbConnected } from '../db/db.js';
 import { extractIOCs } from './enrichmentService.js';
+import { assessSeverity } from './severityEngine.js';
+import { recordCollectionResult } from './feedHealthService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,12 +45,11 @@ const CATEGORY_KEYWORDS = {
     'Dark Web': ['dark web', 'onion', 'tor', 'market', 'underground', 'forum']
 };
 
-const determineSeverity = (title, snippet) => {
-    const text = `${title} ${snippet}`.toLowerCase();
-
-    if (SEVERITY_KEYWORDS.CRITICAL.some(k => text.includes(k))) return 'Critical';
-    if (SEVERITY_KEYWORDS.HIGH.some(k => text.includes(k))) return 'High';
-    if (SEVERITY_KEYWORDS.MEDIUM.some(k => text.includes(k))) return 'Medium';
+const determineSeverity = (title, snippet, source = '') => {
+    const assessment = assessSeverity({ title, contentSnippet: snippet, source });
+    if (assessment.severity === 'critical') return 'Critical';
+    if (assessment.severity === 'high') return 'High';
+    if (assessment.severity === 'medium') return 'Medium';
     return 'Low';
 };
 
@@ -132,7 +133,7 @@ export const fetchAndProcessNews = async () => {
                     if (!item || !item.link || !item.title) return;
                     const exists = existingNews.some(n => n.link === item.link);
                     if (!exists) {
-                        const severity = determineSeverity(item.title, item.contentSnippet || '');
+                        const severity = determineSeverity(item.title, item.contentSnippet || '', feed.title || '');
                         const category = determineCategory(item.title, item.contentSnippet || '');
                         const newItem = {
                             title: item.title,
