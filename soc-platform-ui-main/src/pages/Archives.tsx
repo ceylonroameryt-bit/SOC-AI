@@ -71,7 +71,7 @@ const Archives = () => {
         };
 
         fetchData();
-    }, []);
+    }, [queryParam]);
 
     const handleSearchChange = (val: string) => {
         setSearchTerm(val);

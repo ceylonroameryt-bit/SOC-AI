@@ -2,7 +2,7 @@ import React from 'react';
 import { X, ExternalLink, ShieldCheck, Target, Search, FileDown, ShieldAlert, ArrowUpRight, CheckCircle2, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SeverityBadge from './SeverityBadge';
-import { INTEL_CATEGORY_LABELS } from './IntelligenceTable';
+import { INTEL_CATEGORY_LABELS } from '../../types/intelligence';
 import { API_BASE } from '../../config/api';
 
 export interface IntelligenceRecord {

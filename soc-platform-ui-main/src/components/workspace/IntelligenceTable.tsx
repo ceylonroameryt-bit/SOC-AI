@@ -1,23 +1,10 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Search, ChevronRight, ArrowUpDown, Globe, CheckSquare, Square, MinusSquare, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
-import SeverityBadge, { normalizeSeverity } from './SeverityBadge';
+import SeverityBadge from './SeverityBadge';
 import type { IntelligenceRecord } from './ReportDetailPanel';
+import { INTEL_CATEGORY_LABELS, normalizeSeverity, type TimeRange } from '../../types/intelligence';
 
 // ─── Taxonomy ────────────────────────────────────────────────────────────────
-
-export const INTEL_CATEGORY_LABELS: Record<string, string> = {
-    'ransomware-extortion':         'Ransomware & Extortion',
-    'malware':                      'Malware',
-    'phishing-social-engineering':  'Phishing & Social Engineering',
-    'threat-actors-campaigns':      'Threat Actors & Campaigns',
-    'breaches-data-exposure':       'Breaches & Data Exposure',
-    'cloud-identity-attacks':       'Cloud & Identity Attacks',
-    'supply-chain-attacks':         'Supply Chain Attacks',
-    'ddos-service-disruption':      'DDoS & Service Disruption',
-    'general-security-news':        'General Security News',
-    'needs-classification':         'Needs Classification',
-    'vuln-disclosure':              'Vulnerability Disclosure',
-};
 
 const EVIDENCE_STATUS_LABELS: Record<string, string> = {
     'verified':         'Verified',
@@ -32,8 +19,6 @@ const EVIDENCE_STATUS_STYLES: Record<string, string> = {
     'advisory':         'bg-blue-50 text-blue-700 border border-blue-200',
     'unassessed':       'bg-slate-100 text-slate-600 border border-slate-200',
 };
-
-export type TimeRange = '24h' | '7d' | '30d' | 'all';
 
 const TIME_RANGE_LABELS: Record<TimeRange, string> = {
     '24h': 'Last 24 Hours',
@@ -204,7 +189,12 @@ export const IntelligenceTable: React.FC<IntelligenceTableProps> = ({
     const pageSize = 15;
 
     // Reset pagination when any filter changes
-    useEffect(() => { setCurrentPage(1); }, [currentFilter, categoryFilter, timeRange, searchQuery]);
+    const filterKey = `${currentFilter}-${categoryFilter}-${timeRange}-${searchQuery}`;
+    const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+    if (filterKey !== prevFilterKey) {
+        setPrevFilterKey(filterKey);
+        setCurrentPage(1);
+    }
 
     // Severity filter options with counts (counts from ALL records, before any filter)
     const severityCounts = useMemo(() => {
@@ -243,12 +233,12 @@ export const IntelligenceTable: React.FC<IntelligenceTableProps> = ({
             if (currentFilter !== 'All' && normalizeSeverity(r.severity) !== currentFilter) return false;
             // Category filter
             if (categoryFilter && categoryFilter !== 'all') {
-                const rCat = (r as any).intelCategory || 'needs-classification';
+                const rCat = r.intelCategory || 'needs-classification';
                 if (rCat !== categoryFilter) return false;
             }
             // Time range filter
             if (cutoff) {
-                const d = new Date((r as any).pubDate || 0);
+                const d = new Date(r.pubDate || 0);
                 if (d < cutoff) return false;
             }
             // Search filter
@@ -271,8 +261,8 @@ export const IntelligenceTable: React.FC<IntelligenceTableProps> = ({
                 const oB = SEVERITY_ORDER[normalizeSeverity(b.severity)] ?? 0;
                 return sortDirection === 'desc' ? oB - oA : oA - oB;
             }
-            const dA = new Date((a as any).pubDate || 0).getTime();
-            const dB = new Date((b as any).pubDate || 0).getTime();
+            const dA = new Date(a.pubDate || 0).getTime();
+            const dB = new Date(b.pubDate || 0).getTime();
             return sortDirection === 'desc' ? dB - dA : dA - dB;
         });
     }, [filteredRecords, sortField, sortDirection]);
@@ -371,26 +361,24 @@ export const IntelligenceTable: React.FC<IntelligenceTableProps> = ({
                 </div>
 
                 {/* Row 2: Active filter chips + result count */}
-                {(activeChips.length > 0 || true) && (
-                    <div className="flex items-center justify-between gap-2 flex-wrap min-h-[20px]">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                            {activeChips.map((chip, i) => (
-                                <FilterChip key={i} label={chip.label} onRemove={chip.remove} />
-                            ))}
-                            {activeChips.length > 1 && (
-                                <button
-                                    onClick={clearAllFilters}
-                                    className="text-[11px] text-[#64748B] hover:text-[#0665F9] underline underline-offset-2 transition-colors"
-                                >
-                                    Clear all
-                                </button>
-                            )}
-                        </div>
-                        <span className="text-[11px] text-[#64748B] font-mono whitespace-nowrap">
-                            {sortedRecords.length.toLocaleString()} record{sortedRecords.length !== 1 ? 's' : ''}
-                        </span>
+                <div className="flex items-center justify-between gap-2 flex-wrap min-h-[20px]">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                        {activeChips.map((chip, i) => (
+                            <FilterChip key={i} label={chip.label} onRemove={chip.remove} />
+                        ))}
+                        {activeChips.length > 1 && (
+                            <button
+                                onClick={clearAllFilters}
+                                className="text-[11px] text-[#64748B] hover:text-[#0665F9] underline underline-offset-2 transition-colors"
+                            >
+                                Clear all
+                            </button>
+                        )}
                     </div>
-                )}
+                    <span className="text-[11px] text-[#64748B] font-mono whitespace-nowrap">
+                        {sortedRecords.length.toLocaleString()} record{sortedRecords.length !== 1 ? 's' : ''}
+                    </span>
+                </div>
             </div>
 
             {/* Bulk selection bar */}
@@ -499,9 +487,9 @@ export const IntelligenceTable: React.FC<IntelligenceTableProps> = ({
                                 const rowKey = record.link || record.title;
                                 const isSelectedRow = selectedRecord?.title === record.title && selectedRecord?.link === record.link;
                                 const isChecked = selectedIds.has(rowKey);
-                                const intelCat = (record as any).intelCategory || 'needs-classification';
+                                const intelCat = record.intelCategory || 'needs-classification';
                                 const catLabel = INTEL_CATEGORY_LABELS[intelCat] || intelCat;
-                                const evidenceStatus = (record as any).evidenceStatus || 'unassessed';
+                                const evidenceStatus = record.evidenceStatus || 'unassessed';
                                 const evidenceLabel = EVIDENCE_STATUS_LABELS[evidenceStatus] || evidenceStatus;
                                 const evidenceStyle = EVIDENCE_STATUS_STYLES[evidenceStatus] || EVIDENCE_STATUS_STYLES['unassessed'];
 
@@ -571,7 +559,7 @@ export const IntelligenceTable: React.FC<IntelligenceTableProps> = ({
 
                                         {/* Published */}
                                         <td className="px-3 py-3 whitespace-nowrap text-[#64748B] text-xs">
-                                            {formatRelativeTime((record as any).pubDate)}
+                                            {formatRelativeTime(record.pubDate)}
                                         </td>
 
                                         {/* Chevron */}

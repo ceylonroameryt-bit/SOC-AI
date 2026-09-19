@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AlertTriangle, Newspaper, ShieldAlert, Radio, AlertOctagon, RefreshCw } from 'lucide-react';
 import MetricCard from '../components/workspace/MetricCard';
-import IntelligenceTable, { type TimeRange } from '../components/workspace/IntelligenceTable';
+import IntelligenceTable from '../components/workspace/IntelligenceTable';
+import type { TimeRange } from '../types/intelligence';
 import ReportDetailPanel, { type IntelligenceRecord } from '../components/workspace/ReportDetailPanel';
 import { API_BASE } from '../config/api';
 

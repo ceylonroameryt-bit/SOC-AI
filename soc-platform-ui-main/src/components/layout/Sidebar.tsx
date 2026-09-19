@@ -123,6 +123,14 @@ const NAV_SECTIONS: NavSection[] = [
     },
 ];
 
+function isActiveSection(section: NavSection, path: string): boolean {
+    if (path === section.path) return true;
+    if (section.activePaths?.includes(path)) return true;
+    if (section.path === '/intelligence' && path === '/') return true;
+    if (section.subLinks?.some(sl => path === sl.path || path.startsWith(sl.path + '?'))) return true;
+    return false;
+}
+
 export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false }) => {
     const location = useLocation();
     const currentPath = location.pathname;
@@ -138,14 +146,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
         }
         return initial;
     });
-
-    function isActiveSection(section: NavSection, path: string): boolean {
-        if (path === section.path) return true;
-        if (section.activePaths?.includes(path)) return true;
-        if (section.path === '/intelligence' && path === '/') return true;
-        if (section.subLinks?.some(sl => path === sl.path || path.startsWith(sl.path + '?'))) return true;
-        return false;
-    }
 
     function toggleSection(sectionPath: string, hasSubLinks: boolean) {
         if (!hasSubLinks) return;

@@ -1,22 +1,12 @@
 import React from 'react';
+import { normalizeSeverity, type SeverityLevel } from '../../types/intelligence';
 
-export type SeverityLevel = 'Critical' | 'High' | 'Medium' | 'Low' | 'Informational';
 
 interface SeverityBadgeProps {
     severity?: string | null;
     size?: 'sm' | 'md';
     className?: string;
 }
-
-export const normalizeSeverity = (sev?: string | null): SeverityLevel => {
-    if (!sev) return 'Informational';
-    const s = sev.toLowerCase().trim();
-    if (s.includes('crit')) return 'Critical';
-    if (s.includes('high')) return 'High';
-    if (s.includes('med')) return 'Medium';
-    if (s.includes('low')) return 'Low';
-    return 'Informational';
-};
 
 const SEVERITY_STYLES: Record<SeverityLevel, { bg: string; text: string; border: string; dot: string }> = {
     Critical: {
