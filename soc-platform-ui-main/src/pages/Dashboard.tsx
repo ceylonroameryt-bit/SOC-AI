@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Newspaper, Flame, BarChart3, Filter, Radio, ShieldAlert, AlertOctagon } from 'lucide-react';
+import { LayoutDashboard, Newspaper, Flame, BarChart3, Radio, ShieldAlert, AlertOctagon } from 'lucide-react';
 import TelemetryCards from '../components/dashboard/TelemetryCards';
 import NewsFeed from '../components/dashboard/NewsFeed';
 import SeverityChart from '../components/dashboard/SeverityChart';
 import CveTrackerWidget from '../components/dashboard/CveTrackerWidget';
 import MitreMiniMatrix from '../components/dashboard/MitreMiniMatrix';
 import AiExecutiveWidget from '../components/dashboard/AiExecutiveWidget';
+import SeverityBarChartWidget from '../components/dashboard/SeverityBarChartWidget';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { API_BASE } from '../config/api';
 
@@ -186,6 +187,7 @@ const Dashboard = () => {
 
                     {/* Bottom Tier: Live Intel Feed with Severity Filter bar */}
                     <div className="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-4">
+                        {/* Header */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
                             <div className="flex items-center gap-2">
                                 <div className="p-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
@@ -200,42 +202,13 @@ const Dashboard = () => {
                                     </p>
                                 </div>
                             </div>
-
-                            {/* Severity Quick Chips */}
-                            <div
-                                role="radiogroup"
-                                aria-label="Filter threat feed by priority severity"
-                                className="flex items-center gap-1.5 flex-wrap"
-                            >
-                                <span className="text-[11px] font-bold text-slate-600 mr-1 flex items-center gap-1">
-                                    <Filter className="w-3 h-3" aria-hidden="true" /> Priority:
-                                </span>
-                                {['All', 'Critical', 'High', 'Medium', 'Low'].map(sev => {
-                                    const isSelected =
-                                        (sev === 'All' && !selectedSeverity) || selectedSeverity === sev;
-                                    return (
-                                        <button
-                                            key={sev}
-                                            type="button"
-                                            role="radio"
-                                            aria-checked={isSelected}
-                                            onClick={() => handleSeverityChange(sev === 'All' ? null : sev)}
-                                            className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-blue-600 ${
-                                                isSelected
-                                                    ? sev === 'Critical'
-                                                        ? 'bg-red-700 text-white border-red-700'
-                                                        : sev === 'High'
-                                                        ? 'bg-orange-700 text-white border-orange-700'
-                                                        : 'bg-blue-700 text-white border-blue-700'
-                                                    : 'bg-slate-50 text-slate-700 border-slate-300 hover:bg-slate-100'
-                                            }`}
-                                        >
-                                            {sev}
-                                        </button>
-                                    );
-                                })}
-                            </div>
                         </div>
+
+                        {/* Interactive Severity Bar Chart Widget for Critical, High, Medium, Low */}
+                        <SeverityBarChartWidget
+                            selectedSeverity={selectedSeverity}
+                            onSelectSeverity={handleSeverityChange}
+                        />
 
                         {/* Embedded Feed */}
                         <div key={refreshTrigger}>
