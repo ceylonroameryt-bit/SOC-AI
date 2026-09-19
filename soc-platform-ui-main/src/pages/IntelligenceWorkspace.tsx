@@ -404,14 +404,14 @@ export const IntelligenceWorkspace: React.FC = () => {
             </div>
 
             {/* View Mode Switcher Tabs: Threat Categories | Global Live News | Saved News */}
-            <div className="flex items-center gap-2 border-b border-[#E2EAF3] pb-2 overflow-x-auto">
+            <div className="flex items-center gap-2 border-b border-[#E2EAF3] py-2 overflow-x-auto min-h-[48px]">
                 <button
                     type="button"
                     onClick={() => updateUrlParams({ view: 'categories' })}
-                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-colors shrink-0 ${
+                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-[#147DFA] ${
                         urlView === 'categories'
                             ? 'bg-white text-[#147DFA] shadow-2xs border border-[#BFDBFE]'
-                            : 'text-[#586C86] hover:text-[#14263F] hover:bg-white/60'
+                            : 'text-[#586C86] hover:text-[#14263F] hover:bg-white/60 border border-transparent'
                     }`}
                 >
                     <Layers className="w-4 h-4" />
@@ -421,10 +421,10 @@ export const IntelligenceWorkspace: React.FC = () => {
                 <button
                     type="button"
                     onClick={() => updateUrlParams({ view: 'global-news' })}
-                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-colors shrink-0 ${
+                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-[#147DFA] ${
                         urlView === 'global-news'
                             ? 'bg-white text-[#147DFA] shadow-2xs border border-[#BFDBFE]'
-                            : 'text-[#586C86] hover:text-[#14263F] hover:bg-white/60'
+                            : 'text-[#586C86] hover:text-[#14263F] hover:bg-white/60 border border-transparent'
                     }`}
                 >
                     <Globe className="w-4 h-4 text-[#147DFA]" />
@@ -435,10 +435,10 @@ export const IntelligenceWorkspace: React.FC = () => {
                 <button
                     type="button"
                     onClick={() => updateUrlParams({ view: 'saved' })}
-                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-colors shrink-0 ${
+                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold inline-flex items-center gap-2 transition-colors shrink-0 focus:outline-none focus:ring-2 focus:ring-[#147DFA] ${
                         urlView === 'saved'
                             ? 'bg-white text-[#147DFA] shadow-2xs border border-[#BFDBFE]'
-                            : 'text-[#586C86] hover:text-[#14263F] hover:bg-white/60'
+                            : 'text-[#586C86] hover:text-[#14263F] hover:bg-white/60 border border-transparent'
                     }`}
                 >
                     <Bookmark className="w-4 h-4" />
