@@ -6,7 +6,7 @@ import {
     ArrowRight,
     Users,
 } from 'lucide-react';
-import { CATEGORY_DEFINITIONS } from './CategoryNavigation';
+import { CATEGORY_DEFINITIONS } from '../../types/categories';
 import type { IntelligenceRecord } from './ReportDetailPanel';
 
 interface CategoryOverviewPanelProps {
@@ -139,6 +139,7 @@ export const CategoryOverviewPanel: React.FC<CategoryOverviewPanelProps> = ({
         }, [matchingRecords]);
 
     const CategoryIcon = activeCategory.icon;
+    const [currentTime] = useState(() => Date.now());
 
     // Relative date formatter
     const formatSmallDate = (dateStr?: string) => {
@@ -146,8 +147,7 @@ export const CategoryOverviewPanel: React.FC<CategoryOverviewPanelProps> = ({
         try {
             const d = new Date(dateStr);
             if (isNaN(d.getTime())) return 'Date unavailable';
-            const now = Date.now();
-            const diffHours = Math.floor((now - d.getTime()) / (1000 * 60 * 60));
+            const diffHours = Math.floor((currentTime - d.getTime()) / (1000 * 60 * 60));
             if (diffHours < 24) return `${diffHours}h ago`;
             if (diffHours < 48) return 'Yesterday';
             return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });

@@ -17,7 +17,8 @@ import {
 import { API_BASE } from '../config/api';
 import type { TimeRange } from '../types/intelligence';
 import ReportDetailPanel, { type IntelligenceRecord } from '../components/workspace/ReportDetailPanel';
-import CategoryNavigation, { CATEGORY_DEFINITIONS } from '../components/workspace/CategoryNavigation';
+import CategoryNavigation from '../components/workspace/CategoryNavigation';
+import { CATEGORY_DEFINITIONS } from '../types/categories';
 import IntelligenceCard from '../components/workspace/IntelligenceCard';
 import CategoryOverviewPanel from '../components/workspace/CategoryOverviewPanel';
 import GlobalLiveNews from '../components/workspace/GlobalLiveNews';
@@ -127,9 +128,10 @@ export const IntelligenceWorkspace: React.FC = () => {
                 );
                 if (found) setSelectedRecord(found);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to load intelligence workspace data:', err);
-            setFetchError(err.message || 'Error loading intelligence data');
+            const msg = err instanceof Error ? err.message : 'Error loading intelligence data';
+            setFetchError(msg);
         } finally {
             setIsLoading(false);
         }
@@ -300,7 +302,9 @@ export const IntelligenceWorkspace: React.FC = () => {
         try {
             localStorage.removeItem(STORAGE_KEY_SAVED_STORE);
             localStorage.removeItem(STORAGE_KEY_SAVED);
-        } catch {}
+        } catch {
+            /* ignore storage clear error */
+        }
     };
 
     const handleTopicClick = (topic: string) => {

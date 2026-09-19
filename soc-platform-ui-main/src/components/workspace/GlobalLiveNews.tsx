@@ -30,6 +30,7 @@ export const GlobalLiveNews: React.FC<GlobalLiveNewsProps> = ({
     onSelectRecord,
     onRefresh,
 }) => {
+    const [currentTime] = useState(() => Date.now());
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDateFilter, setSelectedDateFilter] = useState<'all' | 'today' | 'yesterday' | '7d' | string>('all');
     const [selectedSeverity, setSelectedSeverity] = useState<string>('all');
@@ -105,7 +106,7 @@ export const GlobalLiveNews: React.FC<GlobalLiveNewsProps> = ({
         } else if (selectedDateFilter === 'yesterday') {
             items = items.filter((r) => getDateKey(r.pubDate) === yesterdayStr);
         } else if (selectedDateFilter === '7d') {
-            const past7dCutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+            const past7dCutoff = currentTime - 7 * 24 * 60 * 60 * 1000;
             items = items.filter((r) => {
                 const t = new Date(r.pubDate || 0).getTime();
                 return !isNaN(t) && t >= past7dCutoff;
@@ -139,7 +140,7 @@ export const GlobalLiveNews: React.FC<GlobalLiveNewsProps> = ({
             const tB = new Date(b.pubDate || 0).getTime();
             return tB - tA;
         });
-    }, [records, selectedDateFilter, selectedSeverity, searchQuery]);
+    }, [records, selectedDateFilter, selectedSeverity, searchQuery, currentTime]);
 
     // Group filtered records by dateKey
     const groupedByDate = useMemo(() => {

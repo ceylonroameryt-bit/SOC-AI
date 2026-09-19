@@ -63,7 +63,9 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
         try {
             const saved = localStorage.getItem(`analyst_state_${recordKey}`);
             if (saved) return JSON.parse(saved).status || 'new';
-        } catch {}
+        } catch {
+            /* ignore storage read error */
+        }
         return 'new';
     });
 
@@ -71,7 +73,9 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
         try {
             const saved = localStorage.getItem(`analyst_state_${recordKey}`);
             if (saved) return JSON.parse(saved).notes || '';
-        } catch {}
+        } catch {
+            /* ignore storage read error */
+        }
         return '';
     });
 
@@ -113,7 +117,9 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
                     analystId: 'analyst-1'
                 })
             }).catch(() => {});
-        } catch {}
+        } catch {
+            /* ignore storage error */
+        }
     };
 
     const handleSaveNote = () => {
@@ -130,7 +136,9 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
                     analystId: 'analyst-1'
                 })
             }).catch(() => {});
-        } catch {}
+        } catch {
+            /* ignore storage error */
+        }
         setNoteSavedNotice(true);
         setTimeout(() => setNoteSavedNotice(false), 2500);
     };
@@ -151,7 +159,9 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
                     analystId: 'analyst-1'
                 })
             }).catch(() => {});
-        } catch {}
+        } catch {
+            /* ignore storage error */
+        }
     };
 
     if (!record) return null;
