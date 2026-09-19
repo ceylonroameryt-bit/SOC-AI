@@ -17,6 +17,7 @@ const RuleLibrary    = lazy(() => import('./pages/RuleLibrary'));
 const ReportsHub     = lazy(() => import('./pages/ReportsHub'));
 const Settings       = lazy(() => import('./pages/Settings'));
 const AIBrief        = lazy(() => import('./pages/AIBrief'));
+const VulnerabilitiesView = lazy(() => import('./pages/VulnerabilitiesView'));
 const CriticalThreatsView = lazy(() => import('./components/dashboard/CriticalThreatsView'));
 const SeverityChart  = lazy(() => import('./components/dashboard/SeverityChart'));
 
@@ -42,6 +43,9 @@ function App() {
               <Route index element={<IntelligenceWorkspace />} />
               <Route path="intelligence" element={<IntelligenceWorkspace />} />
               <Route path="overview"     element={<Dashboard />} />
+
+              {/* Vulnerabilities */}
+              <Route path="vulnerabilities" element={<VulnerabilitiesView />} />
 
               {/* Investigation & Enrichment */}
               <Route path="investigate"  element={<Enrichment />} />

@@ -6,6 +6,7 @@ import { insertThreat, insertIOCs, isDbConnected } from '../db/db.js';
 import { extractIOCs } from './enrichmentService.js';
 import { assessSeverity } from './severityEngine.js';
 import { recordCollectionResult } from './feedHealthService.js';
+import { classifyRecord, mapLegacyCategory, INTEL_CATEGORIES } from './classificationEngine.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -135,6 +136,13 @@ export const fetchAndProcessNews = async () => {
                     if (!exists) {
                         const severity = determineSeverity(item.title, item.contentSnippet || '', feed.title || '');
                         const category = determineCategory(item.title, item.contentSnippet || '');
+                        // Classify with the new taxonomy engine
+                        const classification = classifyRecord({
+                            title: item.title,
+                            contentSnippet: item.contentSnippet || '',
+                            source: feed.title || '',
+                        });
+
                         const newItem = {
                             title: item.title,
                             link: item.link,
@@ -142,7 +150,18 @@ export const fetchAndProcessNews = async () => {
                             contentSnippet: item.contentSnippet || '',
                             source: feed.title || 'Unknown Source',
                             severity: severity,
+                            // Legacy category field (raw value) - preserved for reversibility
+                            sourceCategory: category,
                             category: category,
+                            // New taxonomy fields
+                            intelCategory: classification.intelCategory,
+                            intelCategoryDisplay: classification.displayName,
+                            secondaryTopics: classification.secondaryTopics,
+                            classificationMethod: classification.method,
+                            classificationConfidence: classification.confidence,
+                            classificationReason: classification.reason,
+                            taxonomyVersion: classification.taxonomyVersion,
+                            evidenceStatus: deriveEvidenceStatus(item.title, item.contentSnippet || '', classification),
                             fetchedAt: new Date().toISOString()
                         };
                         existingNews.push(newItem);
@@ -186,6 +205,106 @@ export const fetchAndProcessNews = async () => {
 export const getNews = () => {
     return NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
 };
+
+/**
+ * Derive evidence status for a news record.
+ * Kept separate from severity to avoid conflating the two dimensions.
+ * @returns {'verified' | 'unverified-claim' | 'advisory' | 'unassessed'}
+ */
+function deriveEvidenceStatus(title, snippet, classification) {
+    const text = `${title} ${snippet}`.toLowerCase();
+    if (
+        text.includes('security advisory') ||
+        text.includes('patch advisory') ||
+        text.includes('cisa advisory') ||
+        text.includes('cert advisory') ||
+        classification.intelCategory === 'vuln-disclosure'
+    ) return 'advisory';
+    if (
+        text.includes('leak site') ||
+        text.includes('victim published') ||
+        text.includes('allegedly') ||
+        text.includes('claims to have') ||
+        text.includes('unverified') ||
+        text.includes('dark web post')
+    ) return 'unverified-claim';
+    if (
+        text.includes('confirmed') ||
+        text.includes('verified') ||
+        text.includes('official statement') ||
+        text.includes('breach notification')
+    ) return 'verified';
+    return 'unassessed';
+}
+
+/**
+ * backfillClassification — runs a classification pass over all existing news records
+ * that lack an `intelCategory` field or have category='undefined'.
+ *
+ * Preserves `sourceCategory` (original raw value).
+ * Does NOT delete or overwrite records that already have `analystCategory` set.
+ * Called once on server startup after initial news load.
+ */
+export function backfillClassification() {
+    const news = NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
+    if (!news || news.length === 0) return;
+
+    let updatedCount = 0;
+    const updated = news.map(item => {
+        // Skip records already classified by the engine or an analyst
+        if (item.intelCategory && item.classificationMethod) return item;
+
+        // Try reversible legacy category mapping first
+        const legacyMapped = mapLegacyCategory(item.category);
+
+        let classification;
+        if (legacyMapped) {
+            // Direct mapping available — use it but still derive secondary topics
+            classification = {
+                intelCategory: legacyMapped,
+                displayName: INTEL_CATEGORIES[legacyMapped],
+                secondaryTopics: [],
+                method: 'legacy-mapping',
+                confidence: 70,
+                reason: `Mapped from legacy category: "${item.category}".`,
+                taxonomyVersion: 'v1.0',
+            };
+        } else {
+            // Need full classification engine
+            classification = classifyRecord({
+                title: item.title,
+                contentSnippet: item.contentSnippet || '',
+                source: item.source || '',
+                analystCategory: item.analystCategory,
+            });
+        }
+
+        updatedCount++;
+        return {
+            ...item,
+            // Preserve original source category
+            sourceCategory: item.sourceCategory || item.category || undefined,
+            // Apply new taxonomy
+            intelCategory: classification.intelCategory,
+            intelCategoryDisplay: classification.displayName,
+            secondaryTopics: item.secondaryTopics || classification.secondaryTopics,
+            classificationMethod: classification.method,
+            classificationConfidence: classification.confidence,
+            classificationReason: classification.reason,
+            taxonomyVersion: classification.taxonomyVersion,
+            evidenceStatus: item.evidenceStatus || deriveEvidenceStatus(
+                item.title || '',
+                item.contentSnippet || '',
+                classification
+            ),
+        };
+    });
+
+    if (updatedCount > 0) {
+        console.log(`[CLASSIFICATION] Backfilled ${updatedCount} records with new taxonomy.`);
+        saveNewsData(updated);
+    }
+}
 
 export const getSeverityStats = () => {
     const news = loadNewsData();

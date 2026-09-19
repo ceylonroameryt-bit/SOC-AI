@@ -2,25 +2,34 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AlertTriangle, Newspaper, ShieldAlert, Radio, AlertOctagon, RefreshCw } from 'lucide-react';
 import MetricCard from '../components/workspace/MetricCard';
-import IntelligenceTable from '../components/workspace/IntelligenceTable';
+import IntelligenceTable, { type TimeRange } from '../components/workspace/IntelligenceTable';
 import ReportDetailPanel, { type IntelligenceRecord } from '../components/workspace/ReportDetailPanel';
 import { API_BASE } from '../config/api';
+
+interface CategoryCount {
+    id: string;
+    displayName: string;
+    count: number;
+}
 
 export const IntelligenceWorkspace: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     // URL State parameters
-    const urlSeverity = searchParams.get('severity') || 'All';
-    const urlQuery = searchParams.get('q') || '';
-    const urlSelectedId = searchParams.get('selected') || null;
+    const urlSeverity      = searchParams.get('severity')  || 'All';
+    const urlQuery         = searchParams.get('q')         || '';
+    const urlSelectedId    = searchParams.get('selected')  || null;
+    const urlCategory      = searchParams.get('category')  || 'all';
+    const urlTimeRange     = (searchParams.get('time') as TimeRange) || '24h';
 
     // Local state
-    const [records, setRecords] = useState<IntelligenceRecord[]>([]);
+    const [records, setRecords]               = useState<IntelligenceRecord[]>([]);
     const [selectedRecord, setSelectedRecord] = useState<IntelligenceRecord | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isStale, setIsStale] = useState<boolean>(false);
-    const [isDemoEnabled, setIsDemoEnabled] = useState<boolean>(false);
-    const [snapshotTime, setSnapshotTime] = useState<string>('Syncing...');
+    const [isLoading, setIsLoading]           = useState<boolean>(true);
+    const [isStale, setIsStale]               = useState<boolean>(false);
+    const [isDemoEnabled, setIsDemoEnabled]   = useState<boolean>(false);
+    const [snapshotTime, setSnapshotTime]     = useState<string>('Syncing...');
+    const [categoryCounts, setCategoryCounts] = useState<CategoryCount[]>([]);
 
     // Metrics state
     const [metrics, setMetrics] = useState<{
@@ -41,7 +50,13 @@ export const IntelligenceWorkspace: React.FC = () => {
     const updateUrlParams = useCallback((updates: Record<string, string | null>) => {
         const next = new URLSearchParams(searchParams);
         for (const [key, value] of Object.entries(updates)) {
-            if (value === null || value === '' || (key === 'severity' && value === 'All')) {
+            if (
+                value === null ||
+                value === '' ||
+                (key === 'severity' && value === 'All') ||
+                (key === 'category' && value === 'all') ||
+                (key === 'time' && value === '24h')
+            ) {
                 next.delete(key);
             } else {
                 next.set(key, value);
@@ -50,13 +65,14 @@ export const IntelligenceWorkspace: React.FC = () => {
         setSearchParams(next, { replace: true });
     }, [searchParams, setSearchParams]);
 
-    // Fetch snapshot & news telemetry
+    // Fetch snapshot, news, and category counts
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const [snapshotRes, newsRes] = await Promise.allSettled([
+            const [snapshotRes, newsRes, catRes] = await Promise.allSettled([
                 fetch(`${API_BASE}/api/dashboard/snapshot`).then(r => (r.ok ? r.json() : null)),
-                fetch(`${API_BASE}/api/news`).then(r => (r.ok ? r.json() : null))
+                fetch(`${API_BASE}/api/news?limit=500`).then(r => (r.ok ? r.json() : null)),
+                fetch(`${API_BASE}/api/categories/counts`).then(r => (r.ok ? r.json() : null)),
             ]);
 
             let newsItems: IntelligenceRecord[] = [];
@@ -65,6 +81,10 @@ export const IntelligenceWorkspace: React.FC = () => {
                     ? newsRes.value
                     : (Array.isArray(newsRes.value?.news) ? newsRes.value.news : []);
                 setRecords(newsItems);
+            }
+
+            if (catRes.status === 'fulfilled' && catRes.value?.categories) {
+                setCategoryCounts(catRes.value.categories);
             }
 
             if (snapshotRes.status === 'fulfilled' && snapshotRes.value) {
@@ -76,37 +96,33 @@ export const IntelligenceWorkspace: React.FC = () => {
                 }
 
                 const criticalCount = s.news?.critical ?? 0;
-                const highCount = s.news?.high ?? 0;
-                const priority = criticalCount + highCount;
+                const highCount     = s.news?.high     ?? 0;
 
                 setMetrics({
-                    priorityItems: priority,
-                    newStories: s.news?.unique24h ?? (newsItems.length || 0),
-                    exploitedCves: s.kev?.total ?? 1710,
-                    sourcesHealthy: s.sources?.healthy ?? null,
+                    priorityItems:     criticalCount + highCount,
+                    newStories:        s.news?.unique24h ?? (newsItems.length || 0),
+                    exploitedCves:     s.kev?.total ?? null,
+                    sourcesHealthy:    s.sources?.healthy ?? null,
                     sourcesConfigured: s.sources?.configured ?? null,
                 });
             } else {
-                // Fallback metrics calculation directly from real items
+                // Fallback metrics from real items
                 const crit = newsItems.filter(i => (i.severity || '').toLowerCase().includes('crit')).length;
                 const high = newsItems.filter(i => (i.severity || '').toLowerCase().includes('high')).length;
                 setMetrics({
-                    priorityItems: crit + high,
-                    newStories: newsItems.length,
-                    exploitedCves: 1710,
-                    sourcesHealthy: null,
-                    sourcesConfigured: 101,
+                    priorityItems:     crit + high,
+                    newStories:        newsItems.length,
+                    exploitedCves:     null,
+                    sourcesHealthy:    null,
+                    sourcesConfigured: null,
                 });
             }
 
-            // Sync selected record from URL if specified
+            // Sync selected record from URL
             if (urlSelectedId && newsItems.length > 0) {
                 const found = newsItems.find(r => r.link === urlSelectedId || r.title === urlSelectedId);
-                if (found) {
-                    setSelectedRecord(found);
-                }
+                if (found) setSelectedRecord(found);
             } else if (!selectedRecord && newsItems.length > 0) {
-                // Default select the first priority or first item on desktop
                 setSelectedRecord(newsItems[0]);
             }
         } catch (err) {
@@ -114,15 +130,18 @@ export const IntelligenceWorkspace: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [urlSelectedId]);
+    }, [urlSelectedId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+    useEffect(() => { fetchData(); }, [fetchData]);
 
     const handleSelectRecord = (rec: IntelligenceRecord) => {
         setSelectedRecord(rec);
         updateUrlParams({ selected: rec.link || rec.title });
+        if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+            setTimeout(() => {
+                document.getElementById('report-detail-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 80);
+        }
     };
 
     const handleCloseDetail = () => {
@@ -130,17 +149,9 @@ export const IntelligenceWorkspace: React.FC = () => {
         updateUrlParams({ selected: null });
     };
 
-    const handleFilterChange = (severity: string) => {
-        updateUrlParams({ severity });
-    };
-
-    const handleSearchChange = (q: string) => {
-        updateUrlParams({ q });
-    };
-
     return (
         <div className="h-full flex flex-col p-4 lg:p-6 space-y-5 max-w-[1600px] mx-auto w-full overflow-y-auto custom-scrollbar">
-            {/* Header: Title, Subtitle, Scope & Demo Flag */}
+            {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-[#E2E8F0]">
                 <div>
                     <div className="flex items-center gap-2 mb-1">
@@ -232,21 +243,26 @@ export const IntelligenceWorkspace: React.FC = () => {
                 aria-label="Intelligence Investigation Split View"
                 className="flex-1 flex flex-col lg:flex-row items-start gap-4 min-h-[500px]"
             >
-                {/* Table Container (Fills 100% when panel is closed, ~60% when open) */}
+                {/* Table */}
                 <div className={`w-full transition-all duration-150 ${selectedRecord ? 'lg:w-[60%]' : 'lg:w-full'}`}>
                     <IntelligenceTable
                         records={records}
                         selectedRecord={selectedRecord}
                         onSelectRecord={handleSelectRecord}
                         currentFilter={urlSeverity}
-                        onFilterChange={handleFilterChange}
+                        onFilterChange={(s) => updateUrlParams({ severity: s })}
+                        categoryFilter={urlCategory}
+                        onCategoryFilterChange={(c) => updateUrlParams({ category: c })}
+                        timeRange={urlTimeRange}
+                        onTimeRangeChange={(t) => updateUrlParams({ time: t })}
                         searchQuery={urlQuery}
-                        onSearchChange={handleSearchChange}
+                        onSearchChange={(q) => updateUrlParams({ q })}
+                        categoryCounts={categoryCounts}
                         isLoading={isLoading}
                     />
                 </div>
 
-                {/* Report Detail Investigation Panel (40% width on wide desktop) */}
+                {/* Detail Panel */}
                 {selectedRecord && (
                     <div className="w-full lg:w-[40%] lg:sticky lg:top-4 h-[650px] lg:h-[calc(100vh-220px)] transition-all duration-150">
                         <ReportDetailPanel

@@ -1,7 +1,8 @@
 import React from 'react';
-import { X, ExternalLink, ShieldCheck, Target, Search, FileDown, ShieldAlert, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { X, ExternalLink, ShieldCheck, Target, Search, FileDown, ShieldAlert, ArrowUpRight, CheckCircle2, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SeverityBadge from './SeverityBadge';
+import { INTEL_CATEGORY_LABELS } from './IntelligenceTable';
 import { API_BASE } from '../../config/api';
 
 export interface IntelligenceRecord {
@@ -12,9 +13,20 @@ export interface IntelligenceRecord {
     pubDate: string;
     severity?: string;
     category?: string;
+    sourceCategory?: string;
+    // New taxonomy fields
+    intelCategory?: string;
+    intelCategoryDisplay?: string;
+    secondaryTopics?: string[];
+    classificationMethod?: string;
+    classificationConfidence?: number | null;
+    classificationReason?: string;
+    taxonomyVersion?: string;
+    evidenceStatus?: 'verified' | 'unverified-claim' | 'advisory' | 'unassessed';
     contentSnippet?: string;
     content?: string;
     ingestedAt?: string;
+    fetchedAt?: string;
     freshness?: string;
     ioc?: {
         ip_addresses?: string[];
@@ -134,6 +146,7 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
 
     return (
         <aside
+            id="report-detail-panel"
             aria-label="Threat Investigation Report Detail Panel"
             className="w-full bg-white border border-[#E2E8F0] rounded-lg flex flex-col h-full overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
         >
@@ -167,15 +180,59 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
             <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5 text-sm custom-scrollbar">
                 
                 {/* Telemetry Metadata Strip */}
-                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-3 grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                        <span className="text-[#64748B] block text-[11px]">Publisher</span>
-                        <span className="font-medium text-[#0F172A] mt-0.5 block truncate">{record.source}</span>
+                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-3 space-y-3 text-xs">
+                    {/* Row 1: Publisher + timestamps */}
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <span className="text-[#64748B] block text-[11px]">Publisher</span>
+                            <span className="font-medium text-[#0F172A] mt-0.5 block truncate">{record.source}</span>
+                        </div>
+                        <div>
+                            <span className="text-[#64748B] block text-[11px]">Published</span>
+                            <span className="font-medium text-[#0F172A] mt-0.5 block">{formattedPubDate}</span>
+                        </div>
+                        {record.fetchedAt && (
+                            <div className="col-span-2">
+                                <span className="text-[#64748B] block text-[11px]">Collected</span>
+                                <span className="font-medium text-[#0F172A] mt-0.5 block">{formattedIngested}</span>
+                            </div>
+                        )}
                     </div>
-                    <div>
-                        <span className="text-[#64748B] block text-[11px]">Collection Freshness</span>
-                        <span className="font-medium text-[#0F172A] mt-0.5 block truncate">{formattedIngested}</span>
+
+                    {/* Row 2: Category + evidence status */}
+                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#E2E8F0]">
+                        {record.intelCategory && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F1F5F9] text-[#475569] border border-[#E2E8F0]">
+                                <Tag className="w-2.5 h-2.5" />
+                                {record.intelCategoryDisplay || INTEL_CATEGORY_LABELS[record.intelCategory] || record.intelCategory}
+                            </span>
+                        )}
+                        {record.evidenceStatus && record.evidenceStatus !== 'unassessed' && (
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-medium border ${
+                                record.evidenceStatus === 'verified' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                record.evidenceStatus === 'unverified-claim' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                record.evidenceStatus === 'advisory' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                'bg-slate-100 text-slate-600 border-slate-200'
+                            }`}>
+                                {record.evidenceStatus === 'verified' ? 'Verified' :
+                                 record.evidenceStatus === 'unverified-claim' ? 'Unverified claim' :
+                                 record.evidenceStatus === 'advisory' ? 'Advisory' : 'Unassessed'}
+                            </span>
+                        )}
+                        {(record.secondaryTopics || []).map((tag, i) => (
+                            <span key={i} className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-500 border border-slate-200">
+                                {tag}
+                            </span>
+                        ))}
                     </div>
+
+                    {/* Row 3: Classification reason (if available and not analyst override) */}
+                    {record.classificationReason && record.classificationMethod !== 'analyst-override' && (
+                        <div className="pt-2 border-t border-[#E2E8F0]">
+                            <span className="text-[#94A3B8] block text-[10px] uppercase tracking-wider font-semibold mb-0.5">Classification</span>
+                            <p className="text-[#64748B] text-[11px] leading-relaxed">{record.classificationReason}</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Section 1: Summary */}

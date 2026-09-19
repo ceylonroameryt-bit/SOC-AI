@@ -20,9 +20,10 @@ import webhooksRouter from './routes/webhooks.js';
 import aiRouter       from './routes/ai.js';
 import rulesRouter    from './routes/rules.js';
 import dashboardRouter from './routes/dashboard.js';
+import categoriesRouter from './routes/categories.js';
 
 // Service imports
-import { fetchAndProcessNews, getNews } from './services/newsService.js';
+import { fetchAndProcessNews, getNews, backfillClassification } from './services/newsService.js';
 import { sendPeriodicSummary }          from './services/emailService.js';
 import { broadcastAlert }               from './services/webhookService.js';
 import { processNewsForMitre }          from './services/mitreService.js';
@@ -156,6 +157,7 @@ app.use('/api/webhooks',  webhooksRouter);
 app.use('/api/ai',        aiRouter);
 app.use('/api/rules',     rulesRouter);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/categories', categoriesRouter);
 
 // ==========================================
 // STATIC FILES (production)
@@ -404,9 +406,14 @@ if (!isTestMode) {
         console.log(`   CORS Origins: ${allowedOrigins.join(', ')}`);
         console.log(`   Rate Limit: 500 req/15min (API), 10 req/15min (Email)\n`);
 
-        // Initial data fetch + MITRE mapping
+        // Initial data fetch + MITRE mapping + classification backfill
         fetchAndProcessNews().then(news => {
             if (news?.length) processNewsForMitre(news);
+            // Run classification backfill after initial load
+            // (handles all records that existed before classificationEngine was added)
+            try { backfillClassification(); } catch (e) {
+                console.warn('[CLASSIFICATION] Backfill warning:', e.message);
+            }
         });
 
         // Schedule email every 3 hours

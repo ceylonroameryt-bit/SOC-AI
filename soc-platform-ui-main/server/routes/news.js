@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     try {
         const news = getNews();
         const limit = parseInt(req.query.limit) || 100;
-        const { severity, category, q } = req.query;
+        const { severity, category, intelCategory, q } = req.query;
 
         let filtered = news;
         if (severity && severity !== 'all') {
@@ -16,6 +16,12 @@ router.get('/', (req, res) => {
         }
         if (category && category !== 'all') {
             filtered = filtered.filter(item => item.category?.toLowerCase() === category.toLowerCase());
+        }
+        // New taxonomy category filter — filters on intelCategory stable ID
+        if (intelCategory && intelCategory !== 'all') {
+            filtered = filtered.filter(item =>
+                (item.intelCategory || 'needs-classification') === intelCategory
+            );
         }
         if (q && q.trim()) {
             const query = q.toLowerCase();
@@ -32,6 +38,7 @@ router.get('/', (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve news feed.' });
     }
 });
+
 
 // Force refresh news feeds
 router.post('/refresh', async (req, res) => {
