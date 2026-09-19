@@ -45,7 +45,7 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="h-full flex flex-col overflow-y-auto custom-scrollbar p-4 lg:p-6 space-y-5 max-w-7xl mx-auto w-full">
+        <div className="min-h-full flex flex-col p-4 lg:p-6 space-y-5 max-w-7xl mx-auto w-full">
             {/* Demo Environment Banner */}
             {isDemoEnabled && (
                 <div className="bg-amber-400 border border-amber-500 text-slate-950 px-4 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-bold shadow-xs">
@@ -185,7 +185,7 @@ const Dashboard = () => {
                     <MitreMiniMatrix />
 
                     {/* Bottom Tier: Live Intel Feed with Severity Filter bar */}
-                    <div className="glass-card p-4 sm:p-5 bg-white space-y-4">
+                    <div className="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-4">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
                             <div className="flex items-center gap-2">
                                 <div className="p-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
@@ -239,7 +239,7 @@ const Dashboard = () => {
 
                         {/* Embedded Feed */}
                         <div key={refreshTrigger}>
-                            <NewsFeed mode="all" severityFilter={selectedSeverity} />
+                            <NewsFeed mode="all" severityFilter={selectedSeverity} isEmbedded={true} />
                         </div>
                     </div>
                 </div>
@@ -250,10 +250,10 @@ const Dashboard = () => {
                     id="panel-news"
                     role="tabpanel"
                     aria-labelledby="tab-news"
-                    className="glass-card p-4 sm:p-5 bg-white focus:outline-none"
+                    className="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs focus:outline-none"
                     tabIndex={0}
                 >
-                    <NewsFeed mode="timeline" />
+                    <NewsFeed mode="timeline" isEmbedded={true} />
                 </div>
             )}
 
@@ -262,7 +262,7 @@ const Dashboard = () => {
                     id="panel-critical"
                     role="tabpanel"
                     aria-labelledby="tab-critical"
-                    className="glass-card p-4 sm:p-5 bg-white focus:outline-none"
+                    className="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs focus:outline-none"
                     tabIndex={0}
                 >
                     <div className="mb-4 pb-3 border-b border-slate-200 flex items-center gap-2">
@@ -278,7 +278,7 @@ const Dashboard = () => {
                             </p>
                         </div>
                     </div>
-                    <NewsFeed mode="critical" />
+                    <NewsFeed mode="critical" isEmbedded={true} />
                 </div>
             )}
 

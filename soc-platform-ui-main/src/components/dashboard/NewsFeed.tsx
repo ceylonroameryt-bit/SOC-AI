@@ -15,9 +15,10 @@ interface NewsItem {
 interface NewsFeedProps {
     mode?: 'all' | 'critical' | 'timeline';
     severityFilter?: string | null;
+    isEmbedded?: boolean;
 }
 
-const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
+const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeedProps) => {
     const [news, setNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -116,66 +117,70 @@ const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
     const uniqueSources = new Set(news.map(n => n.source)).size;
 
     return (
-        <div className="h-full flex flex-col gap-4 p-4 lg:p-6 overflow-y-auto custom-scrollbar max-w-7xl mx-auto w-full">
+        <div className={isEmbedded ? "flex flex-col gap-4 w-full" : "h-full flex flex-col gap-4 p-4 lg:p-6 overflow-y-auto custom-scrollbar max-w-7xl mx-auto w-full"}>
 
             {/* Header with Portfolio Editorial Styling */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-[#E2E8F0]">
-                <div>
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="section-label">Live Threat Stream</span>
-                        <div className="availability-chip text-[10px] py-0.5 px-2">
-                            <span className="chip-dot"></span>
-                            <span>Active Ingestion</span>
+            {!isEmbedded && (
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-[#E2E8F0]">
+                    <div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="section-label">Live Threat Stream</span>
+                            <div className="availability-chip text-[10px] py-0.5 px-2">
+                                <span className="chip-dot"></span>
+                                <span>Active Ingestion</span>
+                            </div>
                         </div>
+                        <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
+                            Global Security Intelligence
+                        </h1>
+                        <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-2xl">
+                            Automated multi-tier alert triage, threat extraction, and severity scoring across global vulnerability disclosures.
+                        </p>
                     </div>
-                    <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-                        Global Security Intelligence
-                    </h1>
-                    <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-2xl">
-                        Automated multi-tier alert triage, threat extraction, and severity scoring across global vulnerability disclosures.
-                    </p>
-                </div>
 
-                <div className="flex items-center gap-2 self-start md:self-end">
-                    {lastUpdated && (
-                        <span className="text-[11px] text-slate-500 font-mono bg-white px-2.5 py-1 rounded-lg border border-[#E2E8F0] shadow-sm">
-                            Synced: {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <div className="flex items-center gap-2 self-start md:self-end">
+                        {lastUpdated && (
+                            <span className="text-[11px] text-slate-500 font-mono bg-white px-2.5 py-1 rounded-lg border border-[#E2E8F0] shadow-sm">
+                                Synced: {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        )}
+                        <span className="text-[11px] text-blue-700 font-medium bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
+                            Auto-refresh 30m
                         </span>
-                    )}
-                    <span className="text-[11px] text-blue-700 font-medium bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
-                        Auto-refresh 30m
-                    </span>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Stats Strip matching sujampathirathnayaka.com */}
-            <div className="stats-strip my-1">
-                <div className="stats-strip-inner">
-                    <div className="strip-stat">
-                        <span className="strip-num">{totalCount > 0 ? totalCount : '1.2K'}<span className="strip-sup">+</span></span>
-                        <span className="strip-label">Ingested Disclosures</span>
-                        <span className="strip-sub">Real-time Stream</span>
-                    </div>
-                    <div className="strip-divider hidden md:block"></div>
-                    <div className="strip-stat">
-                        <span className="strip-num text-red-600">{criticalCount}<span className="strip-sup text-red-600"> Crit</span></span>
-                        <span className="strip-label">Critical Vulnerabilities</span>
-                        <span className="strip-sub">Zero-Days &amp; Exploits</span>
-                    </div>
-                    <div className="strip-divider hidden md:block"></div>
-                    <div className="strip-stat">
-                        <span className="strip-num text-amber-600">{highCount}<span className="strip-sup text-amber-600"> High</span></span>
-                        <span className="strip-label">High Severity</span>
-                        <span className="strip-sub">Active Triage SLA</span>
-                    </div>
-                    <div className="strip-divider hidden md:block"></div>
-                    <div className="strip-stat">
-                        <span className="strip-num">{uniqueSources || 18}<span className="strip-sup"> Feeds</span></span>
-                        <span className="strip-label">Active Sources</span>
-                        <span className="strip-sub">CISA, Bleeping, THN</span>
+            {!isEmbedded && (
+                <div className="stats-strip my-1">
+                    <div className="stats-strip-inner">
+                        <div className="strip-stat">
+                            <span className="strip-num">{totalCount > 0 ? totalCount : '1.2K'}<span className="strip-sup">+</span></span>
+                            <span className="strip-label">Ingested Disclosures</span>
+                            <span className="strip-sub">Real-time Stream</span>
+                        </div>
+                        <div className="strip-divider hidden md:block"></div>
+                        <div className="strip-stat">
+                            <span className="strip-num text-red-600">{criticalCount}<span className="strip-sup text-red-600"> Crit</span></span>
+                            <span className="strip-label">Critical Vulnerabilities</span>
+                            <span className="strip-sub">Zero-Days &amp; Exploits</span>
+                        </div>
+                        <div className="strip-divider hidden md:block"></div>
+                        <div className="strip-stat">
+                            <span className="strip-num text-amber-600">{highCount}<span className="strip-sup text-amber-600"> High</span></span>
+                            <span className="strip-label">High Severity</span>
+                            <span className="strip-sub">Active Triage SLA</span>
+                        </div>
+                        <div className="strip-divider hidden md:block"></div>
+                        <div className="strip-stat">
+                            <span className="strip-num">{uniqueSources || 18}<span className="strip-sup"> Feeds</span></span>
+                            <span className="strip-label">Active Sources</span>
+                            <span className="strip-sub">CISA, Bleeping, THN</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Grid Section (Critical or Filtered) */}
             {showGrid && gridItems.length > 0 && (
@@ -237,13 +242,13 @@ const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
 
             {/* Timeline Feed (List) */}
             {showList && (
-                <div className="metric-card p-5 flex-1 min-h-0 flex flex-col">
+                <div className={isEmbedded ? "metric-card p-4 sm:p-5 flex flex-col" : "metric-card p-5 flex-1 min-h-0 flex flex-col"}>
                     <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#E2E8F0]">
                         <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center">
                                 <Calendar className="w-4 h-4 text-blue-700" />
                             </div>
-                            <h3 className="font-display text-lg font-bold text-[#0F172A]">
+                            <h3 className="font-display text-base sm:text-lg font-bold text-[#0F172A]">
                                 Intelligence Timeline
                             </h3>
                         </div>
@@ -252,7 +257,7 @@ const NewsFeed = ({ mode = 'all', severityFilter }: NewsFeedProps) => {
                         </span>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-6">
+                    <div className={isEmbedded ? "space-y-6" : "flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-6"}>
                         {loading ? (
                             <div className="text-slate-500 text-center py-16 text-sm animate-pulse flex flex-col items-center gap-2">
                                 <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
