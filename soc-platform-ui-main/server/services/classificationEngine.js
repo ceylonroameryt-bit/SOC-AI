@@ -34,14 +34,27 @@ export const INTEL_CATEGORIES = {
 
 export const CATEGORY_DISPLAY_NAMES = INTEL_CATEGORIES;
 
+export const CONTENT_TYPES = {
+    'security-advisory':        'Security Advisory',
+    'incident-report':          'Incident Report',
+    'research':                 'Research',
+    'vulnerability-disclosure': 'Vulnerability Disclosure',
+    'threat-actor-claim':       'Threat-Actor Claim',
+    'industry-news':            'Industry News',
+    'event-webinar':            'Event / Webinar',
+    'unknown':                  'Unknown',
+};
+
 // Evidence signal sets — must match multiple signals or a high-confidence single signal
 // DO NOT use single-word title keywords as the sole basis for classification.
 
 const RANSOMWARE_SIGNALS = [
     'ransomware', 'ransom payment', 'ransom demand', 'encrypted files',
     'data encrypted', 'extortion portal', 'leak site', 'victim published',
+    'published a new victim', 'new victim', 'victim claim', 'ransomware.live',
     'lockbit', 'akira', 'blackcat', 'alphv', 'clop', 'play ransomware',
     'royal ransomware', 'rhysida', 'hunter ransomware', 'ragnar locker',
+    'qilin', 'cactus ransomware', 'medusa ransomware', 'dragonforce', 'bianlian',
     'ransomware group', 'ransomware gang', 'ransomware attack confirmed',
     'double extortion', 'triple extortion', 'ransom note',
 ];
@@ -131,6 +144,11 @@ const NON_THREAT_SIGNALS = [
     'top 10 tips', 'best practices for 2026', 'building a career',
     'why cybersecurity matters', 'opinion:', 'forrester wave',
     'vendor evaluation', 'how to get started with',
+    // Corporate & funding
+    'funding round', 'seed funding', 'series a', 'series b', 'series c',
+    'raises $', 'raised $', 'secures $', 'secured $', 'venture capital',
+    'valuation', 'acquisition', 'acquired by', 'quarterly results',
+    'merger', 'ipo', 'appoints', 'named ceo', 'named ciso'
 ];
 
 /**
@@ -181,13 +199,20 @@ export function classifyRecord(item = {}) {
     // 2. Non-threat content check — marketing/educational/informational
     const nonThreatCount = countSignals(combined, NON_THREAT_SIGNALS);
     if (nonThreatCount >= 1) {
+        const isEvent = ['webinar', 'virtual event', 'panel discussion', 'podcast', 'fireside chat', 'register now'].some(w => combined.includes(w));
+        const isFunding = ['funding', 'seed', 'series a', 'series b', 'raises $', 'raised $', 'secures $', 'venture capital', 'valuation', 'acquisition'].some(w => combined.includes(w));
+        const contentType = isEvent ? 'event-webinar' : (isFunding ? 'industry-news' : 'industry-news');
+        const secondaryTopics = isFunding ? ['funding', 'corporate'] : (isEvent ? ['event'] : ['informational']);
+
         return {
             intelCategory: 'general-security-news',
             displayName: INTEL_CATEGORIES['general-security-news'],
-            secondaryTopics: ['informational'],
+            secondaryTopics,
+            contentType,
+            evidenceStatus: 'unassessed',
             method: 'rule-based',
-            confidence: 80,
-            reason: `Non-operational content markers detected: editorial, marketing, or educational material.`,
+            confidence: 85,
+            reason: `Non-operational content markers detected: ${isEvent ? 'event or webinar' : (isFunding ? 'corporate/funding announcement' : 'editorial or marketing material')}.`,
             taxonomyVersion: TAXONOMY_VERSION,
         };
     }
@@ -203,6 +228,8 @@ export function classifyRecord(item = {}) {
             intelCategory: 'vuln-disclosure',
             displayName: INTEL_CATEGORIES['vuln-disclosure'],
             secondaryTopics: hasCveId ? ['cve'] : [],
+            contentType: 'vulnerability-disclosure',
+            evidenceStatus: 'advisory',
             method: 'rule-based',
             confidence: 75,
             reason: `Primary event is a vulnerability disclosure or patch advisory.`,
@@ -211,8 +238,11 @@ export function classifyRecord(item = {}) {
     }
 
     // 4. Score each threat category
+    const isRansomwareSource = (item.source || '').toLowerCase().includes('ransomware');
+    const isVictimClaim = combined.includes('published a new victim') || combined.includes('new victim');
+
     const scores = {
-        'ransomware-extortion':         countSignals(combined, RANSOMWARE_SIGNALS),
+        'ransomware-extortion':         countSignals(combined, RANSOMWARE_SIGNALS) + (isRansomwareSource || isVictimClaim ? 3 : 0),
         'malware':                      countSignals(combined, MALWARE_SIGNALS),
         'phishing-social-engineering':  countSignals(combined, PHISHING_SIGNALS),
         'threat-actors-campaigns':      countSignals(combined, THREAT_ACTOR_SIGNALS),
@@ -237,20 +267,24 @@ export function classifyRecord(item = {}) {
                 intelCategory: 'general-security-news',
                 displayName: INTEL_CATEGORIES['general-security-news'],
                 secondaryTopics: [],
+                contentType: 'industry-news',
+                evidenceStatus: 'unassessed',
                 method: 'rule-based',
                 confidence: 55,
                 reason: 'General security topic without specific threat category signals.',
                 taxonomyVersion: TAXONOMY_VERSION,
             };
         }
-        // Truly ambiguous
+        // Insufficient evidence — genuine needs-classification
         return {
             intelCategory: 'needs-classification',
             displayName: INTEL_CATEGORIES['needs-classification'],
             secondaryTopics: [],
+            contentType: 'unknown',
+            evidenceStatus: 'unassessed',
             method: 'unclassified',
-            confidence: null,
-            reason: 'Insufficient evidence to assign a primary category.',
+            confidence: null, // explicit null when insufficient
+            reason: 'Insufficient threat signals to determine categorization reliably.',
             taxonomyVersion: TAXONOMY_VERSION,
         };
     }
@@ -261,6 +295,8 @@ export function classifyRecord(item = {}) {
             intelCategory: 'needs-classification',
             displayName: INTEL_CATEGORIES['needs-classification'],
             secondaryTopics: [],
+            contentType: 'unknown',
+            evidenceStatus: 'unassessed',
             method: 'unclassified',
             confidence: null,
             reason: 'Ambiguous — equal evidence for multiple categories. Manual review recommended.',
@@ -268,13 +304,13 @@ export function classifyRecord(item = {}) {
         };
     }
 
-    // 6. Compute secondary topics from other categories with score >= 1
+    // Assign secondary topics for categories scoring >= 1 (excluding top)
     const secondaryTopics = ranked
         .slice(1)
-        .filter(([, s]) => s >= 1)
-        .map(([cat]) => INTEL_CATEGORIES[cat]);
+        .filter(([, score]) => score >= 1)
+        .map(([cat]) => cat);
 
-    // 7. Confidence: based on signal count and separation from second-best
+    // Confidence scoring based on margin over second place
     const separation = topScore - secondScore;
     let confidence;
     if (topScore >= 3 && separation >= 2) {
@@ -287,10 +323,41 @@ export function classifyRecord(item = {}) {
         confidence = 55;
     }
 
+    // Determine content type and evidence status based on top category
+    let contentType = 'unknown';
+    let evidenceStatus = 'unassessed';
+
+    if (topCategory === 'ransomware-extortion') {
+        if (isVictimClaim || isRansomwareSource || combined.includes('leak site')) {
+            contentType = 'threat-actor-claim';
+            evidenceStatus = 'unverified-claim';
+        } else {
+            contentType = 'incident-report';
+            evidenceStatus = 'unverified-claim';
+        }
+    } else if (topCategory === 'threat-actors-campaigns') {
+        contentType = 'research';
+        evidenceStatus = 'unverified-claim';
+    } else if (topCategory === 'breaches-data-exposure') {
+        contentType = 'incident-report';
+        evidenceStatus = combined.includes('confirmed') || combined.includes('breach notification') ? 'verified' : 'unverified-claim';
+    } else if (topCategory === 'malware') {
+        contentType = 'research';
+        evidenceStatus = 'advisory';
+    } else if (topCategory === 'phishing-social-engineering') {
+        contentType = 'security-advisory';
+        evidenceStatus = 'advisory';
+    } else {
+        contentType = 'industry-news';
+        evidenceStatus = 'unassessed';
+    }
+
     return {
         intelCategory: topCategory,
         displayName: INTEL_CATEGORIES[topCategory],
         secondaryTopics,
+        contentType,
+        evidenceStatus,
         method: 'rule-based',
         confidence,
         reason: `Primary category matched ${topScore} signal(s). ${secondaryTopics.length > 0 ? `Secondary topics: ${secondaryTopics.join(', ')}.` : ''}`,

@@ -1,14 +1,34 @@
 import express from 'express';
 import { fetchAndProcessNews, getNews, getSeverityStats } from '../services/newsService.js';
+import { classifyRecord, INTEL_CATEGORIES } from '../services/classificationEngine.js';
 
 const router = express.Router();
 
 // Serve news from in-memory cache (instant response)
 router.get('/', (req, res) => {
     try {
-        const news = getNews();
+        const rawNews = getNews();
         const limit = parseInt(req.query.limit) || 100;
         const { severity, category, intelCategory, q } = req.query;
+
+        // Ensure runtime data contract: all records must have classification fields
+        const news = rawNews.map(item => {
+            if (item.intelCategory && item.classificationMethod) return item;
+            const res = classifyRecord(item);
+            return {
+                ...item,
+                sourceCategory: item.sourceCategory || item.category || undefined,
+                intelCategory: res.intelCategory,
+                intelCategoryDisplay: res.displayName,
+                secondaryTopics: item.secondaryTopics || res.secondaryTopics,
+                contentType: item.contentType || res.contentType,
+                evidenceStatus: item.evidenceStatus || res.evidenceStatus,
+                classificationMethod: res.method,
+                classificationConfidence: res.confidence,
+                classificationReason: res.reason,
+                taxonomyVersion: res.taxonomyVersion,
+            };
+        });
 
         let filtered = news;
         if (severity && severity !== 'all') {

@@ -34,12 +34,12 @@ router.get('/snapshot', (req, res) => {
 
         const sourceStats = getFeedHealthStats();
 
-        // Compute 24h news numbers
+        // Compute authentic 24h news metrics without coercing missing dates
         const nowTime = Date.now();
         const oneDayAgo = nowTime - 24 * 60 * 60 * 1000;
         const news24h = news.filter(n => {
             const t = new Date(n.pubDate || 0).getTime();
-            return isNaN(t) || t >= oneDayAgo;
+            return !isNaN(t) && t >= oneDayAgo && t <= nowTime + 60000;
         });
 
         const uniqueTitles = new Set(news24h.map(n => (n.title || '').trim().toLowerCase()));
@@ -117,8 +117,8 @@ router.get('/snapshot', (req, res) => {
             lastSuccessfulIngestion: new Date(nowTime - 5 * 60 * 1000).toISOString(),
             news: {
                 latestCount: news.length,
-                total24h: news24h.length || news.length,
-                unique24h: uniqueTitles.size || news.length,
+                total24h: news24h.length,
+                unique24h: uniqueTitles.size,
                 critical: severityCounts.critical,
                 high: severityCounts.high,
                 medium: severityCounts.medium,

@@ -11,6 +11,8 @@ import { assessSeverity } from '../server/services/severityEngine.js';
 import { clusterArticles } from '../server/services/clusteringEngine.js';
 import { getFeedHealthStats, getUniqueSources } from '../server/services/feedHealthService.js';
 import { enrichCVE } from '../server/services/enrichmentService.js';
+import { assessRelevance } from '../server/services/relevanceEngine.js';
+import { classifyRecord } from '../server/services/classificationEngine.js';
 
 let server;
 let baseUrl;
@@ -401,5 +403,120 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
         assert.ok(true, 'Source category preservation check passed');
     });
 
+    // Test 19: Non-operational content (webinars & funding news) receives informational/low severity and event-webinar / industry-news
+    test('19. Non-operational content (webinars, funding) receives informational/low severity without threat inflation', () => {
+        const webinar = {
+            title: 'Virtual Summit: Modern Threat Hunting Strategies & Best Practices',
+            contentSnippet: 'Join our panel of experts for an interactive webinar discussing SOC automation and AI integration.',
+            source: 'Dark Reading Events'
+        };
+        const funding = {
+            title: 'Cybersecurity Startup Sentinel raises $30M Series B funding round for identity threat detection',
+            contentSnippet: 'Venture capital firm leads $30M investment into seed-stage automated security vendor.',
+            source: 'TechCrunch Security'
+        };
+
+        const webinarClass = classifyRecord(webinar);
+        const webinarSev = assessSeverity(webinar);
+        assert.equal(webinarClass.contentType, 'event-webinar');
+        assert.equal(webinarClass.intelCategory, 'general-security-news');
+        assert.ok(webinarSev.severity === 'informational' || webinarSev.severity === 'low');
+
+        const fundingClass = classifyRecord(funding);
+        const fundingSev = assessSeverity(funding);
+        assert.equal(fundingClass.contentType, 'industry-news');
+        assert.ok(fundingClass.secondaryTopics.includes('funding'));
+        assert.ok(fundingSev.severity === 'informational' || fundingSev.severity === 'low');
+    });
+
+    // Test 20: Ransomware extortion victim claims receive High/Critical priority with unverified-claim evidence status
+    test('20. Ransomware victim claims receive High/Critical priority and unverified-claim evidence status', () => {
+        const victimClaim = {
+            title: 'Qilin Ransomware Published a New Victim: Major Regional Health System',
+            contentSnippet: 'Extortion gang has added the healthcare provider to its dark web leak site, claiming 500GB of exfiltrated medical databases.',
+            source: 'Dark Web: Ransomware Leaks'
+        };
+        const sev = assessSeverity(victimClaim);
+        const classResult = classifyRecord(victimClaim);
+
+        assert.ok(sev.severity === 'critical' || sev.severity === 'high', `Ransomware victim claim should be High or Critical, got ${sev.severity}`);
+        assert.equal(classResult.intelCategory, 'ransomware-extortion');
+        assert.equal(classResult.contentType, 'threat-actor-claim');
+        assert.equal(classResult.evidenceStatus, 'unverified-claim');
+    });
+
+    // Test 21: Organizational relevance accurately identifies watched technologies without falsely asserting confirmed exposure
+    test('21. Organizational relevance detects watched perimeter assets with unverified exposure status', () => {
+        const advisory = {
+            title: 'Critical Zero-Day in Palo Alto PAN-OS Enables Remote Command Injection',
+            contentSnippet: 'CVE-2024-3400 affects perimeter firewall management interfaces.',
+            source: 'Unit 42'
+        };
+        const relevance = assessRelevance(advisory);
+        assert.equal(relevance.isRelevant, true);
+        assert.equal(relevance.tier, 'watched-technology');
+        assert.ok(relevance.matchedTerms.includes('Palo Alto'));
+        assert.equal(relevance.exposureStatus, 'possible-relevance'); // MUST NOT claim confirmed-exposure
+    });
+
+    // Test 22: Analyst action endpoint persists status transitions, notes, and dismissals
+    test('22. Analyst action endpoint persists status transitions, notes, and dismissals', async () => {
+        const testRecordId = `test-rec-${Date.now()}`;
+
+        // 1. Status transition
+        const statusRes = await fetch(`${baseUrl}/api/analyst/action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                recordId: testRecordId,
+                actionType: 'status_change',
+                value: 'action_required',
+                analystId: 'lead-analyst'
+            })
+        });
+        assert.equal(statusRes.status, 200);
+        const statusBody = await statusRes.json();
+        assert.equal(statusBody.state.status, 'action_required');
+
+        // 2. Note added
+        const noteRes = await fetch(`${baseUrl}/api/analyst/action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                recordId: testRecordId,
+                actionType: 'note_added',
+                value: 'Verified asset is behind internal bastion host. Incident ticket #INC-8891.',
+                analystId: 'lead-analyst'
+            })
+        });
+        assert.equal(noteRes.status, 200);
+        const noteBody = await noteRes.json();
+        assert.ok(noteBody.state.notes.includes('#INC-8891'));
+
+        // 3. Read back from record endpoint
+        const getRes = await fetch(`${baseUrl}/api/analyst/record/${testRecordId}`);
+        assert.equal(getRes.status, 200);
+        const recordData = await getRes.json();
+        assert.equal(recordData.status, 'action_required');
+        assert.ok(recordData.notes.includes('#INC-8891'));
+        assert.ok(recordData.history.length >= 2);
+    });
+
+    // Test 23: Sources API returns real measured telemetry with expected fields
+    test('23. Sources API returns real measured telemetry without blind assumptions', async () => {
+        const res = await fetch(`${baseUrl}/api/sources`);
+        assert.equal(res.status, 200);
+        const sources = await res.json();
+        assert.ok(Array.isArray(sources));
+        assert.ok(sources.length > 50);
+
+        const sample = sources[0];
+        assert.ok(sample.health, 'Source must have health object');
+        assert.ok(['healthy', 'degraded', 'failed', 'delayed', 'unknown'].includes(sample.health.status));
+        assert.ok(typeof sample.health.lastAttemptAt === 'string');
+        assert.ok(typeof sample.health.consecutiveFailures === 'number');
+    });
+
 });
+
 

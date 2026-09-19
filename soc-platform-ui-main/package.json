@@ -10,6 +10,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "node --test tests/platform_verification.test.js && npm run build",
+    "collector": "node server/collector.js",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Calendar, FileDown, User, Menu, ExternalLink, Eye } from 'lucide-react';
+import { Search, Calendar, FileDown, User, Menu, ExternalLink, Eye, AlertOctagon } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_BASE } from '../../config/api';
 import { useAccessibility } from '../../context/AccessibilityContext';
 
 interface TopBarProps {
     onMenuToggle?: () => void;
+    isDemoEnabled?: boolean;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle }) => {
+export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { setIsModalOpen } = useAccessibility();
@@ -45,6 +46,15 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Sync time range from URL parameters if present
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const urlTime = params.get('time') || params.get('range');
+        if (urlTime && ['24h', '7d', '30d', 'all'].includes(urlTime)) {
+            setTimeRange(urlTime);
+        }
+    }, [location.search]);
+
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const q = searchQuery.trim();
@@ -64,8 +74,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle }) => {
 
     const handleTimeRangeChange = (val: string) => {
         setTimeRange(val);
-        // Dispatch time range to current page searchParams if on intelligence or archives
+        // Dispatch time range to current page searchParams (using canonical 'time' and fallback 'range')
         const params = new URLSearchParams(location.search);
+        params.set('time', val);
         params.set('range', val);
         navigate({ search: params.toString() }, { replace: true });
     };
@@ -110,20 +121,38 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle }) => {
                     <input
                         ref={searchInputRef}
                         type="text"
-                        placeholder="Search CVEs, IOCs, threats, or keywords..."
+                        placeholder="Search reports, actors, indicators, or keywords…"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-14 py-2 bg-[#F8FAFC] border border-[#E2E8F0] focus:border-[#0665F9] focus:bg-white rounded-md text-xs text-[#0F172A] placeholder-[#94A3B8] outline-none transition-colors"
-                        aria-label="Global intelligence search"
+                        className="w-full pl-9 pr-14 py-2 bg-[#F8FAFC] border border-[#E2EAF3] focus:border-[#147DFA] focus:bg-white rounded-lg text-xs text-[#14263F] placeholder-[#94A3B8] outline-none transition-colors"
+                        aria-label="Search reports, actors, indicators, or keywords"
                     />
-                    <kbd className="hidden sm:inline-flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center px-1.5 py-0.5 text-[10px] font-mono text-[#64748B] bg-white border border-[#E2E8F0] rounded shadow-2xs">
-                        Ctrl+K
-                    </kbd>
+                    {searchQuery ? (
+                        <button
+                            type="button"
+                            onClick={() => { setSearchQuery(''); navigate('/intelligence'); }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded"
+                            title="Clear search"
+                            aria-label="Clear search query"
+                        >
+                            <span className="text-xs font-semibold">✕</span>
+                        </button>
+                    ) : (
+                        <kbd className="hidden sm:inline-flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center px-1.5 py-0.5 text-[10px] font-mono text-[#64748B] bg-white border border-[#E2EAF3] rounded shadow-2xs">
+                            Ctrl+K
+                        </kbd>
+                    )}
                 </form>
             </div>
 
             {/* Right Controls: Time Range, Quick Export & User Menu */}
             <div className="flex items-center gap-2.5">
+                {isDemoEnabled && (
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded shadow-2xs">
+                        <AlertOctagon className="w-3 h-3 text-amber-700" />
+                        <span>DEMO DATA</span>
+                    </span>
+                )}
                 {/* Time Range Selector */}
                 <div className="hidden md:flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md px-2.5 py-1.5 text-xs text-[#0F172A]">
                     <Calendar className="w-3.5 h-3.5 text-[#64748B]" aria-hidden="true" />

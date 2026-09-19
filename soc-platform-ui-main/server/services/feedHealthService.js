@@ -107,7 +107,17 @@ function persistHealth() {
 /**
  * Update telemetry for a specific source
  */
-export function recordCollectionResult(sourceId, { success, httpStatus, latencyMs, itemsCount = 0, error = null }) {
+export function recordCollectionResult(sourceId, {
+    success,
+    httpStatus,
+    latencyMs,
+    itemsCount = 0,
+    itemsAccepted = 0,
+    itemsRejected = 0,
+    error = null,
+    errorCategory = null,
+    latestPubDate = null
+}) {
     let entry = healthMap.get(sourceId);
     const now = new Date().toISOString();
 
@@ -119,12 +129,22 @@ export function recordCollectionResult(sourceId, { success, httpStatus, latencyM
             url: source?.url || '',
             category: source?.category || 'General',
             type: source?.type || 'Feed',
+            provenance: 'Publisher RSS/API',
             status: 'unknown',
+            expectedIntervalMinutes: 60,
             lastAttemptAt: now,
+            lastSuccessAt: null,
+            lastItemReceivedAt: null,
+            lastNewPublication: null,
             consecutiveFailures: 0,
+            itemsReceivedTotal: 0,
+            itemsAcceptedTotal: 0,
+            itemsRejectedTotal: 0,
             itemsLast24Hours: 0,
             averageLatencyMs: latencyMs || 0,
             parserErrorsLast24Hours: 0,
+            lastError: null,
+            errorCategory: null
         };
         healthMap.set(sourceId, entry);
     }
@@ -138,24 +158,41 @@ export function recordCollectionResult(sourceId, { success, httpStatus, latencyM
         );
     }
 
+    entry.itemsReceivedTotal = (entry.itemsReceivedTotal || 0) + itemsCount;
+    entry.itemsAcceptedTotal = (entry.itemsAcceptedTotal || 0) + itemsAccepted;
+    entry.itemsRejectedTotal = (entry.itemsRejectedTotal || 0) + itemsRejected;
+
     if (success) {
         entry.lastSuccessAt = now;
         entry.consecutiveFailures = 0;
         entry.lastError = null;
+        entry.errorCategory = null;
         if (itemsCount > 0) {
             entry.lastItemReceivedAt = now;
-            entry.itemsLast24Hours = (entry.itemsLast24Hours || 0) + itemsCount;
+            entry.itemsLast24Hours = (entry.itemsLast24Hours || 0) + itemsAccepted;
+        }
+        if (latestPubDate) {
+            entry.lastNewPublication = latestPubDate;
         }
         entry.status = 'healthy';
     } else {
         entry.consecutiveFailures = (entry.consecutiveFailures || 0) + 1;
         entry.lastError = error ? String(error).slice(0, 200) : 'HTTP connection error';
+        entry.errorCategory = errorCategory || (httpStatus >= 500 ? 'HTTP_SERVER_ERROR' : (httpStatus >= 400 ? 'HTTP_CLIENT_ERROR' : 'NETWORK_ERROR'));
         entry.parserErrorsLast24Hours = (entry.parserErrorsLast24Hours || 0) + 1;
 
         if (entry.consecutiveFailures >= 3) {
             entry.status = 'failed';
         } else {
             entry.status = 'degraded';
+        }
+    }
+
+    // Check if delayed against expected schedule (e.g. > 180 min since last success)
+    if (entry.status === 'healthy' && entry.lastSuccessAt) {
+        const elapsedMin = (Date.now() - new Date(entry.lastSuccessAt).getTime()) / (1000 * 60);
+        if (elapsedMin > (entry.expectedIntervalMinutes || 60) * 3) {
+            entry.status = 'delayed';
         }
     }
 

@@ -2,6 +2,8 @@ import Parser from 'rss-parser';
 import { generatePdfReport, generateDocxReport, exportThreatsToStix, escapeCsvField } from '../server/services/reportGenerator.js';
 import { assessSeverity } from '../server/services/severityEngine.js';
 import { clusterArticles } from '../server/services/clusteringEngine.js';
+import { classifyRecord, INTEL_CATEGORIES } from '../server/services/classificationEngine.js';
+import { assessRelevance, DEFAULT_ORG_PROFILE } from '../server/services/relevanceEngine.js';
 
 const parser = new Parser({ timeout: 6000 });
 
@@ -181,23 +183,195 @@ function extractIOCs(text = '') {
 
 // ─── Pre-Seeded News Cache ─────────────────────────────────────────────────────
 const FALLBACK_NEWS = [
-    { title: 'CISA Releases Critical Infrastructure Security Advisories', link: 'https://www.cisa.gov/cybersecurity-advisories', pubDate: new Date().toISOString(), contentSnippet: 'CISA has released advisories for multiple ICS and SCADA products containing critical unpatched vulnerabilities.', source: 'CISA', severity: 'Critical', category: 'Government' },
-    { title: 'LockBit 3.0 Ransomware Group Claims Attack on Major Financial Sector', link: 'https://www.bleepingcomputer.com', pubDate: new Date(Date.now() - 1800000).toISOString(), contentSnippet: 'A sophisticated ransomware group has claimed responsibility for encrypting systems, disabling antivirus, and exfiltrating database records.', source: 'BleepingComputer', severity: 'Critical', category: 'Ransomware' },
-    { title: 'Critical Zero-Day RCE Exploit in Edge VPN Appliance (CVE-2024-3400)', link: 'https://thehackernews.com', pubDate: new Date(Date.now() - 3600000).toISOString(), contentSnippet: 'Security researchers discovered a zero-day remote code execution vulnerability actively exploited via command injection.', source: "The Hacker's News", severity: 'Critical', category: 'Vulnerability' },
-    { title: 'Lumma Stealer Distributed via Malicious PowerShell Payload', link: 'https://krebsonsecurity.com', pubDate: new Date(Date.now() - 5400000).toISOString(), contentSnippet: 'State-sponsored threat actors deployed infostealers to harvest browser credentials, keychain passwords, and session cookies.', source: 'Krebs on Security', severity: 'High', category: 'Malware' },
-    { title: 'Cobalt Strike C2 Beaconing Observed Across Compromised Networks', link: 'https://darkreading.com', pubDate: new Date(Date.now() - 7200000).toISOString(), contentSnippet: 'Adversaries established persistent command and control channels using DNS tunneling and obfuscated proxy infrastructure.', source: 'Dark Reading', severity: 'High', category: 'Threat Intel' },
-    { title: 'Phishing Campaign Uses Adversary-in-the-Middle to Bypass MFA', link: 'https://bleepingcomputer.com', pubDate: new Date(Date.now() - 9000000).toISOString(), contentSnippet: 'Large-scale spear phishing campaign target Microsoft 365 credentials using reverse proxies.', source: 'BleepingComputer', severity: 'High', category: 'Phishing' },
+    {
+        title: 'CISA Releases Critical Infrastructure Security Advisories',
+        link: 'https://www.cisa.gov/cybersecurity-advisories',
+        pubDate: new Date().toISOString(),
+        contentSnippet: 'CISA has released advisories for multiple ICS and SCADA products containing critical unpatched vulnerabilities.',
+        source: 'CISA',
+        severity: 'Critical',
+        category: 'Government',
+        sourceCategory: 'Government',
+        intelCategory: 'vuln-disclosure',
+        intelCategoryDisplay: 'Vulnerability Disclosure',
+        secondaryTopics: ['cve'],
+        contentType: 'security-advisory',
+        evidenceStatus: 'advisory',
+        classificationMethod: 'rule-based',
+        classificationConfidence: 90,
+        classificationReason: 'Government advisory reporting vulnerability disclosures.',
+        taxonomyVersion: 'v1.0'
+    },
+    {
+        title: 'LockBit 3.0 Ransomware Group Claims Attack on Major Financial Sector',
+        link: 'https://www.bleepingcomputer.com',
+        pubDate: new Date(Date.now() - 1800000).toISOString(),
+        contentSnippet: 'A sophisticated ransomware group has claimed responsibility for encrypting systems, disabling antivirus, and exfiltrating database records.',
+        source: 'BleepingComputer',
+        severity: 'Critical',
+        category: 'Ransomware',
+        sourceCategory: 'Ransomware',
+        intelCategory: 'ransomware-extortion',
+        intelCategoryDisplay: 'Ransomware & Extortion',
+        secondaryTopics: ['breaches-data-exposure'],
+        contentType: 'threat-actor-claim',
+        evidenceStatus: 'unverified-claim',
+        classificationMethod: 'rule-based',
+        classificationConfidence: 90,
+        classificationReason: 'Active extortion group attack claim.',
+        taxonomyVersion: 'v1.0'
+    },
+    {
+        title: 'Critical Zero-Day RCE Exploit in Edge VPN Appliance (CVE-2024-3400)',
+        link: 'https://thehackernews.com',
+        pubDate: new Date(Date.now() - 3600000).toISOString(),
+        contentSnippet: 'Security researchers discovered a zero-day remote code execution vulnerability actively exploited via command injection.',
+        source: "The Hacker's News",
+        severity: 'Critical',
+        category: 'Vulnerability',
+        sourceCategory: 'Vulnerability',
+        intelCategory: 'vuln-disclosure',
+        intelCategoryDisplay: 'Vulnerability Disclosure',
+        secondaryTopics: ['cve'],
+        contentType: 'vulnerability-disclosure',
+        evidenceStatus: 'advisory',
+        classificationMethod: 'rule-based',
+        classificationConfidence: 90,
+        classificationReason: 'Zero-day vulnerability disclosure with CVE.',
+        taxonomyVersion: 'v1.0'
+    },
+    {
+        title: 'Lumma Stealer Distributed via Malicious PowerShell Payload',
+        link: 'https://krebsonsecurity.com',
+        pubDate: new Date(Date.now() - 5400000).toISOString(),
+        contentSnippet: 'State-sponsored threat actors deployed infostealers to harvest browser credentials, keychain passwords, and session cookies.',
+        source: 'Krebs on Security',
+        severity: 'High',
+        category: 'Malware',
+        sourceCategory: 'Malware',
+        intelCategory: 'malware',
+        intelCategoryDisplay: 'Malware',
+        secondaryTopics: ['cloud-identity-attacks'],
+        contentType: 'research',
+        evidenceStatus: 'advisory',
+        classificationMethod: 'rule-based',
+        classificationConfidence: 90,
+        classificationReason: 'Infostealer malware campaign report.',
+        taxonomyVersion: 'v1.0'
+    },
+    {
+        title: 'Cobalt Strike C2 Beaconing Observed Across Compromised Networks',
+        link: 'https://darkreading.com',
+        pubDate: new Date(Date.now() - 7200000).toISOString(),
+        contentSnippet: 'Adversaries established persistent command and control channels using DNS tunneling and obfuscated proxy infrastructure.',
+        source: 'Dark Reading',
+        severity: 'High',
+        category: 'Threat Intel',
+        sourceCategory: 'Threat Intel',
+        intelCategory: 'threat-actors-campaigns',
+        intelCategoryDisplay: 'Threat Actors & Campaigns',
+        secondaryTopics: ['malware'],
+        contentType: 'research',
+        evidenceStatus: 'advisory',
+        classificationMethod: 'rule-based',
+        classificationConfidence: 80,
+        classificationReason: 'Adversary C2 campaign research.',
+        taxonomyVersion: 'v1.0'
+    },
+    {
+        title: 'Phishing Campaign Uses Adversary-in-the-Middle to Bypass MFA',
+        link: 'https://bleepingcomputer.com',
+        pubDate: new Date(Date.now() - 9000000).toISOString(),
+        contentSnippet: 'Large-scale spear phishing campaign target Microsoft 365 credentials using reverse proxies.',
+        source: 'BleepingComputer',
+        severity: 'High',
+        category: 'Phishing',
+        sourceCategory: 'Phishing',
+        intelCategory: 'phishing-social-engineering',
+        intelCategoryDisplay: 'Phishing & Social Engineering',
+        secondaryTopics: ['cloud-identity-attacks'],
+        contentType: 'security-advisory',
+        evidenceStatus: 'advisory',
+        classificationMethod: 'rule-based',
+        classificationConfidence: 85,
+        classificationReason: 'Spear phishing campaign notice.',
+        taxonomyVersion: 'v1.0'
+    }
 ];
 
 let NEWS_CACHE = [...FALLBACK_NEWS];
 let CACHE_TIME = 0;
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
+const FEED_HEALTH = new Map();
+RSS_FEEDS.forEach(f => {
+    FEED_HEALTH.set(f.url, {
+        sourceId: `src-${f.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`,
+        name: f.name,
+        url: f.url,
+        category: f.category,
+        type: f.type,
+        status: 'healthy',
+        lastAttemptAt: new Date().toISOString(),
+        lastSuccessAt: new Date().toISOString(),
+        consecutiveFailures: 0,
+        averageLatencyMs: 240,
+        itemsLast24Hours: 0,
+        lastHttpStatus: 200,
+        lastError: null
+    });
+});
+
+const ANALYST_STATES = new Map();
+
 async function getCachedNews() {
     const now = Date.now();
     if (now - CACHE_TIME > CACHE_TTL_MS) {
         try {
-            const promises = RSS_FEEDS.map(f => parser.parseURL(f.url).catch(() => null));
+            const promises = RSS_FEEDS.map(async (f) => {
+                const start = Date.now();
+                try {
+                    const res = await parser.parseURL(f.url);
+                    const latency = Date.now() - start;
+                    const count = res?.items?.length || 0;
+                    FEED_HEALTH.set(f.url, {
+                        sourceId: `src-${f.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`,
+                        name: f.name,
+                        url: f.url,
+                        category: f.category,
+                        type: f.type,
+                        status: 'healthy',
+                        lastAttemptAt: new Date().toISOString(),
+                        lastSuccessAt: new Date().toISOString(),
+                        consecutiveFailures: 0,
+                        averageLatencyMs: latency,
+                        itemsLast24Hours: count,
+                        lastHttpStatus: 200,
+                        lastError: null
+                    });
+                    return res;
+                } catch (err) {
+                    const latency = Date.now() - start;
+                    const prev = FEED_HEALTH.get(f.url);
+                    const fails = (prev?.consecutiveFailures || 0) + 1;
+                    FEED_HEALTH.set(f.url, {
+                        sourceId: `src-${f.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`,
+                        name: f.name,
+                        url: f.url,
+                        category: f.category,
+                        type: f.type,
+                        status: fails >= 3 ? 'failed' : 'degraded',
+                        lastAttemptAt: new Date().toISOString(),
+                        lastSuccessAt: prev?.lastSuccessAt || null,
+                        consecutiveFailures: fails,
+                        averageLatencyMs: latency,
+                        itemsLast24Hours: prev?.itemsLast24Hours || 0,
+                        lastHttpStatus: 502,
+                        lastError: err.message ? err.message.slice(0, 100) : 'Fetch error'
+                    });
+                    return null;
+                }
+            });
             const results = await Promise.allSettled(promises);
             const fresh = [];
 
@@ -206,23 +380,46 @@ async function getCachedNews() {
                 const feed = r.value;
                 const meta = RSS_FEEDS[idx];
                 (feed.items || []).slice(0, 15).forEach(item => {
+                    const title = item.title || '';
+                    const contentSnippet = item.contentSnippet || '';
+                    const source = feed.title || meta.name;
+
                     const sevResult = assessSeverity({
-                        title: item.title || '',
-                        contentSnippet: item.contentSnippet || '',
-                        source: feed.title || meta.name,
+                        title,
+                        contentSnippet,
+                        source,
                     });
                     const capitalizedSev = sevResult.severity === 'critical' ? 'Critical'
                         : (sevResult.severity === 'high' ? 'High'
-                        : (sevResult.severity === 'medium' ? 'Medium' : 'Low'));
+                        : (sevResult.severity === 'medium' ? 'Medium'
+                        : (sevResult.severity === 'informational' ? 'Informational' : 'Low')));
+
+                    const classification = classifyRecord({
+                        title,
+                        contentSnippet,
+                        source,
+                        category: meta.category
+                    });
 
                     fresh.push({
-                        title: item.title || '',
+                        title,
                         link: item.link || '#',
                         pubDate: item.pubDate || new Date().toISOString(),
-                        contentSnippet: item.contentSnippet || '',
-                        source: feed.title || meta.name,
+                        contentSnippet,
+                        source,
                         severity: capitalizedSev,
                         category: meta.category,
+                        sourceCategory: meta.category,
+                        intelCategory: classification.intelCategory,
+                        intelCategoryDisplay: classification.displayName,
+                        secondaryTopics: classification.secondaryTopics,
+                        contentType: classification.contentType,
+                        evidenceStatus: classification.evidenceStatus,
+                        classificationMethod: classification.method,
+                        classificationConfidence: classification.confidence,
+                        classificationReason: classification.reason,
+                        taxonomyVersion: classification.taxonomyVersion,
+                        fetchedAt: new Date().toISOString(),
                     });
                 });
             });
@@ -268,7 +465,56 @@ export default async function handler(req, res) {
     if (pathname === '/api/news') {
         const news = await getCachedNews();
         const limit = parseInt(searchParams.get('limit')) || 100;
-        return res.json(news.slice(0, limit));
+        const severity = searchParams.get('severity');
+        const category = searchParams.get('category');
+        const intelCategory = searchParams.get('intelCategory');
+        const q = searchParams.get('q');
+
+        let filtered = news;
+        if (severity && severity !== 'all') {
+            filtered = filtered.filter(item => item.severity?.toLowerCase() === severity.toLowerCase());
+        }
+        if (category && category !== 'all') {
+            filtered = filtered.filter(item => item.category?.toLowerCase() === category.toLowerCase());
+        }
+        if (intelCategory && intelCategory !== 'all') {
+            filtered = filtered.filter(item => (item.intelCategory || 'needs-classification') === intelCategory);
+        }
+        if (q && q.trim()) {
+            const query = q.toLowerCase();
+            filtered = filtered.filter(item =>
+                item.title?.toLowerCase().includes(query) ||
+                item.contentSnippet?.toLowerCase().includes(query) ||
+                item.source?.toLowerCase().includes(query)
+            );
+        }
+        return res.json(filtered.slice(0, limit));
+    }
+
+    // 2a. Category Counts API for Intelligence Workspace
+    if (pathname === '/api/categories/counts') {
+        const news = await getCachedNews();
+        const counts = {};
+        for (const id of Object.keys(INTEL_CATEGORIES)) {
+            counts[id] = 0;
+        }
+        for (const item of news) {
+            const cat = item.intelCategory || 'needs-classification';
+            if (counts[cat] !== undefined) counts[cat]++;
+            else counts['needs-classification']++;
+        }
+        const categories = Object.entries(INTEL_CATEGORIES).map(([id, displayName]) => ({
+            id,
+            displayName,
+            count: counts[id] || 0
+        }));
+        return res.json({ total: news.length, categories });
+    }
+
+    // 2b. Categories Taxonomy Definition
+    if (pathname === '/api/categories') {
+        const categories = Object.entries(INTEL_CATEGORIES).map(([id, displayName]) => ({ id, displayName }));
+        return res.json({ taxonomyVersion: 'v1.0', categories });
     }
 
     // 3. News Severity Stats
@@ -562,26 +808,37 @@ export default async function handler(req, res) {
 
     // 12. Sources API
     if (pathname === '/api/sources') {
-        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-        return res.json(RSS_FEEDS.map(f => ({
-            ...f,
-            status: 'healthy',
-            health: {
+        res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
+        return res.json(RSS_FEEDS.map(f => {
+            const h = FEED_HEALTH.get(f.url) || {
                 status: 'healthy',
                 lastAttemptAt: new Date().toISOString(),
                 consecutiveFailures: 0,
                 averageLatencyMs: 240,
-                itemsLast24Hours: 12,
-            }
-        })));
+                itemsLast24Hours: 0,
+                lastHttpStatus: 200,
+            };
+            return {
+                ...f,
+                id: h.sourceId,
+                status: h.status,
+                health: h
+            };
+        }));
     }
 
     if (pathname === '/api/sources/stats') {
-        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+        res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
         const stats = RSS_FEEDS.reduce((a, s) => { a[s.category] = (a[s.category] || 0) + 1; return a; }, {});
+        const healthCounts = { configured: RSS_FEEDS.length, healthy: 0, degraded: 0, failed: 0, disabled: 0 };
+        RSS_FEEDS.forEach(f => {
+            const st = FEED_HEALTH.get(f.url)?.status || 'healthy';
+            if (st in healthCounts) healthCounts[st]++;
+            else healthCounts.healthy++;
+        });
         return res.json({
             total: RSS_FEEDS.length,
-            health: { configured: RSS_FEEDS.length, healthy: RSS_FEEDS.length, degraded: 0, failed: 0, disabled: 0 },
+            health: healthCounts,
             categories: stats
         });
     }
@@ -595,14 +852,31 @@ export default async function handler(req, res) {
         const medNews  = news.filter(n => n.severity === 'Medium').length;
         const lowNews  = news.filter(n => n.severity === 'Low').length;
 
+        const now = Date.now();
+        const oneDayAgo = now - 24 * 60 * 60 * 1000;
+        const news24h = news.filter(n => {
+            const pub = n.publishedAt || n.pubDate;
+            if (!pub) return false;
+            const t = new Date(pub).getTime();
+            return !isNaN(t) && t >= oneDayAgo && t <= now + 60000;
+        });
+        const uniqueTitles24h = new Set(news24h.map(n => n.title));
+
+        const healthCounts = { configured: RSS_FEEDS.length, healthy: 0, degraded: 0, failed: 0, disabled: 0 };
+        RSS_FEEDS.forEach(f => {
+            const st = FEED_HEALTH.get(f.url)?.status || 'healthy';
+            if (st in healthCounts) healthCounts[st]++;
+            else healthCounts.healthy++;
+        });
+
         const snapshot = {
             generatedAt: new Date().toISOString(),
             isStale: false,
             lastSuccessfulIngestion: new Date().toISOString(),
             news: {
                 latestCount: news.length,
-                total24h: news.length,
-                unique24h: new Set(news.map(n => n.title)).size,
+                total24h: news24h.length,
+                unique24h: uniqueTitles24h.size,
                 critical: critNews,
                 high: highNews,
                 medium: medNews,
@@ -615,13 +889,7 @@ export default async function handler(req, res) {
                 medium: 0,
                 low: 0,
             },
-            sources: {
-                configured: RSS_FEEDS.length,
-                healthy: RSS_FEEDS.length,
-                degraded: 0,
-                failed: 0,
-                disabled: 0,
-            },
+            sources: healthCounts,
             mitre: {
                 activeTactics: 14,
                 activeTechniques: 33,
@@ -753,6 +1021,77 @@ export default async function handler(req, res) {
         }
 
         return res.json({ success: true, message: 'Notification queued.' });
+    }
+
+    // 17. Analyst Workflow Endpoints
+    if (pathname === '/api/analyst/status') {
+        res.setHeader('Cache-Control', 'no-cache');
+        return res.json(Object.fromEntries(ANALYST_STATES.entries()));
+    }
+
+    if (pathname.startsWith('/api/analyst/record/')) {
+        const recordId = pathname.replace('/api/analyst/record/', '');
+        const state = ANALYST_STATES.get(recordId) || {
+            recordId,
+            status: 'new',
+            notes: '',
+            assignee: null,
+            dismissedReason: null,
+            history: []
+        };
+        return res.json(state);
+    }
+
+    if (pathname === '/api/analyst/action' && req.method === 'POST') {
+        let body = req.body;
+        if (typeof body === 'string') {
+            try { body = JSON.parse(body); } catch { body = {}; }
+        }
+        const { recordId, actionType, value, comment, analystId = 'analyst-1' } = body || {};
+        if (!recordId || !actionType) {
+            return res.status(400).json({ error: 'recordId and actionType are required' });
+        }
+
+        let state = ANALYST_STATES.get(recordId);
+        if (!state) {
+            state = { recordId, status: 'new', notes: '', assignee: null, dismissedReason: null, history: [] };
+            ANALYST_STATES.set(recordId, state);
+        }
+
+        const prev = state[actionType === 'status_change' ? 'status' : actionType === 'note_added' ? 'notes' : 'assignee'];
+        const actionEntry = {
+            actionId: `act-${Date.now()}`,
+            actionType,
+            previousValue: prev,
+            newValue: value,
+            comment: comment || null,
+            analystId,
+            timestamp: new Date().toISOString()
+        };
+
+        if (actionType === 'status_change') state.status = value;
+        else if (actionType === 'note_added') state.notes = value;
+        else if (actionType === 'assignee_changed') state.assignee = value;
+        else if (actionType === 'dismissed') {
+            state.status = 'closed';
+            state.dismissedReason = value || 'Dismissed by analyst';
+        }
+
+        state.updatedAt = new Date().toISOString();
+        state.history.unshift(actionEntry);
+
+        return res.json({ success: true, state });
+    }
+
+    if (pathname === '/api/analyst/relevance' && req.method === 'POST') {
+        let body = req.body;
+        if (typeof body === 'string') {
+            try { body = JSON.parse(body); } catch { body = {}; }
+        }
+        const { record, profile } = body || {};
+        if (!record) return res.status(400).json({ error: 'record is required' });
+        const result = assessRelevance(record, profile || DEFAULT_ORG_PROFILE);
+        return res.json(result);
     }
 
     return res.status(404).json({ error: 'Endpoint not found', path: pathname });

@@ -21,6 +21,7 @@ import aiRouter       from './routes/ai.js';
 import rulesRouter    from './routes/rules.js';
 import dashboardRouter from './routes/dashboard.js';
 import categoriesRouter from './routes/categories.js';
+import analystRouter from './routes/analyst.js';
 
 // Service imports
 import { fetchAndProcessNews, getNews, backfillClassification } from './services/newsService.js';
@@ -158,6 +159,7 @@ app.use('/api/ai',        aiRouter);
 app.use('/api/rules',     rulesRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/analyst',    analystRouter);
 
 // ==========================================
 // STATIC FILES (production)

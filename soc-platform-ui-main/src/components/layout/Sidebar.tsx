@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
 import {
-    LayoutDashboard,
-    Shield,
+    Compass,
+    Newspaper,
     Search,
-    Target,
-    FileText,
+    ShieldAlert,
     Radio,
+    FileText,
     Settings,
     X,
-    AlertOctagon,
-    Bot,
-    Archive,
-    Flame,
-    ShieldAlert,
-    Newspaper,
+    Shield,
     ChevronDown,
     ChevronRight,
     Bug,
     Network,
     BookOpen,
+    Bot,
+    Archive,
+    Flame,
+    Layers,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -38,89 +37,81 @@ interface NavSection {
     path: string;
     icon: React.ComponentType<{ className?: string }>;
     description: string;
-    /** Any path that should activate this top-level item */
     activePaths?: string[];
     subLinks?: SubLink[];
 }
 
-// 8 primary navigation sections
-const NAV_SECTIONS: NavSection[] = [
+// 7 primary navigation items specified by UI specification, mapping to existing working routes
+const PRIMARY_NAV_ITEMS: NavSection[] = [
     {
-        label: 'Overview',
+        label: 'Explore',
         path: '/overview',
-        icon: LayoutDashboard,
-        description: 'Mission control & AI brief',
+        icon: Compass,
+        description: 'Threat overview & mission control',
+        activePaths: ['/overview'],
+    },
+    {
+        label: 'Intelligence',
+        path: '/intelligence',
+        icon: Newspaper,
+        description: 'Category-based threat intelligence workspace',
+        activePaths: ['/', '/intelligence'],
+    },
+    {
+        label: 'Indicators',
+        path: '/investigate',
+        icon: Search,
+        description: 'IOC & CVE investigation and enrichment',
+        activePaths: ['/investigate', '/enrich', '/vulnerabilities'],
         subLinks: [
-            { label: 'Dashboard', path: '/overview', icon: LayoutDashboard },
-            { label: 'AI Brief', path: '/ai', icon: Bot },
+            { label: 'IOC Enrichment', path: '/investigate', icon: Search },
+            { label: 'Vulnerabilities & KEV', path: '/vulnerabilities', icon: Bug },
         ],
     },
     {
-        label: 'Threat Intelligence',
-        path: '/intelligence',
-        icon: Newspaper,
-        description: 'News, incidents & critical radar',
-        activePaths: ['/', '/intelligence', '/threats', '/archives', '/critical'],
+        label: 'Actors',
+        path: '/threats',
+        icon: ShieldAlert,
+        description: 'Adversary campaigns & incident radar',
+        activePaths: ['/threats', '/critical', '/archives'],
         subLinks: [
-            { label: 'Latest Intel', path: '/intelligence', icon: Shield },
+            { label: 'Incident Threats', path: '/threats', icon: ShieldAlert },
             { label: 'Critical Radar', path: '/critical', icon: Flame },
             { label: 'Archives', path: '/archives', icon: Archive },
         ],
     },
     {
-        label: 'Vulnerabilities',
-        path: '/vulnerabilities',
-        icon: Bug,
-        description: 'CVEs, KEV & patch advisories',
-        activePaths: ['/vulnerabilities'],
-        subLinks: [
-            { label: 'All Vulnerabilities', path: '/vulnerabilities', icon: Bug },
-            { label: 'Known Exploited (KEV)', path: '/vulnerabilities?filter=kev', icon: ShieldAlert },
-            { label: 'Recently Disclosed', path: '/vulnerabilities?filter=recent', icon: Newspaper },
-        ],
-    },
-    {
-        label: 'IOC Investigation',
-        path: '/investigate',
-        icon: Search,
-        description: 'IOC & CVE enrichment',
-        activePaths: ['/investigate', '/enrich'],
-    },
-    {
-        label: 'Detection Engineering',
-        path: '/detections',
-        icon: Target,
-        description: 'ATT&CK matrix, Sigma & YARA',
-        activePaths: ['/detections', '/mitre', '/mitre-news', '/mitre/news', '/rules'],
-        subLinks: [
-            { label: 'ATT&CK Heatmap', path: '/mitre', icon: Network },
-            { label: 'ATT&CK News', path: '/mitre-news', icon: Newspaper },
-            { label: 'Rule Library', path: '/rules', icon: BookOpen },
-        ],
-    },
-    {
-        label: 'Saved & Reports',
-        path: '/reports',
-        icon: FileText,
-        description: 'Daily sitreps, AI brief & exports',
-        activePaths: ['/reports'],
-        subLinks: [
-            { label: 'Reports & Exports', path: '/reports', icon: FileText },
-            { label: 'AI Brief', path: '/ai', icon: Bot },
-        ],
-    },
-    {
-        label: 'Source Health',
+        label: 'Collections',
         path: '/sources',
         icon: Radio,
-        description: 'Feeds, collectors & connectors',
+        description: 'Feeds, connectors & source telemetry',
+        activePaths: ['/sources'],
+    },
+    {
+        label: 'Reports',
+        path: '/reports',
+        icon: FileText,
+        description: 'Daily sitreps, AI briefings & exports',
+        activePaths: ['/reports', '/ai'],
+        subLinks: [
+            { label: 'Reports Hub', path: '/reports', icon: FileText },
+            { label: 'AI Executive Brief', path: '/ai', icon: Bot },
+        ],
     },
     {
         label: 'Settings',
         path: '/settings',
         icon: Settings,
-        description: 'Integrations, webhooks & API keys',
+        description: 'Integrations, webhooks & API credentials',
+        activePaths: ['/settings'],
     },
+];
+
+// Additional frameworks and tools retained so existing routes remain 100% accessible
+const FRAMEWORK_ITEMS: SubLink[] = [
+    { label: 'ATT&CK Heatmap', path: '/mitre', icon: Network },
+    { label: 'Rule Library', path: '/rules', icon: BookOpen },
+    { label: 'Detections Hub', path: '/detections', icon: Layers },
 ];
 
 function isActiveSection(section: NavSection, path: string): boolean {
@@ -135,11 +126,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
     const location = useLocation();
     const currentPath = location.pathname;
 
-    // Track which sections have their sub-links expanded
     const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
-        // Auto-expand the section that contains the current path
         const initial = new Set<string>();
-        for (const section of NAV_SECTIONS) {
+        for (const section of PRIMARY_NAV_ITEMS) {
             if (isActiveSection(section, currentPath)) {
                 initial.add(section.path);
             }
@@ -163,20 +152,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
     return (
         <aside
             aria-label="Primary Navigation Sidebar"
-            className="w-[232px] h-full bg-[#101F35] text-slate-300 flex flex-col justify-between flex-shrink-0 select-none z-30 shadow-md border-r border-[#1E2E48]"
+            className="w-[216px] h-full bg-[#142A43] text-slate-300 flex flex-col justify-between flex-shrink-0 select-none z-30 shadow-md border-r border-[#1B3655]"
         >
             {/* Top Brand Header */}
             <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
-                <div className="h-16 px-4 flex items-center justify-between border-b border-[#1A2D4A] flex-shrink-0">
+                <div className="h-16 px-4 flex items-center justify-between border-b border-[#1B3655] flex-shrink-0">
                     <Link to="/intelligence" onClick={onClose} className="flex items-center gap-2.5 group">
-                        <div className="w-8 h-8 rounded-md bg-[#0665F9] flex items-center justify-center text-white font-bold shadow-xs">
+                        <div className="w-8 h-8 rounded-lg bg-[#147DFA] flex items-center justify-center text-white font-bold shadow-xs">
                             <Shield className="w-4 h-4 text-white" aria-hidden="true" />
                         </div>
                         <div className="leading-tight">
                             <span className="font-bold text-white text-sm tracking-tight block">
                                 NO ENTRY
                             </span>
-                            <span className="text-[10px] text-slate-400 block font-normal tracking-wide">
+                            <span className="text-[10px] text-slate-300 block font-normal tracking-wide">
                                 Threat Intelligence Platform
                             </span>
                         </div>
@@ -194,25 +183,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                 </div>
 
                 {/* Scrollable Navigation */}
-                <nav className="p-3 space-y-0.5 overflow-y-auto flex-1 custom-scrollbar" aria-label="Main navigation">
-                    <div className="px-2 py-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-                        Main
+                <nav className="p-3 space-y-1 overflow-y-auto flex-1 custom-scrollbar" aria-label="Main navigation">
+                    <div className="px-2 pt-1 pb-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                        Navigation
                     </div>
 
-                    {NAV_SECTIONS.map((section) => {
+                    {PRIMARY_NAV_ITEMS.map((section) => {
                         const Icon = section.icon;
                         const active = isActiveSection(section, currentPath);
                         const hasSubLinks = !!(section.subLinks && section.subLinks.length > 0);
                         const isExpanded = expandedSections.has(section.path);
 
                         return (
-                            <div key={section.path}>
-                                {/* Top-level nav item */}
+                            <div key={section.path} className="space-y-0.5">
                                 <div
-                                    className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                                         active
-                                            ? 'bg-[#0665F9] text-white shadow-xs'
-                                            : 'text-slate-300 hover:text-white hover:bg-[#182A45]'
+                                            ? 'bg-[#147DFA] text-white shadow-xs font-semibold'
+                                            : 'text-slate-300 hover:text-white hover:bg-[#1B3655]'
                                     }`}
                                     role="button"
                                     tabIndex={0}
@@ -232,14 +220,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                         }
                                     }}
                                 >
-                                    {/* If no sub-links, wrap in Link; if has sub-links, just a div */}
                                     {hasSubLinks ? (
                                         <>
                                             <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-slate-400'}`} aria-hidden="true" />
-                                            <span className="flex-1">{section.label}</span>
+                                            <span className="flex-1 truncate">{section.label}</span>
                                             {isExpanded
-                                                ? <ChevronDown className="w-3 h-3 text-slate-400 flex-shrink-0" />
-                                                : <ChevronRight className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                                                ? <ChevronDown className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                                                : <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                                             }
                                         </>
                                     ) : (
@@ -250,18 +237,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                             aria-current={active ? 'page' : undefined}
                                         >
                                             <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-slate-400'}`} aria-hidden="true" />
-                                            <span className="flex-1">{section.label}</span>
+                                            <span className="flex-1 truncate">{section.label}</span>
                                         </Link>
                                     )}
                                 </div>
 
-                                {/* Sub-links (shown when expanded or section is active) */}
-                                {hasSubLinks && (isExpanded || active) && (
-                                    <div className="ml-4 mt-0.5 space-y-0.5 border-l border-[#1E3A5F] pl-2">
-                                        {section.subLinks!.map((sub) => {
+                                {/* Collapsible Sub-links */}
+                                {hasSubLinks && isExpanded && (
+                                    <div className="pl-6 pr-1 py-0.5 space-y-0.5">
+                                        {section.subLinks!.map(sub => {
                                             const SubIcon = sub.icon;
-                                            const subActive = currentPath === sub.path ||
-                                                (sub.path.includes('?') && location.pathname + location.search === sub.path);
+                                            const subActive = currentPath === sub.path || currentPath.startsWith(sub.path + '?');
                                             return (
                                                 <Link
                                                     key={sub.path}
@@ -269,13 +255,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                                     onClick={onClose}
                                                     className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-colors ${
                                                         subActive
-                                                            ? 'bg-[#0665F9]/20 text-white'
-                                                            : 'text-slate-400 hover:text-slate-200 hover:bg-[#182A45]'
+                                                            ? 'bg-[#1B3655] text-white font-semibold'
+                                                            : 'text-slate-400 hover:text-slate-200 hover:bg-[#1B3655]/60'
                                                     }`}
                                                     aria-current={subActive ? 'page' : undefined}
                                                 >
-                                                    <SubIcon className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-                                                    <span>{sub.label}</span>
+                                                    <SubIcon className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
+                                                    <span className="truncate">{sub.label}</span>
                                                 </Link>
                                             );
                                         })}
@@ -284,21 +270,50 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                             </div>
                         );
                     })}
+
+                    {/* Quick Access Frameworks */}
+                    <div className="pt-3">
+                        <div className="px-2 py-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                            Frameworks & Rules
+                        </div>
+                        <div className="space-y-0.5 mt-0.5">
+                            {FRAMEWORK_ITEMS.map(item => {
+                                const SubIcon = item.icon;
+                                const active = currentPath === item.path;
+                                return (
+                                    <Link
+                                        key={item.path}
+                                        to={item.path}
+                                        onClick={onClose}
+                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors ${
+                                            active
+                                                ? 'bg-[#147DFA] text-white font-semibold'
+                                                : 'text-slate-400 hover:text-white hover:bg-[#1B3655]'
+                                        }`}
+                                    >
+                                        <SubIcon className="w-3.5 h-3.5 text-slate-400" />
+                                        <span className="truncate">{item.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </nav>
             </div>
 
-            {/* Bottom Section: Demo status and version */}
-            <div className="p-3 border-t border-[#1A2D4A] space-y-2 text-xs flex-shrink-0">
+            {/* Bottom Brand / Version Status */}
+            <div className="p-3 border-t border-[#1B3655] bg-[#102236] text-[11px] text-slate-400 space-y-1">
                 {isDemoEnabled && (
-                    <div className="bg-amber-400/20 border border-amber-400/30 rounded p-2 text-amber-200 text-[11px] flex items-center gap-1.5 font-mono">
-                        <AlertOctagon className="w-3.5 h-3.5 text-amber-300 flex-shrink-0" />
-                        <span>Demo Mode Active</span>
+                    <div className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-semibold text-center mb-1">
+                        DEMO MODE ACTIVE
                     </div>
                 )}
-
-                <div className="flex items-center justify-between px-1 text-[11px] text-slate-400 font-mono">
-                    <span>Platform v2.4.0</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" title="System Operational" />
+                <div className="flex items-center justify-between text-[11px] px-1">
+                    <span className="font-medium text-slate-300">NO ENTRY SOC</span>
+                    <span className="text-[10px] text-slate-400 font-mono">v2.4.0</span>
+                </div>
+                <div className="text-[10px] text-slate-400 px-1 truncate">
+                    Enterprise Intelligence Grid
                 </div>
             </div>
         </aside>

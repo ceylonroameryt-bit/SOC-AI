@@ -38,7 +38,7 @@ interface CategoryCount {
 export interface IntelligenceTableProps {
     records: IntelligenceRecord[];
     selectedRecord: IntelligenceRecord | null;
-    onSelectRecord: (record: IntelligenceRecord) => void;
+    onSelectRecord: (record: IntelligenceRecord | null) => void;
     currentFilter: string;             // severity filter (e.g. 'All', 'Critical')
     onFilterChange: (severity: string) => void;
     categoryFilter: string;            // intelCategory filter
@@ -266,6 +266,24 @@ export const IntelligenceTable: React.FC<IntelligenceTableProps> = ({
             return sortDirection === 'desc' ? dB - dA : dA - dB;
         });
     }, [filteredRecords, sortField, sortDirection]);
+
+    // Synchronize selection: If selectedRecord falls outside filteredRecords, switch to first match or clear
+    useEffect(() => {
+        if (!selectedRecord) return;
+        if (records.length === 0) return; // Still loading or empty dataset
+        const exists = filteredRecords.some(r =>
+            (r.link && r.link === selectedRecord.link) ||
+            (r.id && r.id === selectedRecord.id) ||
+            (r.title && r.title === selectedRecord.title)
+        );
+        if (!exists) {
+            if (filteredRecords.length > 0) {
+                onSelectRecord(filteredRecords[0]);
+            } else {
+                onSelectRecord(null);
+            }
+        }
+    }, [filteredRecords, selectedRecord, onSelectRecord, records.length]);
 
     const totalPages = Math.max(1, Math.ceil(sortedRecords.length / pageSize));
     const paginatedRecords = useMemo(() => {

@@ -46,13 +46,25 @@ const RANSOMWARE_SIGNALS = [
     'blackcat',
     'alphv',
     'clop',
+    'qilin',
+    'cactus ransomware',
+    'play ransomware',
+    'medusa ransomware',
+    'dragonforce',
+    'bianlian',
+    'rhysida',
     'ransomware group',
     'ransomware gang',
     'data encrypted',
     'ransom payment',
     'extortion portal',
     'victim leak',
+    'victim published',
+    'published a new victim',
+    'new victim',
     'ransomware attack',
+    'ransomware.live',
+    'leak site'
 ];
 
 // Dampeners for non-operational content
@@ -83,6 +95,26 @@ const INFORMATIONAL_SIGNALS = [
     'named leader',
     'market leader',
     'solution provider',
+    // Funding, corporate & venture capital dampeners
+    'funding round',
+    'seed funding',
+    'series a',
+    'series b',
+    'series c',
+    'raises $',
+    'raised $',
+    'secures $',
+    'secured $',
+    'venture capital',
+    'valuation',
+    'acquisition',
+    'acquired by',
+    'quarterly results',
+    'merger',
+    'ipo',
+    'appoints',
+    'named ceo',
+    'named ciso'
 ];
 
 /**
@@ -153,7 +185,7 @@ export function assessSeverity(item = {}) {
     }
 
     // 5. Ransomware Association
-    const hasRansomware = RANSOMWARE_SIGNALS.some(s => combined.includes(s));
+    const hasRansomware = RANSOMWARE_SIGNALS.some(s => combined.includes(s)) || (item.source || '').toLowerCase().includes('ransomware');
     if (hasRansomware) {
         score += 40;
         confidence += 15;

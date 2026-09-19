@@ -21,7 +21,7 @@ const getFeeds = () => {
         if (fs.existsSync(SOURCES_FILE)) {
             const data = fs.readFileSync(SOURCES_FILE, 'utf8');
             const sources = JSON.parse(data);
-            return sources.map(s => s.url).filter(url => url);
+            return sources.filter(s => s.url);
         }
     } catch (err) {
         console.error('Error reading sources file:', err);
@@ -51,6 +51,7 @@ const determineSeverity = (title, snippet, source = '') => {
     if (assessment.severity === 'critical') return 'Critical';
     if (assessment.severity === 'high') return 'High';
     if (assessment.severity === 'medium') return 'Medium';
+    if (assessment.severity === 'informational') return 'Informational';
     return 'Low';
 };
 
@@ -122,25 +123,63 @@ export const fetchAndProcessNews = async () => {
         for (let i = 0; i < feeds.length; i += CHUNK_SIZE) {
             const chunk = feeds.slice(i, i + CHUNK_SIZE);
             console.log(`Processing chunk ${i / CHUNK_SIZE + 1}/${Math.ceil(feeds.length / CHUNK_SIZE)}...`);
-            const chunkPromises = chunk.map(feed => parser.parseURL(feed).catch(err => null));
+            const chunkPromises = chunk.map(async (sourceObj) => {
+                const start = Date.now();
+                const sourceId = `src-${(sourceObj.name || 'feed').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`;
+                try {
+                    const parsed = await parser.parseURL(sourceObj.url);
+                    const latencyMs = Date.now() - start;
+                    const items = parsed?.items || [];
+                    const latestPub = items[0]?.pubDate || null;
+                    return {
+                        feed: parsed,
+                        sourceObj,
+                        sourceId,
+                        latencyMs,
+                        itemsCount: items.length,
+                        latestPub
+                    };
+                } catch (err) {
+                    const latencyMs = Date.now() - start;
+                    recordCollectionResult(sourceId, {
+                        success: false,
+                        httpStatus: 500,
+                        latencyMs,
+                        itemsCount: 0,
+                        itemsAccepted: 0,
+                        itemsRejected: 0,
+                        error: err.message,
+                        errorCategory: 'FETCH_ERROR'
+                    });
+                    return null;
+                }
+            });
             const chunkResults = await Promise.all(chunkPromises);
 
             // Process and save chunk immediately
-            const validChunk = chunkResults.filter(feed => feed !== null);
+            const validChunk = chunkResults.filter(res => res !== null);
             let chunkNewItems = 0;
 
-            validChunk.forEach(feed => {
+            validChunk.forEach(({ feed, sourceObj, sourceId, latencyMs, itemsCount, latestPub }) => {
+                let acceptedForFeed = 0;
+                let rejectedForFeed = 0;
+
                 (feed.items || []).forEach(item => {
-                    if (!item || !item.link || !item.title) return;
+                    if (!item || !item.link || !item.title) {
+                        rejectedForFeed++;
+                        return;
+                    }
                     const exists = existingNews.some(n => n.link === item.link);
                     if (!exists) {
-                        const severity = determineSeverity(item.title, item.contentSnippet || '', feed.title || '');
+                        acceptedForFeed++;
+                        const severity = determineSeverity(item.title, item.contentSnippet || '', sourceObj.name || feed.title || '');
                         const category = determineCategory(item.title, item.contentSnippet || '');
                         // Classify with the new taxonomy engine
                         const classification = classifyRecord({
                             title: item.title,
                             contentSnippet: item.contentSnippet || '',
-                            source: feed.title || '',
+                            source: sourceObj.name || feed.title || '',
+                            category: sourceObj.category
                         });
 
                         const newItem = {
@@ -148,7 +187,7 @@ export const fetchAndProcessNews = async () => {
                             link: item.link,
                             pubDate: item.pubDate || new Date().toISOString(),
                             contentSnippet: item.contentSnippet || '',
-                            source: feed.title || 'Unknown Source',
+                            source: sourceObj.name || feed.title || 'Unknown Source',
                             severity: severity,
                             // Legacy category field (raw value) - preserved for reversibility
                             sourceCategory: category,
@@ -157,6 +196,7 @@ export const fetchAndProcessNews = async () => {
                             intelCategory: classification.intelCategory,
                             intelCategoryDisplay: classification.displayName,
                             secondaryTopics: classification.secondaryTopics,
+                            contentType: classification.contentType,
                             classificationMethod: classification.method,
                             classificationConfidence: classification.confidence,
                             classificationReason: classification.reason,
@@ -179,6 +219,16 @@ export const fetchAndProcessNews = async () => {
                             }).catch(() => {});
                         }
                     }
+                });
+
+                recordCollectionResult(sourceId, {
+                    success: true,
+                    httpStatus: 200,
+                    latencyMs,
+                    itemsCount,
+                    itemsAccepted: acceptedForFeed,
+                    itemsRejected: rejectedForFeed,
+                    latestPubDate: latestPub
                 });
             });
 

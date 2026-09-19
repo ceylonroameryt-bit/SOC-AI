@@ -202,11 +202,11 @@ export function clusterArticles(articles = [], minClusterSize = 2) {
             if (sharedCves.length > 0) {
                 matches = true;
                 matchConfidence = 0.95;
-                matchReason = `Multiple reports tracking exploitation of ${sharedCves.join(', ')}`;
-            } else if (sharedActors.length > 0 && (sim >= 0.20 || withinTimeWindow)) {
+                matchReason = `Multiple independent reports tracking exploitation of ${sharedCves.join(', ')}`;
+            } else if (sharedActors.length > 0 && (sim >= 0.20 || (withinTimeWindow && (sim >= 0.08 || baseArticle.sourceCategory === candidate.sourceCategory)))) {
                 matches = true;
                 matchConfidence = 0.90;
-                matchReason = `Coordinated activity associated with ${sharedActors.join(', ')}`;
+                matchReason = `Coordinated campaign activity associated with ${sharedActors.join(', ')}`;
             } else if (sim >= 0.65 && withinTimeWindow && (baseEntities.all.length > 0 || candEntities.all.length > 0)) {
                 matches = true;
                 matchConfidence = Math.round(sim * 100) / 100;

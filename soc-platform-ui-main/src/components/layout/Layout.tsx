@@ -77,9 +77,12 @@ export const Layout: React.FC = () => {
             )}
 
             {/* Right Main Column (TopBar + Workspace + CollectionStatusBar) */}
-            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-[#F7F9FC]">
+            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-[#F4F7FB]">
                 {/* 64px Top Bar */}
-                <TopBar onMenuToggle={() => setMobileDrawerOpen(true)} />
+                <TopBar
+                    onMenuToggle={() => setMobileDrawerOpen(true)}
+                    isDemoEnabled={isDemoEnabled}
+                />
 
                 {/* Main Viewport Content Area */}
                 <main
