@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Bot, Sparkles, ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -10,16 +11,14 @@ interface BriefData {
 }
 
 const AiExecutiveWidget = () => {
-    const [headline, setHeadline] = useState('Executive Threat Synthesis Active');
-    const [points, setPoints] = useState<string[]>([
-        'LockBit 3.0 & Akira extortion waves targeting perimeter access points.',
-        'Exploitation of edge VPN zero-days (CVE-2024-3400) observed in wild.',
-        'Adversary-in-the-Middle (AiTM) phishing kits bypassing legacy SMS-based MFA.',
-    ]);
+    const [rangeParams] = useSearchParams();
+    const range = rangeParams.get('time') || rangeParams.get('range') || '24h';
+    const [headline, setHeadline] = useState('Source-linked reporting');
+    const [points, setPoints] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${API_BASE}/api/ai/brief`)
+        fetch(`${API_BASE}/api/ai/brief?time=${encodeURIComponent(range)}`)
             .then(res => (res.ok ? res.json() : null))
             .then((data: BriefData | null) => {
                 if (data?.headline) setHeadline(data.headline);
@@ -35,7 +34,7 @@ const AiExecutiveWidget = () => {
             })
             .catch(() => {})
             .finally(() => setLoading(false));
-    }, []);
+    }, [range]);
 
     return (
         <div className="glass-card p-4 sm:p-5 flex flex-col h-full bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/20">
@@ -48,11 +47,11 @@ const AiExecutiveWidget = () => {
                     <div>
                         <div className="flex items-center gap-1.5">
                             <h3 className="font-display text-sm font-bold text-slate-900 leading-tight">
-                                AI Threat Intelligence Brief
+                                Intelligence Brief
                             </h3>
                             <span className="flex items-center gap-0.5 text-[9px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200 font-mono">
                                 <Sparkles className="w-2.5 h-2.5 text-blue-500" />
-                                AI SYNTHESIS
+                                SOURCE DIGEST
                             </span>
                         </div>
                         <p className="text-[11px] text-slate-500 line-clamp-1">
@@ -76,7 +75,7 @@ const AiExecutiveWidget = () => {
                         Synthesizing intelligence telemetry...
                     </div>
                 ) : (
-                    points.map((pt, i) => (
+                    points.length === 0 ? <p className="text-xs text-slate-500">No briefing available for this window.</p> : points.map((pt, i) => (
                         <div
                             key={i}
                             className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 hover:border-blue-300 transition-all flex items-start gap-2 text-xs text-slate-700 leading-relaxed shadow-2xs"
@@ -94,10 +93,10 @@ const AiExecutiveWidget = () => {
             <div className="mt-3 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
                 <div className="flex items-center gap-1 text-emerald-700 font-medium">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>3 Mitigation Playbooks Generated</span>
+                    <span>Review source evidence</span>
                 </div>
                 <Link to="/ai" className="text-blue-600 hover:underline font-semibold">
-                    View Mitigation Playbooks →
+                    View sources →
                 </Link>
             </div>
         </div>

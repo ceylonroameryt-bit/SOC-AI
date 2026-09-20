@@ -17,7 +17,7 @@ export const CollectionStatusBar: React.FC = () => {
         degradedCount: 0,
         failedCount: 0,
         healthyCount: 0,
-        totalConfigured: 101,
+        totalConfigured: 0,
         isStale: false,
         isDemoEnabled: false,
     });
@@ -28,11 +28,11 @@ export const CollectionStatusBar: React.FC = () => {
             .then(snapshot => {
                 if (snapshot) {
                     setStatusData({
-                        lastCollection: snapshot.lastSuccessfulIngestion || snapshot.generatedAt || null,
-                        degradedCount: snapshot.sources?.degraded || 0,
+                        lastCollection: snapshot.lastSuccessfulIngestion || null,
+                        degradedCount: (snapshot.sources?.degraded || 0) + (snapshot.sources?.unknown || 0) + (snapshot.sources?.delayed || 0),
                         failedCount: snapshot.sources?.failed || 0,
                         healthyCount: snapshot.sources?.healthy || 0,
-                        totalConfigured: snapshot.sources?.configured || 101,
+                        totalConfigured: snapshot.sources?.configured ?? 0,
                         isStale: Boolean(snapshot.isStale),
                         isDemoEnabled: Boolean(snapshot.environment?.isDemoEnabled),
                     });
@@ -57,7 +57,7 @@ export const CollectionStatusBar: React.FC = () => {
                         <strong className="text-[#0F172A] font-medium font-mono">
                             {statusData.lastCollection
                                 ? new Date(statusData.lastCollection).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-                                : 'Syncing telemetry...'}
+                                : 'Not measured'}
                         </strong>
                     </span>
                 </div>

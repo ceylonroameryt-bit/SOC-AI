@@ -1,3 +1,8 @@
+import { enrichIP, enrichHash, enrichCVE, checkAbuseIPDB } from '../server/services/enrichmentService.js';
+import { generateQueryBundle } from '../server/services/siemQueryService.js';
+import { isIP } from 'node:net';
+import { getKevSnapshot } from '../server/services/kevSnapshot.js';
+import { filterByRange, newsMetrics, severityStats, buildDigest } from '../server/services/dashboardEvidence.js';
 import Parser from 'rss-parser';
 import { generatePdfReport, generateDocxReport, exportThreatsToStix, escapeCsvField } from '../server/services/reportGenerator.js';
 import { assessSeverity } from '../server/services/severityEngine.js';
@@ -299,7 +304,7 @@ const FALLBACK_NEWS = [
     }
 ];
 
-let NEWS_CACHE = [...FALLBACK_NEWS];
+let NEWS_CACHE = process.env.ENABLE_DEMO_DATA === 'true' ? [...FALLBACK_NEWS] : [];
 let CACHE_TIME = 0;
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
@@ -311,20 +316,28 @@ RSS_FEEDS.forEach(f => {
         url: f.url,
         category: f.category,
         type: f.type,
-        status: 'healthy',
-        lastAttemptAt: new Date().toISOString(),
-        lastSuccessAt: new Date().toISOString(),
+        status: 'unknown',
+        lastAttemptAt: null,
+        lastSuccessAt: null,
         consecutiveFailures: 0,
-        averageLatencyMs: 240,
+        averageLatencyMs: null,
         itemsLast24Hours: 0,
-        lastHttpStatus: 200,
+        lastHttpStatus: null,
         lastError: null
     });
 });
 
 const ANALYST_STATES = new Map();
 
+let newsRefreshInFlight = null;
 async function getCachedNews() {
+    if (!newsRefreshInFlight) {
+        newsRefreshInFlight = refreshNewsCache().finally(() => { newsRefreshInFlight = null; });
+    }
+    return newsRefreshInFlight;
+}
+
+async function refreshNewsCache() {
     const now = Date.now();
     if (now - CACHE_TIME > CACHE_TTL_MS) {
         try {
@@ -366,7 +379,7 @@ async function getCachedNews() {
                         consecutiveFailures: fails,
                         averageLatencyMs: latency,
                         itemsLast24Hours: prev?.itemsLast24Hours || 0,
-                        lastHttpStatus: 502,
+                        lastHttpStatus: err.statusCode || null,
                         lastError: err.message ? err.message.slice(0, 100) : 'Fetch error'
                     });
                     return null;
@@ -404,7 +417,7 @@ async function getCachedNews() {
                     fresh.push({
                         title,
                         link: item.link || '#',
-                        pubDate: item.pubDate || new Date().toISOString(),
+                        pubDate: item.pubDate || null,
                         contentSnippet,
                         source,
                         severity: capitalizedSev,
@@ -425,7 +438,7 @@ async function getCachedNews() {
             });
 
             if (fresh.length > 0) {
-                const combined = [...fresh, ...FALLBACK_NEWS];
+                const combined = process.env.ENABLE_DEMO_DATA === 'true' ? [...fresh, ...FALLBACK_NEWS] : fresh;
                 const seen = new Set();
                 NEWS_CACHE = combined.filter(i => {
                     if (seen.has(i.link)) return false;
@@ -470,9 +483,9 @@ export default async function handler(req, res) {
         const intelCategory = searchParams.get('intelCategory');
         const q = searchParams.get('q');
 
-        let filtered = news;
+        let filtered = filterByRange(news, searchParams.get('time') || searchParams.get('range') || 'all');
         if (severity && severity !== 'all') {
-            filtered = filtered.filter(item => item.severity?.toLowerCase() === severity.toLowerCase());
+            filtered = filtered.filter(item => severity.toLowerCase().split(',').includes(item.severity?.toLowerCase()));
         }
         if (category && category !== 'all') {
             filtered = filtered.filter(item => item.category?.toLowerCase() === category.toLowerCase());
@@ -520,9 +533,7 @@ export default async function handler(req, res) {
     // 3. News Severity Stats
     if (pathname === '/api/news/stats') {
         const news = await getCachedNews();
-        const stats = { Critical: 0, High: 0, Medium: 0, Low: 0 };
-        news.forEach(i => { if (i.severity in stats) stats[i.severity]++; });
-        return res.json(Object.keys(stats).map(k => ({ name: k, count: stats[k] })));
+        return res.json(severityStats(filterByRange(news, searchParams.get('time') || searchParams.get('range') || 'all')));
     }
 
     // 4. MITRE ATT&CK News Matrix & Categorization Endpoint
@@ -623,6 +634,7 @@ export default async function handler(req, res) {
 
     // 5. MITRE Heatmap Data
     if (pathname === '/api/mitre/heatmap') {
+        const news = filterByRange(await getCachedNews(), searchParams.get('time') || 'all');
         const heatmap = TECHNIQUE_KEYWORD_MAP.map(tech => {
             const tactic = MITRE_TACTICS.find(t => t.id === tech.tactic);
             return {
@@ -630,7 +642,7 @@ export default async function handler(req, res) {
                 name: tech.name,
                 tacticId: tech.tactic,
                 tacticName: tactic?.name || 'Unknown',
-                hitCount: 5 + Math.floor(Math.random() * 15),
+                hitCount: news.filter(n => tech.keywords.some(k => `${n.title || ''} ${n.contentSnippet || ''}`.toLowerCase().includes(k))).length,
                 linkedItems: []
             };
         });
@@ -653,70 +665,26 @@ export default async function handler(req, res) {
         return res.json(MITRE_TACTICS);
     }
 
-    // 7. IOC Enrichment APIs
+    // 7. IOC Enrichment: use the same providers and validation as Express.
     if (pathname.startsWith('/api/enrich/ip/')) {
         const ip = decodeURIComponent(pathname.replace('/api/enrich/ip/', ''));
-        return res.json({
-            ip,
-            virustotal: {
-                maliciousEngines: 18,
-                totalEngines: 88,
-                maliciousnessScore: 20,
-                country: 'US',
-                asnOwner: 'Cloudflare / Threat Cluster',
-                vtLink: `https://www.virustotal.com/gui/ip-address/${ip}`,
-            },
-            abuseipdb: {
-                abuseConfidenceScore: 45,
-                totalReports: 142,
-                isp: 'Hosting Provider',
-                countryCode: 'US',
-                abuseLink: `https://www.abuseipdb.com/check/${ip}`,
-            },
-            queries: {
-                iocType: 'IPv4',
-                queries: {
-                    splunk: `index=* src_ip="${ip}" OR dest_ip="${ip}" | stats count by src_ip, dest_ip, sourcetype`,
-                    kql: `DeviceNetworkEvents | where RemoteIP == "${ip}" or LocalIP == "${ip}"`,
-                    sigma: `title: Network Connection to ${ip}\ndetection:\n  selection:\n    DestinationIp: '${ip}'\n  condition: selection\nlevel: high`
-                }
-            }
-        });
+        if (isIP(ip) !== 4) return res.status(400).json({ error: 'Invalid IPv4 address.' });
+        const [virustotal, abuseipdb] = await Promise.all([enrichIP(ip), checkAbuseIPDB(ip)]);
+        return res.json({ ip, virustotal, abuseipdb, queries: generateQueryBundle(ip, 'ip') });
     }
-
+    if (pathname.startsWith('/api/enrich/hash/')) {
+        const hash = decodeURIComponent(pathname.replace('/api/enrich/hash/', ''));
+        if (!/^(?:[a-fA-F0-9]{32}|[a-fA-F0-9]{40}|[a-fA-F0-9]{64})$/.test(hash)) return res.status(400).json({ error: 'Invalid hash.' });
+        return res.json({ hash, virustotal: await enrichHash(hash), queries: generateQueryBundle(hash, 'hash') });
+    }
     if (pathname.startsWith('/api/enrich/cve/')) {
         const cveId = decodeURIComponent(pathname.replace('/api/enrich/cve/', '')).toUpperCase();
-        return res.json({
-            cveId,
-            enrichment: {
-                epssScore: 0.943,
-                epssPercentile: 0.991,
-                isKEV: true,
-                nvdLink: `https://nvd.nist.gov/vuln/detail/${cveId}`
-            },
-            queries: {
-                iocType: 'CVE',
-                queries: {
-                    splunk: `index=* "${cveId}" | stats count by host, sourcetype`,
-                    kql: `DeviceEvents | where AdditionalFields has "${cveId}"`,
-                    sigma: `title: Exploitation Attempt for ${cveId}\ndetection:\n  selection:\n    CommandLine|contains: '${cveId}'\n  condition: selection\nlevel: critical`
-                }
-            }
-        });
+        if (!/^CVE-\d{4}-\d{4,7}$/.test(cveId)) return res.status(400).json({ error: 'Invalid CVE identifier.' });
+        return res.json({ cveId, enrichment: await enrichCVE(cveId), queries: generateQueryBundle(cveId, 'cve') });
     }
-
     if (pathname.startsWith('/api/enrich/queries/')) {
         const ioc = decodeURIComponent(pathname.replace('/api/enrich/queries/', ''));
-        return res.json({
-            queries: {
-                iocType: 'Indicator',
-                queries: {
-                    splunk: `index=* "${ioc}" | stats count by host, user`,
-                    kql: `DeviceEvents | where AdditionalFields has "${ioc}"`,
-                    sigma: `title: Detection for ${ioc}\ndetection:\n  selection:\n    CommandLine|contains: '${ioc}'\n  condition: selection\nlevel: high`
-                }
-            }
-        });
+        return res.json({ queries: generateQueryBundle(ioc) });
     }
 
     // 8. Rule Library API
@@ -725,7 +693,7 @@ export default async function handler(req, res) {
             rules: [
                 { id: 1, title: 'Suspicious PowerShell Download Cradle', description: 'Detects PowerShell webclient download cradles', level: 'high', tags: ['attack.execution', 'attack.t1059'], raw: 'title: Suspicious PowerShell Cradle\nlogsource:\n  category: process_creation\n  product: windows\ndetection:\n  selection:\n    CommandLine|contains:\n      - "DownloadString"\n      - "Invoke-WebRequest"\n  condition: selection\nlevel: high' },
                 { id: 2, title: 'LSASS Memory Dumping via Mimikatz', description: 'Detects credential dumping from LSASS process memory', level: 'critical', tags: ['attack.credential_access', 'attack.t1003'], raw: 'title: LSASS Memory Dump\nlogsource:\n  category: process_creation\n  product: windows\ndetection:\n  selection:\n    CommandLine|contains:\n      - "sekurlsa::logonpasswords"\n      - "lsass.dmp"\n  condition: selection\nlevel: critical' },
-                { id: 3, title: 'Ransomware vssadmin Volume Shadow Deletion', description: 'Detects shadow copy deletion commands', level: 'critical', tags: ['attack.impact', 'attack.t1486'], raw: 'title: VSS Deletion\nlogsource:\n  category: process_creation\n  product: windows\ndetection:\n  selection:\n    CommandLine|contains:\n      - "vssadmin delete shadows"\n      - "wbadmin delete catalog"\n  condition: selection\nlevel: critical' },
+                { id: 3, title: 'Ransomware vssadmin Volume Shadow Deletion', description: 'Detects shadow copy deletion commands', level: 'high', status: 'experimental', tags: ['attack.impact', 'attack.t1490'], raw: 'title: Windows Backup Deletion\nstatus: experimental\nreferences:\n  - https://attack.mitre.org/techniques/T1490/\ntags:\n  - attack.impact\n  - attack.t1490\nlogsource:\n  category: process_creation\n  product: windows\ndetection:\n  selection_vss:\n    Image|endswith: \'\\vssadmin.exe\'\n    CommandLine|contains|all:\n      - "delete"\n      - "shadows"\n  selection_wbadmin:\n    Image|endswith: \'\\wbadmin.exe\'\n    CommandLine|contains|all:\n      - "delete"\n      - "catalog"\n  condition: 1 of selection_*\nfalsepositives:\n  - Authorized backup maintenance\nlevel: high' },
             ]
         });
     }
@@ -741,38 +709,11 @@ export default async function handler(req, res) {
 
     // 9. AI Briefing API
     if (pathname === '/api/ai/stats') {
-        return res.json({
-            isLLMConfigured: true,
-            provider: 'Ollama / Fast-LLM (Cloud)',
-            model: 'llama3.2 / gpt-4o-mini',
-            cachedAt: new Date().toISOString(),
-        });
+        return res.json({ isLLMConfigured: false, provider: null, model: null, generationMethod: 'extractive' });
     }
 
     if (pathname === '/api/ai/brief') {
-        const markdown = `## 🛡️ Executive Cyber Threat Intelligence Briefing
-
-## Key Threat Actors & Campaigns
-- **LockBit 3.0 & Akira Ransomware**: High-frequency extortion campaigns targeting financial and critical infrastructure sectors. Exploiting shadow volume deletion and disabling endpoint defenses.
-- **Edge VPN Zero-Day Exploitation**: Active in-the-wild exploitation of perimeter SSL VPN appliances (CVE-2024-3400, CVE-2023-46805).
-- **AiTM Phishing Waves**: Reverse-proxy phishing kits harvesting session tokens and bypassing SMS-based multi-factor authentication.
-
-## Critical Vulnerabilities Under Exploitation
-- **CVE-2024-3400** (CVSS 10.0 — CISA KEV Listed): Remote command injection on edge security gateways.
-- **CVE-2023-46805** (CVSS 8.2): Authentication bypass leading to arbitrary configuration modification.
-- **CVE-2021-44228** (CVSS 10.0): Log4Shell remote code execution remnants still observed in perimeter scanning.
-
-## Immediate Tactical Recommendations
-1. Enforce FIDO2 / WebAuthn phishing-resistant MFA across all corporate VPN and Microsoft 365 access portals.
-2. Ingest extracted IOCs (IPs, C2 domains, hashes) into firewall blocklists and EDR detection rules.
-3. Validate offline and immutable backups for Active Directory and primary hypervisors.`;
-
-        return res.json({
-            content: markdown,
-            headline: `Executive SOC Intelligence Briefing — ${new Date().toLocaleDateString()}`,
-            generatedAt: Date.now(),
-            cached: true
-        });
+        return res.json(buildDigest(await getCachedNews(), searchParams.get('time') || '24h'));
     }
 
     // 10. AI Clusters API
@@ -810,14 +751,7 @@ export default async function handler(req, res) {
     if (pathname === '/api/sources') {
         res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
         return res.json(RSS_FEEDS.map(f => {
-            const h = FEED_HEALTH.get(f.url) || {
-                status: 'healthy',
-                lastAttemptAt: new Date().toISOString(),
-                consecutiveFailures: 0,
-                averageLatencyMs: 240,
-                itemsLast24Hours: 0,
-                lastHttpStatus: 200,
-            };
+            const h = FEED_HEALTH.get(f.url) || { status: 'unknown', lastAttemptAt: null, lastSuccessAt: null };
             return {
                 ...f,
                 id: h.sourceId,
@@ -830,11 +764,11 @@ export default async function handler(req, res) {
     if (pathname === '/api/sources/stats') {
         res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
         const stats = RSS_FEEDS.reduce((a, s) => { a[s.category] = (a[s.category] || 0) + 1; return a; }, {});
-        const healthCounts = { configured: RSS_FEEDS.length, healthy: 0, degraded: 0, failed: 0, disabled: 0 };
+        const healthCounts = { configured: RSS_FEEDS.length, healthy: 0, degraded: 0, failed: 0, disabled: 0, unknown: 0, delayed: 0 };
         RSS_FEEDS.forEach(f => {
-            const st = FEED_HEALTH.get(f.url)?.status || 'healthy';
+            const st = FEED_HEALTH.get(f.url)?.status || 'unknown';
             if (st in healthCounts) healthCounts[st]++;
-            else healthCounts.healthy++;
+            else healthCounts.unknown++;
         });
         return res.json({
             total: RSS_FEEDS.length,
@@ -847,41 +781,20 @@ export default async function handler(req, res) {
     if (pathname === '/api/dashboard/snapshot') {
         const news = await getCachedNews();
         const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
-        const critNews = news.filter(n => n.severity === 'Critical').length;
-        const highNews = news.filter(n => n.severity === 'High').length;
-        const medNews  = news.filter(n => n.severity === 'Medium').length;
-        const lowNews  = news.filter(n => n.severity === 'Low').length;
-
-        const now = Date.now();
-        const oneDayAgo = now - 24 * 60 * 60 * 1000;
-        const news24h = news.filter(n => {
-            const pub = n.publishedAt || n.pubDate;
-            if (!pub) return false;
-            const t = new Date(pub).getTime();
-            return !isNaN(t) && t >= oneDayAgo && t <= now + 60000;
-        });
-        const uniqueTitles24h = new Set(news24h.map(n => n.title));
-
-        const healthCounts = { configured: RSS_FEEDS.length, healthy: 0, degraded: 0, failed: 0, disabled: 0 };
+        const metrics = newsMetrics(news, searchParams.get('time') || searchParams.get('range'));
+        const lastSuccess = [...FEED_HEALTH.values()].map(h => h.lastSuccessAt).filter(Boolean).sort().at(-1) || null;
+        const healthCounts = { configured: RSS_FEEDS.length, healthy: 0, degraded: 0, failed: 0, disabled: 0, unknown: 0, delayed: 0 };
         RSS_FEEDS.forEach(f => {
-            const st = FEED_HEALTH.get(f.url)?.status || 'healthy';
+            const st = FEED_HEALTH.get(f.url)?.status || 'unknown';
             if (st in healthCounts) healthCounts[st]++;
-            else healthCounts.healthy++;
+            else healthCounts.unknown++;
         });
 
         const snapshot = {
             generatedAt: new Date().toISOString(),
-            isStale: false,
-            lastSuccessfulIngestion: new Date().toISOString(),
-            news: {
-                latestCount: news.length,
-                total24h: news24h.length,
-                unique24h: uniqueTitles24h.size,
-                critical: critNews,
-                high: highNews,
-                medium: medNews,
-                low: lowNews,
-            },
+            isStale: !CACHE_TIME || Date.now() - CACHE_TIME > CACHE_TTL_MS,
+            lastSuccessfulIngestion: lastSuccess,
+            news: metrics,
             threats: {
                 total: isDemoEnabled ? 3 : 0,
                 critical: isDemoEnabled ? 2 : 0,
@@ -891,20 +804,10 @@ export default async function handler(req, res) {
             },
             sources: healthCounts,
             mitre: {
-                activeTactics: 14,
-                activeTechniques: 33,
-                frameworkVersion: 'v16 Enterprise',
+                activeTechniques: TECHNIQUE_KEYWORD_MAP.filter(t => filterByRange(news, metrics.range).some(n => t.keywords.some(k => `${n.title || ''} ${n.contentSnippet || ''}`.toLowerCase().includes(k)))).length,
+                mappingMethod: 'keyword',
             },
-            kev: {
-                total: 1710,
-                lastUpdated: '2026-09-19T08:00:00Z',
-                featured: [
-                    { id: 'CVE-2024-3400', description: 'Palo Alto PAN-OS Command Injection', cvss: 10.0, epss: 0.943, vendor: 'Palo Alto', isKEV: true, dateAdded: 'Active Zero-Day' },
-                    { id: 'CVE-2023-46805', description: 'Ivanti Connect Secure Auth Bypass', cvss: 8.2, epss: 0.884, vendor: 'Ivanti', isKEV: true, dateAdded: 'Exploited in Wild' },
-                    { id: 'CVE-2024-21887', description: 'Ivanti Policy Secure RCE', cvss: 9.1, epss: 0.912, vendor: 'Ivanti', isKEV: true, dateAdded: 'Ransomware Chained' },
-                    { id: 'CVE-2021-44228', description: 'Apache Log4j Log4Shell RCE', cvss: 10.0, epss: 0.975, vendor: 'Apache', isKEV: true, dateAdded: 'Active Scans' },
-                ]
-            },
+            kev: await getKevSnapshot(),
             environment: {
                 appMode: process.env.APP_MODE || 'production',
                 isDemoEnabled,

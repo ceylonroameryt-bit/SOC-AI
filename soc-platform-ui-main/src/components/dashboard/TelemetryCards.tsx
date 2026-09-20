@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { Radio, AlertTriangle, ShieldCheck, Activity, Target, RefreshCw } from 'lucide-react';
 import { API_BASE } from '../../config/api';
@@ -20,6 +21,8 @@ interface TelemetryCardsProps {
 }
 
 const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
+    const [rangeParams] = useSearchParams();
+    const range = rangeParams.get('time') || rangeParams.get('range') || '24h';
     const [stats, setStats] = useState<TelemetryData>({
         totalIntel: null,
         criticalCount: null,
@@ -35,21 +38,21 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
     const [hasError, setHasError] = useState<boolean>(false);
 
     const fetchStats = useCallback(() => {
-        fetch(`${API_BASE}/api/dashboard/snapshot`)
+        fetch(`${API_BASE}/api/dashboard/snapshot?time=${encodeURIComponent(range)}`)
             .then(res => {
                 if (!res.ok) throw new Error(`Snapshot failed: ${res.status}`);
                 return res.json();
             })
             .then(snapshot => {
                 setStats({
-                    totalIntel: snapshot.news?.total24h ?? null,
+                    totalIntel: snapshot.news?.total ?? null,
                     criticalCount: snapshot.news?.critical ?? null,
                     highCount: snapshot.news?.high ?? null,
                     activeTechniques: snapshot.mitre?.activeTechniques ?? null,
                     kevCount: snapshot.kev?.total ?? null,
                     sourcesConfigured: snapshot.sources?.configured ?? null,
                     sourcesHealthy: snapshot.sources?.healthy ?? null,
-                    sourcesDegraded: snapshot.sources?.degraded ?? null,
+                    sourcesDegraded: (snapshot.sources?.degraded ?? 0) + (snapshot.sources?.failed ?? 0) + (snapshot.sources?.unknown ?? 0) + (snapshot.sources?.delayed ?? 0),
                     isStale: Boolean(snapshot.isStale),
                 });
                 setHasError(false);
@@ -62,7 +65,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
                 console.warn('Dashboard snapshot telemetry unavailable:', err);
                 setHasError(true);
             });
-    }, []);
+    }, [range]);
 
     useEffect(() => {
         fetchStats();
@@ -79,7 +82,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
             value: formatValue(stats.criticalCount),
             sub: stats.highCount !== null ? `${stats.highCount} High Priority Alerts` : 'Telemetry pending',
             icon: AlertTriangle,
-            tag: 'SLA Response < 15m',
+            tag: `Window: ${range}`,
             color: 'from-rose-500/10 to-red-500/5',
             border: 'border-red-200/80',
             badgeBg: 'bg-red-50 text-red-700 border-red-200',
@@ -87,11 +90,11 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
             ping: (stats.criticalCount ?? 0) > 0,
         },
         {
-            title: 'Total Ingested Intel',
+            title: 'Collected Reports',
             value: formatValue(stats.totalIntel),
             sub: stats.sourcesConfigured !== null ? `Across ${stats.sourcesConfigured} Monitored Feeds` : 'Verifying sources...',
             icon: Activity,
-            tag: stats.isStale ? 'Stale Snapshot' : 'Validated Telemetry',
+            tag: stats.isStale ? 'Stale Snapshot' : `Window: ${range}`,
             color: 'from-blue-500/10 to-indigo-500/5',
             border: 'border-blue-200/80',
             badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
@@ -101,9 +104,9 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         {
             title: 'ATT&CK Techniques',
             value: formatValue(stats.activeTechniques),
-            sub: 'Active Tactics Correlated',
+            sub: 'Automated report mappings',
             icon: Target,
-            tag: 'v16 ATT&CK Framework',
+            tag: 'Review mapping evidence',
             color: 'from-purple-500/10 to-violet-500/5',
             border: 'border-purple-200/80',
             badgeBg: 'bg-purple-50 text-purple-700 border-purple-200',
@@ -115,7 +118,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
             value: formatValue(stats.kevCount),
             sub: 'Known Exploited Vulnerabilities',
             icon: ShieldCheck,
-            tag: 'CISA Catalog Verified',
+            tag: stats.kevCount === null ? 'Catalog unavailable' : 'Catalog snapshot',
             color: 'from-emerald-500/10 to-teal-500/5',
             border: 'border-emerald-200/80',
             badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -125,7 +128,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         {
             title: 'Ingestion Pipeline',
             value: stats.sourcesConfigured !== null ? `${stats.sourcesHealthy ?? 0}/${stats.sourcesConfigured}` : 'Unavailable',
-            sub: stats.sourcesDegraded ? `${stats.sourcesDegraded} degraded feeds` : 'Measured source health',
+            sub: stats.sourcesDegraded ? `${stats.sourcesDegraded} feeds need attention` : 'Measured source health',
             icon: Radio,
             tag: stats.sourcesHealthy && stats.sourcesConfigured && stats.sourcesHealthy === stats.sourcesConfigured 
                 ? 'Healthy' 
@@ -167,7 +170,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
                     <div className="availability-chip text-[11px] py-0.5 px-2.5">
                         <span className="chip-dot"></span>
                         <span className="font-semibold text-emerald-800">
-                            {stats.isStale ? "Cached Snapshot Active" : "Live Telemetry Active"}
+                            {stats.isStale ? "Cached Snapshot Active" : "Collected intelligence"}
                         </span>
                     </div>
                 </div>
@@ -198,7 +201,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
                             className={`glass-card p-3.5 sm:p-4 flex flex-col justify-between bg-gradient-to-br ${card.color} ${card.border} relative overflow-hidden`}
                         >
                             <div className="flex items-start justify-between gap-2 mb-2">
-                                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider line-clamp-1 font-sans">
+                                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider font-sans">
                                     {card.title}
                                 </span>
                                 <div className="flex items-center gap-1.5">
@@ -218,7 +221,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
                                 <div className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
                                     {card.value}
                                 </div>
-                                <div className="text-[11px] text-slate-500 font-medium line-clamp-1 mt-0.5">
+                                <div className="text-[11px] text-slate-500 font-medium mt-0.5">
                                     {card.sub}
                                 </div>
                             </div>

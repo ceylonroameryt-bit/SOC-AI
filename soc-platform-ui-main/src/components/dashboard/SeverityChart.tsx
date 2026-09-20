@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import NewsFeed from './NewsFeed';
@@ -16,20 +17,23 @@ const COLORS = {
 };
 
 const SeverityChart = () => {
+    const [rangeParams] = useSearchParams();
+    const range = rangeParams.get('time') || rangeParams.get('range') || '24h';
+    const [error, setError] = useState(false);
     const [data, setData] = useState<SeverityStat[]>([]);
     const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch(`${API_BASE}/api/news/stats`)
+        fetch(`${API_BASE}/api/news/stats?time=${encodeURIComponent(range)}`)
             .then(res => {
                 if (!res.ok) throw new Error(`Stats fetch failed: ${res.status}`);
                 return res.json();
             })
             .then(data => {
-                if (Array.isArray(data)) setData(data);
+                if (Array.isArray(data)) { setData(data); setError(false); }
             })
-            .catch(err => console.error('Error fetching stats:', err));
-    }, []);
+            .catch(() => { setData([]); setError(true); });
+    }, [range]);
 
     const handleBarClick = (entry: { name: string }) => {
         if (selectedSeverity === entry.name) {
@@ -41,6 +45,7 @@ const SeverityChart = () => {
 
     return (
         <div className="h-full flex flex-col gap-4 p-4 lg:p-6 overflow-y-auto custom-scrollbar max-w-7xl mx-auto w-full">
+            {error && <p role="alert" className="text-amber-800">Severity data is unavailable. Retry Refresh.</p>}
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 pb-2 border-b border-[#E2E8F0]">
                 <div>
@@ -55,7 +60,7 @@ const SeverityChart = () => {
                         Threat Severity Distribution
                     </h1>
                     <p className="text-slate-500 text-xs sm:text-sm mt-1">
-                        Breakdown of incoming intelligence categorized by operational impact and required response SLA.
+                        Collected reports by assigned severity for the selected time window.
                     </p>
                 </div>
             </div>
@@ -63,7 +68,7 @@ const SeverityChart = () => {
             <div className={`metric-card p-5 flex flex-col bg-white ${selectedSeverity ? 'h-1/2' : 'h-full min-h-[380px] transition-all duration-300'}`}>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                     <h3 className="font-display text-base font-bold text-slate-900">
-                        Incident Volume by Priority
+                        Report Volume by Priority
                     </h3>
                     <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
                         {['Critical', 'High', 'Medium', 'Low'].map((severity) => (
@@ -80,7 +85,7 @@ const SeverityChart = () => {
                         ))}
                     </div>
                 </div>
-                <div className="flex-1 min-h-[220px]">
+                <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data} onClick={(state) => {
                             if (state && 'activePayload' in state) {

@@ -1,5 +1,6 @@
+import { filterByRange, severityStats } from '../services/dashboardEvidence.js';
 import express from 'express';
-import { fetchAndProcessNews, getNews, getSeverityStats } from '../services/newsService.js';
+import { fetchAndProcessNews, getNews } from '../services/newsService.js';
 import { classifyRecord, INTEL_CATEGORIES } from '../services/classificationEngine.js';
 
 const router = express.Router();
@@ -30,9 +31,9 @@ router.get('/', (req, res) => {
             };
         });
 
-        let filtered = news;
+        let filtered = filterByRange(news, req.query.time || req.query.range || 'all');
         if (severity && severity !== 'all') {
-            filtered = filtered.filter(item => item.severity?.toLowerCase() === severity.toLowerCase());
+            filtered = filtered.filter(item => severity.toLowerCase().split(',').includes(item.severity?.toLowerCase()));
         }
         if (category && category !== 'all') {
             filtered = filtered.filter(item => item.category?.toLowerCase() === category.toLowerCase());
@@ -73,7 +74,7 @@ router.post('/refresh', async (req, res) => {
 // Get stats for chart
 router.get('/stats', (req, res) => {
     try {
-        const stats = getSeverityStats();
+        const stats = severityStats(filterByRange(getNews(), req.query.time || req.query.range || 'all'));
         res.json(stats);
     } catch (err) {
         res.status(500).json({ error: 'Failed to retrieve stats.' });

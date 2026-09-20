@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { BarChart3, X } from 'lucide-react';
@@ -20,26 +21,22 @@ const SEVERITY_COLORS: Record<string, string> = {
     Low: '#2563eb',      // Blue-600
 };
 
-const DEFAULT_STATS: SeverityStat[] = [
-    { name: 'Critical', count: 390 },
-    { name: 'High', count: 310 },
-    { name: 'Medium', count: 68 },
-    { name: 'Low', count: 781 },
-];
-
 const SeverityBarChartWidget = ({
     selectedSeverity,
     onSelectSeverity,
 }: SeverityBarChartWidgetProps) => {
-    const [data, setData] = useState<SeverityStat[]>(DEFAULT_STATS);
+    const [rangeParams] = useSearchParams();
+    const range = rangeParams.get('time') || rangeParams.get('range') || '24h';
+    const [status, setStatus] = useState('Loading counts…');
+    const [data, setData] = useState<SeverityStat[]>([]);
 
     useEffect(() => {
         let isMounted = true;
-        fetch(`${API_BASE}/api/news/stats`)
-            .then(res => (res.ok ? res.json() : null))
+        fetch(`${API_BASE}/api/news/stats?time=${encodeURIComponent(range)}`)
+            .then(res => { if (!res.ok) throw new Error('Counts unavailable'); return res.json(); })
             .then(stats => {
                 if (!isMounted) return;
-                if (Array.isArray(stats) && stats.length > 0) {
+                if (Array.isArray(stats)) {
                     // Ensure standard order: Critical, High, Medium, Low
                     const order = ['Critical', 'High', 'Medium', 'Low'];
                     const sorted = [...stats].sort((a, b) => {
@@ -48,14 +45,15 @@ const SeverityBarChartWidget = ({
                         return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
                     });
                     setData(sorted);
+                    setStatus('');
                 }
             })
-            .catch(() => {});
+            .catch(() => { if (isMounted) setStatus('Counts unavailable — retry Refresh.'); });
 
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [range]);
 
     const totalCount = data.reduce((sum, item) => sum + (item.count || 0), 0);
 
@@ -99,7 +97,7 @@ const SeverityBarChartWidget = ({
                                 Severity Distribution &amp; Priority Filter
                             </h3>
                             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-slate-200/70 text-slate-700">
-                                {totalCount.toLocaleString()} Total
+                                {status || `${totalCount.toLocaleString()} reports · ${range}`}
                             </span>
                         </div>
                         <p className="text-[11px] text-slate-500">

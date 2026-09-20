@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ExternalLink, Flame, Calendar } from 'lucide-react';
 import { API_BASE } from '../../config/api';
@@ -19,19 +20,24 @@ interface NewsFeedProps {
 }
 
 const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeedProps) => {
+    const [rangeParams] = useSearchParams();
+    const range = rangeParams.get('time') || rangeParams.get('range') || '24h';
     const [news, setNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
     useEffect(() => {
+        let active = true;
+        const controller = new AbortController();
         const fetchNews = () => {
-            fetch(`${API_BASE}/api/news`)
+            fetch(`${API_BASE}/api/news?time=${encodeURIComponent(range)}&severity=${encodeURIComponent(severityFilter || (mode === 'critical' ? 'Critical,High' : 'all'))}`, { signal: controller.signal })
                 .then(res => {
                     if (!res.ok) throw new Error(`Server returned ${res.status}`);
                     return res.json();
                 })
                 .then(data => {
+                    if (!active) return;
                     const items = Array.isArray(data) ? data : (data.news || []);
                     if (!Array.isArray(items)) throw new Error('Invalid response format');
                     setNews(items);
@@ -40,6 +46,7 @@ const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeed
                     setLastUpdated(new Date());
                 })
                 .catch(err => {
+                    if (!active) return;
                     console.error('Error fetching news:', err);
                     setError(err.message || 'Failed to load news feed');
                     setLoading(false);
@@ -52,8 +59,8 @@ const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeed
         // Poll every 30 minutes to catch incoming items continuously
         const interval = setInterval(fetchNews, 30 * 60 * 1000);
 
-        return () => clearInterval(interval);
-    }, []);
+        return () => { active = false; controller.abort(); clearInterval(interval); };
+    }, [range, severityFilter, mode]);
 
     const getSeverityColor = (severity?: string) => {
         switch (severity) {
@@ -92,7 +99,7 @@ const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeed
     // Determine what to show in List section
     // If filtering, show NOTHING in list (user wants boxes). If not filtering, show timelineNews
     // LIMIT to 100 items for performance
-    const listItems = (showFilteredList ? [] : news.filter(item => item.severity !== 'Critical' && item.severity !== 'High')).slice(0, 100);
+    const listItems = (showFilteredList ? [] : news.filter(item => mode === 'timeline' || (item.severity !== 'Critical' && item.severity !== 'High'))).slice(0, 100);
 
     const groupedListItems = listItems.reduce((acc, item) => {
         const label = formatDateLabel(item.pubDate);
@@ -119,6 +126,7 @@ const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeed
     return (
         <div className={isEmbedded ? "flex flex-col gap-4 w-full" : "h-full flex flex-col gap-4 p-4 lg:p-6 overflow-y-auto custom-scrollbar max-w-7xl mx-auto w-full"}>
 
+<p className="text-xs text-slate-500">Latest {news.length} loaded reports (up to 100) · {range}</p>
             {/* Header with Portfolio Editorial Styling */}
             {!isEmbedded && (
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-[#E2E8F0]">

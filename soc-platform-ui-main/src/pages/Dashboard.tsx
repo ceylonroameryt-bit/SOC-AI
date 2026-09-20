@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { LayoutDashboard, Newspaper, Flame, BarChart3, Radio, ShieldAlert, AlertOctagon } from 'lucide-react';
 import TelemetryCards from '../components/dashboard/TelemetryCards';
@@ -13,6 +14,8 @@ import { API_BASE } from '../config/api';
 type DashboardTab = 'overview' | 'news' | 'critical' | 'metrics';
 
 const Dashboard = () => {
+    const [params] = useSearchParams();
+    const range = params.get('time') || params.get('range') || '24h';
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
     const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
@@ -46,7 +49,7 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="min-h-full flex flex-col p-4 lg:p-6 space-y-5 max-w-7xl mx-auto w-full">
+        <div key={`${range}-${refreshTrigger}`} className="min-h-full flex flex-col p-4 lg:p-6 space-y-5 max-w-7xl mx-auto w-full">
             {/* Demo Environment Banner */}
             {isDemoEnabled && (
                 <div className="bg-amber-400 border border-amber-500 text-slate-950 px-4 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-bold shadow-xs">
@@ -61,21 +64,21 @@ const Dashboard = () => {
             )}
 
             {/* Header & Mission Control Switcher */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+            <div className="flex flex-col items-start justify-between gap-4 pb-3 border-b border-slate-200">
                 <div>
                     <div className="flex items-center gap-2 mb-1.5">
                         <span className="section-label">SOC Mission Control</span>
                         <div
                             className="availability-chip text-[10px] py-0.5 px-2"
                             role="status"
-                            aria-label="Threat Radar status: Active"
+                            aria-label="External threat reporting"
                         >
                             <span className="chip-dot" aria-hidden="true"></span>
-                            <span className="font-semibold text-emerald-800">Threat Radar Monitored</span>
+                            <span className="font-semibold text-emerald-800">External reporting</span>
                         </div>
                     </div>
                     <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-                        Security Operations &amp; Intelligence Dashboard
+                        Threat Intelligence Overview
                     </h1>
                     <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
                         Precomputed operational intelligence aggregated across monitored vendor labs, advisories, and CISA feeds.
