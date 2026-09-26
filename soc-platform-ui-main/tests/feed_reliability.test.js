@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {
     normalizeFeedUrl,
     extractPublisherDomain,
-    isPrivateOrInternalUrl
+    isPrivateOrInternalUrl,
+    validateRedirectUrl
 } from '../server/utils/urlUtils.js';
 import {
     getSourcesRegistry,
@@ -43,6 +44,28 @@ describe('RSS Ingestion & Feed Reliability Verification Suite', () => {
             assert.equal(isPrivateOrInternalUrl('https://cisa.gov/cybersecurity-advisories/all.xml'), false);
             assert.equal(isPrivateOrInternalUrl('https://msrc.microsoft.com/feed'), false);
             assert.equal(isPrivateOrInternalUrl('https://krebsonsecurity.com/feed/'), false);
+        });
+
+        test('Validates redirect targets and blocks SSRF redirect chains', () => {
+            // Block redirect to metadata
+            const blocked1 = validateRedirectUrl('https://example.com/feed', 'http://169.254.169.254/latest/meta-data/');
+            assert.equal(blocked1.safe, false);
+
+            // Block redirect to loopback
+            const blocked2 = validateRedirectUrl('https://example.com/feed', 'http://127.0.0.1:8080/admin');
+            assert.equal(blocked2.safe, false);
+
+            // Block redirect to RFC1918
+            const blocked3 = validateRedirectUrl('https://example.com/feed', 'http://192.168.1.1/');
+            assert.equal(blocked3.safe, false);
+
+            // Allow safe relative and absolute redirects
+            const safeRelative = validateRedirectUrl('https://example.com/feed', '/rss.xml');
+            assert.equal(safeRelative.safe, true);
+            assert.equal(safeRelative.url, 'https://example.com/rss.xml');
+
+            const safeAbsolute = validateRedirectUrl('https://example.com/feed', 'https://feeds.example.org/atom.xml');
+            assert.equal(safeAbsolute.safe, true);
         });
     });
 
@@ -101,10 +124,28 @@ describe('RSS Ingestion & Feed Reliability Verification Suite', () => {
         });
 
         test('Review states are strictly partitioned', () => {
-            const validStates = new Set(['approved', 'candidate', 'quarantined', 'retired']);
+            const validStates = new Set(['approved', 'candidate', 'quarantined', 'retired', 'rejected']);
             for (const s of registry) {
                 assert.ok(validStates.has(s.reviewState), `Invalid review state "${s.reviewState}" for source ${s.id}`);
             }
+        });
+
+        test('Lifecycle states reconcile exactly to total registered catalogue', () => {
+            const stats = getFeedHealthStats();
+            assert.equal(stats.lifecycle.isReconciled, true, 'Lifecycle breakdown must be strictly reconciled');
+            assert.equal(stats.lifecycle.unaccounted, 0, 'Zero feeds may be unaccounted');
+            assert.equal(stats.lifecycle.total, stats.registered);
+            assert.equal(
+                stats.lifecycle.approved + stats.lifecycle.candidate + stats.lifecycle.quarantined + stats.lifecycle.retired + stats.lifecycle.rejected,
+                stats.registered
+            );
+        });
+
+        test('Scheduling states reconcile exactly to total registered catalogue', () => {
+            const stats = getFeedHealthStats();
+            assert.equal(stats.scheduling.isReconciled, true, 'Scheduling breakdown must be strictly reconciled');
+            assert.equal(stats.scheduling.unaccounted, 0);
+            assert.equal(stats.scheduling.enabled + stats.scheduling.disabled, stats.registered);
         });
 
         test('Candidate sources are not enabled by default', () => {
@@ -204,6 +245,22 @@ describe('RSS Ingestion & Feed Reliability Verification Suite', () => {
             assert.equal(resolvePublicationFreshness(oneYearAgo), 'dormant');
             assert.equal(resolvePublicationFreshness(null), 'unknown');
         });
+
+        test('Active health rate uses labelled denominator (healthy / enabled active)', () => {
+            const stats = getFeedHealthStats();
+            assert.equal(stats.activeHealth.denominator, stats.enabled, 'Denominator must be active/enabled feeds');
+            assert.equal(stats.activeHealth.numerator, stats.healthy);
+            assert.ok(stats.activeHealth.ratePercent >= 0 && stats.activeHealth.ratePercent <= 100);
+            assert.ok(stats.activeHealth.formattedLabel.includes('/'), 'Label must show fraction format (e.g. 147 / 149)');
+        });
+
+        test('Target progress uses explicit denominator 1,000 without fabrication', () => {
+            const stats = getFeedHealthStats();
+            assert.equal(stats.targetProgress.target, 1000);
+            assert.equal(stats.targetProgress.verified, stats.verifiedSources);
+            assert.equal(stats.targetProgress.remainingGap, 1000 - stats.verifiedSources);
+            assert.ok(stats.targetProgress.remainingGap > 0, 'Cannot claim 1,000 completed until reached');
+        });
     });
 
     // 5. Collector Engine Utilities
@@ -279,6 +336,17 @@ describe('RSS Ingestion & Feed Reliability Verification Suite', () => {
             assert.equal(stats.targetSources, 1000);
             assert.equal(stats.remainingGap, Math.max(0, 1000 - stats.verifiedSources));
             assert.ok(stats.snapshotGeneratedAt);
+        });
+
+        test('Candidate rejection records rejection reason and category', () => {
+            const rejectedRecords = getFeedHealthRecords({ reviewState: 'rejected', limit: 50 });
+            assert.ok(rejectedRecords.total > 0, 'Must have rejected candidate records tracked in registry');
+            for (const r of rejectedRecords.records) {
+                assert.equal(r.reviewState, 'rejected');
+                assert.equal(r.enabled, false);
+                assert.ok(r.rejectionReason, `Rejected source ${r.id} must have a rejectionReason`);
+                assert.ok(r.errorCategory, `Rejected source ${r.id} must have an errorCategory`);
+            }
         });
     });
 });

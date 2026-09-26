@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import Parser from 'rss-parser';
-import { isPrivateOrInternalUrl, extractPublisherDomain } from '../utils/urlUtils.js';
+import { isPrivateOrInternalUrl, extractPublisherDomain, safeFetchWithRedirects } from '../utils/urlUtils.js';
 import { recordCollectionResult } from './feedHealthService.js';
 import { assessSeverity } from './severityEngine.js';
 import { classifyRecord } from './classificationEngine.js';
@@ -124,12 +124,11 @@ export async function collectFeed(source) {
                     headers['If-Modified-Since'] = source.lastModified;
                 }
 
-                const response = await fetch(targetUrl, {
+                const response = await safeFetchWithRedirects(targetUrl, {
                     method: 'GET',
                     headers,
-                    redirect: 'follow',
                     signal: controller.signal
-                });
+                }, 5);
 
                 clearTimeout(timeoutId);
                 const latencyMs = Date.now() - attemptStart;
@@ -242,6 +241,18 @@ export async function collectFeed(source) {
 
             } catch (err) {
                 const latencyMs = Date.now() - attemptStart;
+                if (err.code === 'SSRF_BLOCKED') {
+                    return {
+                        source,
+                        sourceId,
+                        success: false,
+                        httpStatus: null,
+                        latencyMs,
+                        error: err.message,
+                        errorCategory: 'SECURITY_BLOCKED',
+                        feed: null
+                    };
+                }
                 const isTimeout = err.name === 'AbortError' || err.message?.includes('timeout');
                 lastError = err.message;
                 lastHttpStatus = null; // NEVER fabricate HTTP status code on network/timeout!

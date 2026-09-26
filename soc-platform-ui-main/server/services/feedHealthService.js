@@ -96,7 +96,8 @@ function initHealth() {
 
     const registry = getSourcesRegistry();
     for (const s of registry) {
-        if (!healthMap.has(s.id)) {
+        const existing = healthMap.get(s.id);
+        if (!existing) {
             // New or untested feed is strictly UNKNOWN (never fabricated as healthy!)
             healthMap.set(s.id, {
                 sourceId: s.id,
@@ -110,16 +111,43 @@ function initHealth() {
                 expectedIntervalMinutes: s.expectedIntervalMinutes || 60,
                 lastAttemptAt: s.lastAttemptAt || null,
                 lastSuccessAt: s.lastSuccessAt || null,
-                lastHttpStatus: null,
+                lastHttpStatus: s.lastHttpStatus !== undefined ? s.lastHttpStatus : null,
                 consecutiveFailures: s.consecutiveFailures || 0,
                 itemsLast24Hours: 0,
                 itemsTotal: 0,
                 averageLatencyMs: null,
                 latestPublicationAt: s.latestPublicationAt || null,
-                lastError: s.retirementReason || null,
-                errorCategory: null,
+                lastError: s.retirementReason || s.rejectionReason || null,
+                errorCategory: s.errorCategory || null,
                 nextRetryAt: null
             });
+        } else {
+            // Synchronize canonical configuration fields from registry
+            existing.enabled = s.enabled;
+            existing.reviewState = s.reviewState;
+            existing.name = s.name;
+            existing.category = s.category;
+            existing.publisherDomain = s.publisherDomain;
+            if (s.lastSuccessAt && (!existing.lastSuccessAt || new Date(s.lastSuccessAt) > new Date(existing.lastSuccessAt))) {
+                existing.lastSuccessAt = s.lastSuccessAt;
+            }
+            if (s.lastAttemptAt && (!existing.lastAttemptAt || new Date(s.lastAttemptAt) > new Date(existing.lastAttemptAt))) {
+                existing.lastAttemptAt = s.lastAttemptAt;
+            }
+            if (s.latestPublicationAt && !existing.latestPublicationAt) {
+                existing.latestPublicationAt = s.latestPublicationAt;
+            }
+            if (s.errorCategory && !existing.errorCategory) {
+                existing.errorCategory = s.errorCategory;
+            }
+            if (s.rejectionReason && !existing.lastError) {
+                existing.lastError = s.rejectionReason;
+            }
+            if (!existing.enabled) {
+                existing.status = 'disabled';
+            } else if (existing.status === 'disabled' || existing.status === 'unknown') {
+                existing.status = existing.lastSuccessAt ? 'healthy' : 'unknown';
+            }
         }
     }
 }
@@ -323,19 +351,21 @@ export function getFeedHealthRecords({
             publicationFreshness: freshness,
             replacementNotes: s.replacementNotes || null,
             retirementReason: s.retirementReason || null,
+            rejectionReason: s.rejectionReason || null,
+            errorCategory: s.errorCategory || h?.errorCategory || null,
             health: {
                 sourceId: s.id,
                 status: dynamicStatus,
                 lastAttemptAt: h?.lastAttemptAt || s.lastAttemptAt || null,
                 lastSuccessAt: h?.lastSuccessAt || s.lastSuccessAt || null,
-                lastHttpStatus: h?.lastHttpStatus !== undefined ? h.lastHttpStatus : null,
+                lastHttpStatus: h?.lastHttpStatus !== undefined ? h.lastHttpStatus : (s.lastHttpStatus !== undefined ? s.lastHttpStatus : null),
                 consecutiveFailures: h?.consecutiveFailures || s.consecutiveFailures || 0,
                 averageLatencyMs: h?.averageLatencyMs || null,
                 itemsLast24Hours: h?.itemsLast24Hours || 0,
                 itemsTotal: h?.itemsTotal || 0,
                 latestPublicationAt: h?.latestPublicationAt || s.latestPublicationAt || null,
-                lastError: h?.lastError || s.retirementReason || null,
-                errorCategory: h?.errorCategory || null,
+                lastError: h?.lastError || s.retirementReason || s.rejectionReason || null,
+                errorCategory: h?.errorCategory || s.errorCategory || null,
                 nextRetryAt: h?.nextRetryAt || null
             }
         };
@@ -382,63 +412,156 @@ export function getFeedHealthRecords({
 }
 
 /**
- * Returns comprehensive system-wide health and catalog statistics.
+ * Returns comprehensive system-wide health and catalog statistics with explicit,
+ * mutually exclusive lifecycle, scheduling, operational health, and target progress.
  */
 export function getFeedHealthStats() {
     const registry = getSourcesRegistry();
     const stats = {
         registered: registry.length,
         enabled: 0,
+        disabled: 0,
+
+        // Lifecycle / Review states (Mutually exclusive: sum === registered)
         approved: 0,
         candidate: 0,
         quarantined: 0,
         retired: 0,
+        rejected: 0,
+
+        // Overall health buckets (Legacy backward-compatible)
         healthy: 0,
         delayed: 0,
         degraded: 0,
         failed: 0,
         unknown: 0,
-        disabled: 0,
         attentionRequired: 0,
+
+        // Operational health for actively enabled/scheduled sources
+        activeHealthy: 0,
+        activeDelayed: 0,
+        activeDegraded: 0,
+        activeFailed: 0,
+        activeUnknown: 0,
+
+        // Attribution
+        distinctDomains: 0,
         distinctPublishers: 0,
+
+        // Target progress (1,000 Verified Operational Endpoints)
         targetSources: 1000,
         verifiedSources: 0,
+        targetProgressPercent: 0,
         remainingGap: 0,
-        configured: 0, // legacy alias for backward compatibility
+
+        // Backward compatibility
+        configured: registry.length
     };
 
+    const domains = new Set();
     const publishers = new Set();
     const categories = {};
 
     for (const s of registry) {
-        publishers.add(s.publisherDomain);
+        if (s.publisherDomain) domains.add(s.publisherDomain.toLowerCase());
+        publishers.add((s.name || s.publisherDomain || 'unknown').toLowerCase().trim());
         categories[s.category] = (categories[s.category] || 0) + 1;
 
-        if (s.enabled) stats.enabled++;
+        // 1. Scheduling State
+        if (s.enabled) {
+            stats.enabled++;
+        } else {
+            stats.disabled++;
+        }
+
+        // 2. Lifecycle / Review State
         if (s.reviewState === 'approved') stats.approved++;
         else if (s.reviewState === 'candidate') stats.candidate++;
         else if (s.reviewState === 'quarantined') stats.quarantined++;
         else if (s.reviewState === 'retired') stats.retired++;
+        else if (s.reviewState === 'rejected') stats.rejected++;
+        else stats.candidate++; // safe fallback
 
+        // 3. Operational Health
         const h = healthMap.get(s.id);
         const dynamicStatus = resolveDynamicHealth(h, s);
 
-        if (dynamicStatus in stats) {
-            stats[dynamicStatus]++;
-        } else {
-            stats.unknown++;
+        if (dynamicStatus !== 'disabled') {
+            if (dynamicStatus in stats) {
+                stats[dynamicStatus]++;
+            } else {
+                stats.unknown++;
+            }
+        }
+
+        // Operational health specific to enabled feeds
+        if (s.enabled) {
+            if (dynamicStatus === 'healthy') stats.activeHealthy++;
+            else if (dynamicStatus === 'delayed') stats.activeDelayed++;
+            else if (dynamicStatus === 'degraded') stats.activeDegraded++;
+            else if (dynamicStatus === 'failed') stats.activeFailed++;
+            else stats.activeUnknown++;
         }
     }
 
     stats.configured = stats.registered;
     stats.attentionRequired = stats.degraded + stats.failed;
+    stats.distinctDomains = domains.size;
     stats.distinctPublishers = publishers.size;
-    stats.verifiedSources = stats.healthy;
-    stats.remainingGap = Math.max(0, stats.targetSources - stats.healthy);
+
+    // Verified sources count = active healthy feeds satisfying verified criteria
+    stats.verifiedSources = stats.activeHealthy;
+    stats.targetProgressPercent = stats.targetSources > 0
+        ? Number(((stats.verifiedSources / stats.targetSources) * 100).toFixed(1))
+        : 0;
+    stats.remainingGap = Math.max(0, stats.targetSources - stats.verifiedSources);
+
+    const activeHealthRatePercent = stats.enabled > 0
+        ? Number(((stats.activeHealthy / stats.enabled) * 100).toFixed(1))
+        : 0;
 
     return {
         ...stats,
         categories,
+        lifecycle: {
+            total: stats.registered,
+            registered: stats.registered,
+            approved: stats.approved,
+            candidate: stats.candidate,
+            quarantined: stats.quarantined,
+            retired: stats.retired,
+            rejected: stats.rejected,
+            isReconciled: stats.registered === (stats.approved + stats.candidate + stats.quarantined + stats.retired + stats.rejected),
+            unaccounted: stats.registered - (stats.approved + stats.candidate + stats.quarantined + stats.retired + stats.rejected)
+        },
+        scheduling: {
+            total: stats.registered,
+            enabled: stats.enabled,
+            disabled: stats.disabled,
+            isReconciled: stats.registered === (stats.enabled + stats.disabled),
+            unaccounted: stats.registered - (stats.enabled + stats.disabled)
+        },
+        activeHealth: {
+            totalActive: stats.enabled,
+            denominator: stats.enabled,
+            numerator: stats.activeHealthy,
+            healthy: stats.activeHealthy,
+            delayed: stats.activeDelayed,
+            degraded: stats.activeDegraded,
+            failed: stats.activeFailed,
+            unknown: stats.activeUnknown,
+            ratePercent: activeHealthRatePercent,
+            healthyRatePercent: activeHealthRatePercent,
+            formattedLabel: `${stats.activeHealthy} / ${stats.enabled} (${activeHealthRatePercent}%)`,
+            label: `${stats.activeHealthy} / ${stats.enabled} active feeds healthy (${activeHealthRatePercent}%)`
+        },
+        targetProgress: {
+            target: stats.targetSources,
+            verified: stats.verifiedSources,
+            percent: stats.targetProgressPercent,
+            remainingGap: stats.remainingGap,
+            label: `${stats.verifiedSources} / ${stats.targetSources} verified operational endpoints (${stats.targetProgressPercent}%)`
+        },
         snapshotGeneratedAt: new Date().toISOString()
     };
 }

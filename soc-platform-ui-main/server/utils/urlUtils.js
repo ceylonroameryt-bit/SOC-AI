@@ -98,8 +98,86 @@ export function isPrivateOrInternalUrl(rawUrl) {
             if (octet1 === 0) return true;
         }
 
+        // Decimal integer IP check (e.g. 2130706433 = 127.0.0.1)
+        if (/^\d+$/.test(host)) {
+            const num = parseInt(host, 10);
+            if (num >= 0 && num <= 4294967295) {
+                const o1 = (num >>> 24) & 255;
+                const o2 = (num >>> 16) & 255;
+                if (o1 === 127 || o1 === 10 || (o1 === 172 && o2 >= 16 && o2 <= 31) || (o1 === 192 && o2 === 168) || (o1 === 169 && o2 === 254) || o1 === 0) {
+                    return true;
+                }
+            }
+        }
+
+        // IPv6 loopback, link-local (fe80::), and IPv4-mapped IPv6
+        const cleanV6 = host.replace(/^\[|\]$/g, '');
+        if (cleanV6 === '::1' || cleanV6.startsWith('fe80:') || cleanV6.startsWith('fc') || cleanV6.startsWith('fd') || cleanV6.includes('::ffff:127.')) {
+            return true;
+        }
+
         return false;
     } catch {
         return true; // Invalid URL is blocked
     }
 }
+
+/**
+ * Validates a redirect location against SSRF boundaries before following it.
+ */
+export function validateRedirectUrl(currentUrl, locationHeader) {
+    if (!locationHeader) return { safe: false, reason: 'Missing Location header' };
+    try {
+        const resolved = new URL(locationHeader, currentUrl).toString();
+        if (isPrivateOrInternalUrl(resolved)) {
+            return { safe: false, url: resolved, reason: 'Redirect target is a private, loopback, or cloud-metadata address' };
+        }
+        return { safe: true, url: resolved };
+    } catch (e) {
+        return { safe: false, reason: `Malformed redirect location: ${e.message}` };
+    }
+}
+
+/**
+ * Performs HTTP fetch while strictly enforcing SSRF checks on every redirect hop.
+ */
+export async function safeFetchWithRedirects(initialUrl, options = {}, maxRedirects = 5) {
+    let currentUrl = initialUrl;
+    let redirects = 0;
+
+    while (redirects <= maxRedirects) {
+        if (isPrivateOrInternalUrl(currentUrl)) {
+            const err = new Error(`SSRF Blocked: URL resolved to private/internal network (${currentUrl})`);
+            err.code = 'SSRF_BLOCKED';
+            throw err;
+        }
+
+        const fetchOptions = {
+            ...options,
+            redirect: 'manual'
+        };
+
+        const response = await fetch(currentUrl, fetchOptions);
+
+        if ([301, 302, 303, 307, 308].includes(response.status)) {
+            redirects++;
+            if (redirects > maxRedirects) {
+                const err = new Error(`Too many redirects (exceeded limit of ${maxRedirects})`);
+                err.code = 'TOO_MANY_REDIRECTS';
+                throw err;
+            }
+            const location = response.headers.get('location');
+            const check = validateRedirectUrl(currentUrl, location);
+            if (!check.safe) {
+                const err = new Error(`SSRF Blocked on redirect: ${check.reason} (${check.url || location})`);
+                err.code = 'SSRF_BLOCKED';
+                throw err;
+            }
+            currentUrl = check.url;
+            continue;
+        }
+
+        return response;
+    }
+}
+

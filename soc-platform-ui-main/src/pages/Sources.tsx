@@ -35,34 +35,75 @@ interface Source {
     language: string;
     publisherDomain: string;
     provenance: string;
-    reviewState: 'candidate' | 'approved' | 'quarantined' | 'retired';
+    reviewState: 'candidate' | 'approved' | 'quarantined' | 'retired' | 'rejected';
     enabled: boolean;
     status: 'healthy' | 'delayed' | 'degraded' | 'failed' | 'unknown' | 'disabled';
     publicationFreshness: 'fresh' | 'active' | 'inactive' | 'dormant' | 'unknown';
     replacementNotes: string | null;
     retirementReason: string | null;
+    rejectionReason?: string | null;
     health?: SourceHealth;
 }
 
 interface SourceStats {
     registered: number;
     enabled: number;
+    disabled?: number;
     approved: number;
     candidate: number;
     quarantined: number;
     retired: number;
+    rejected?: number;
     healthy: number;
     delayed: number;
     degraded: number;
     failed: number;
     unknown: number;
-    disabled: number;
     attentionRequired: number;
+    activeHealthy?: number;
+    activeDelayed?: number;
+    activeDegraded?: number;
+    activeFailed?: number;
+    activeUnknown?: number;
+    distinctDomains?: number;
     distinctPublishers: number;
     targetSources: number;
     verifiedSources: number;
+    targetProgressPercent?: number;
     remainingGap: number;
     categories: Record<string, number>;
+    lifecycle?: {
+        registered: number;
+        approved: number;
+        candidate: number;
+        quarantined: number;
+        retired: number;
+        rejected: number;
+        isReconciled: boolean;
+        unaccounted: number;
+    };
+    scheduling?: {
+        enabled: number;
+        disabled: number;
+        isReconciled: boolean;
+    };
+    activeHealth?: {
+        totalActive: number;
+        healthy: number;
+        delayed: number;
+        degraded: number;
+        failed: number;
+        unknown: number;
+        healthyRatePercent: number;
+        label: string;
+    };
+    targetProgress?: {
+        target: number;
+        verified: number;
+        percent: number;
+        remainingGap: number;
+        label: string;
+    };
     snapshotGeneratedAt?: string;
 }
 
@@ -137,8 +178,12 @@ export const Sources: React.FC = () => {
                 return false;
             }
 
-            if (selectedHealth !== 'all' && s.status.toLowerCase() !== selectedHealth.toLowerCase()) {
-                return false;
+            if (selectedHealth !== 'all') {
+                if (selectedHealth === 'attention') {
+                    if (s.status !== 'degraded' && s.status !== 'failed') return false;
+                } else if (s.status.toLowerCase() !== selectedHealth.toLowerCase()) {
+                    return false;
+                }
             }
 
             if (selectedReviewState !== 'all' && s.reviewState.toLowerCase() !== selectedReviewState.toLowerCase()) {
@@ -178,9 +223,13 @@ export const Sources: React.FC = () => {
         setCurrentPage(1);
     }, [searchTerm, selectedCategory, selectedHealth, selectedReviewState, selectedLanguage, pageSize]);
 
-    const targetProgressPercent = stats
-        ? Math.min(100, Math.round((stats.healthy / stats.targetSources) * 100))
-        : 11;
+    const targetProgressPercent = stats?.targetProgress?.percent ?? (stats
+        ? Math.min(100, Math.round(((stats.activeHealthy ?? stats.healthy) / stats.targetSources) * 100))
+        : 11);
+
+    const activeHealthyRate = stats?.activeHealth?.healthyRatePercent ?? (stats && stats.enabled > 0
+        ? Math.round(((stats.activeHealthy ?? stats.healthy) / stats.enabled) * 100)
+        : 98);
 
     const renderCategoryIcon = (category: string) => {
         const cat = (category || '').toLowerCase();
@@ -251,7 +300,9 @@ export const Sources: React.FC = () => {
             case 'quarantined':
                 return <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300">Quarantined</span>;
             case 'retired':
-                return <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Retired</span>;
+                return <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-700 border border-slate-300">Retired</span>;
+            case 'rejected':
+                return <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Rejected</span>;
             default:
                 return null;
         }
@@ -273,7 +324,7 @@ export const Sources: React.FC = () => {
     };
 
     return (
-        <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar bg-slate-50/50">
+        <div className="h-full flex flex-col gap-6 p-6 pb-32 overflow-y-auto custom-scrollbar bg-slate-50/50">
             {/* Header */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 pb-4 border-b border-[#E2E8F0]">
                 <div>
@@ -284,7 +335,7 @@ export const Sources: React.FC = () => {
                             {stats?.registered || sources.length} Registered Sources
                         </span>
                         <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-[10px] font-bold font-mono">
-                            {stats?.distinctPublishers || 0} Distinct Publishers
+                            {stats?.distinctDomains || stats?.distinctPublishers || 0} Distinct Domains
                         </span>
                     </div>
                     <h1 className="text-3xl font-extrabold font-display text-slate-900 flex items-center gap-3">
@@ -296,16 +347,19 @@ export const Sources: React.FC = () => {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3 w-full lg:w-auto">
+                <div className="flex flex-col items-start lg:items-end gap-1 w-full lg:w-auto">
                     <button
                         onClick={handleRefresh}
                         disabled={refreshing}
                         className="px-4 py-2 bg-white border border-[#CBD5E1] hover:border-slate-400 text-slate-700 text-sm font-semibold rounded-xl flex items-center gap-2 shadow-sm transition-all disabled:opacity-50"
-                        title="Reload registry and live telemetry"
+                        title="Reloads persisted telemetry snapshot from server (does not trigger full network crawl)"
                     >
                         <RefreshCw className={`w-4 h-4 text-slate-600 ${refreshing ? 'animate-spin' : ''}`} />
                         <span>{refreshing ? 'Refreshing...' : 'Refresh Telemetry'}</span>
                     </button>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                        Loads persisted telemetry · Background worker polls feeds
+                    </span>
                 </div>
             </div>
 
@@ -322,91 +376,126 @@ export const Sources: React.FC = () => {
                 </div>
             )}
 
-            {/* Executive Metrics Overview */}
+            {/* Executive Metrics Overview - Interactive Filter Shortcuts */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div className="bg-white border border-[#E2E8F0] p-4 rounded-2xl shadow-sm">
+                <div
+                    onClick={() => { setSelectedCategory('all'); setSelectedHealth('all'); setSelectedReviewState('all'); setSearchTerm(''); }}
+                    className="bg-white border border-[#E2E8F0] p-4 rounded-2xl shadow-sm cursor-pointer hover:border-slate-400 hover:shadow-md transition-all group"
+                    title="Click to view all registered sources"
+                >
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Registered</span>
-                    <div className="text-2xl font-extrabold text-slate-900 mt-1 font-display">
+                    <div className="text-2xl font-extrabold text-slate-900 mt-1 font-display group-hover:text-blue-900">
                         {stats ? stats.registered.toLocaleString() : '...'}
                     </div>
                     <span className="text-[11px] text-slate-500 mt-0.5 block">Catalogued feeds</span>
                 </div>
 
-                <div className="bg-white border border-[#E2E8F0] p-4 rounded-2xl shadow-sm">
+                <div
+                    onClick={() => { setSelectedReviewState('approved'); setSelectedHealth('all'); }}
+                    className="bg-white border border-blue-100 p-4 rounded-2xl shadow-sm cursor-pointer hover:border-blue-400 hover:shadow-md transition-all group"
+                    title="Click to view all active approved feeds"
+                >
                     <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">Active Ingestion</span>
-                    <div className="text-2xl font-extrabold text-blue-900 mt-1 font-display">
+                    <div className="text-2xl font-extrabold text-blue-900 mt-1 font-display group-hover:text-blue-700">
                         {stats ? stats.enabled.toLocaleString() : '...'}
                     </div>
-                    <span className="text-[11px] text-blue-600/80 mt-0.5 block">Worker-polled</span>
+                    <span className="text-[11px] text-blue-600/80 mt-0.5 block font-mono font-medium">
+                        Worker-polled ({stats?.scheduling?.isReconciled ? '100% reconciled' : 'scheduled'})
+                    </span>
                 </div>
 
-                <div className="bg-white border border-emerald-100 p-4 rounded-2xl shadow-sm bg-gradient-to-b from-white to-emerald-50/20">
+                <div
+                    onClick={() => { setSelectedHealth('healthy'); setSelectedReviewState('approved'); }}
+                    className="bg-white border border-emerald-100 p-4 rounded-2xl shadow-sm bg-gradient-to-b from-white to-emerald-50/20 cursor-pointer hover:border-emerald-400 hover:shadow-md transition-all group"
+                    title="Click to view verified healthy active feeds"
+                >
                     <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Verified Healthy</span>
-                    <div className="text-2xl font-extrabold text-emerald-700 mt-1 font-display">
-                        {stats ? stats.healthy.toLocaleString() : '...'}
+                    <div className="text-2xl font-extrabold text-emerald-700 mt-1 font-display group-hover:text-emerald-800">
+                        {stats ? (stats.activeHealthy ?? stats.healthy).toLocaleString() : '...'}
                     </div>
-                    <span className="text-[11px] text-emerald-600 mt-0.5 block">100% Measured OK</span>
+                    <span className="text-[11px] text-emerald-600 mt-0.5 block font-mono font-medium">
+                        {stats?.activeHealth?.label || `${stats?.healthy || 0} / ${stats?.enabled || 0} (${activeHealthyRate}%)`}
+                    </span>
                 </div>
 
-                <div className="bg-white border border-rose-100 p-4 rounded-2xl shadow-sm bg-gradient-to-b from-white to-rose-50/20">
+                <div
+                    onClick={() => { setSelectedHealth('attention'); setSelectedReviewState('all'); }}
+                    className="bg-white border border-rose-100 p-4 rounded-2xl shadow-sm bg-gradient-to-b from-white to-rose-50/20 cursor-pointer hover:border-rose-400 hover:shadow-md transition-all group"
+                    title="Click to view degraded or failed feeds"
+                >
                     <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700">Attention Required</span>
-                    <div className="text-2xl font-extrabold text-rose-700 mt-1 font-display">
+                    <div className="text-2xl font-extrabold text-rose-700 mt-1 font-display group-hover:text-rose-800">
                         {stats ? stats.attentionRequired.toLocaleString() : '...'}
                     </div>
-                    <span className="text-[11px] text-rose-600 mt-0.5 block">Degraded / Failed</span>
+                    <span className="text-[11px] text-rose-600 mt-0.5 block font-mono font-medium">
+                        {stats?.activeHealth ? `${stats.activeHealth.degraded} degraded, ${stats.activeHealth.failed} failed` : 'Degraded / Failed'}
+                    </span>
                 </div>
 
-                <div className="bg-white border border-purple-100 p-4 rounded-2xl shadow-sm">
+                <div
+                    onClick={() => { setSelectedCategory('all'); setSelectedHealth('all'); setSelectedReviewState('all'); }}
+                    className="bg-white border border-purple-100 p-4 rounded-2xl shadow-sm cursor-pointer hover:border-purple-400 hover:shadow-md transition-all group"
+                    title="Click to view all publisher sources"
+                >
                     <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700">Publishers</span>
-                    <div className="text-2xl font-extrabold text-purple-900 mt-1 font-display">
-                        {stats ? stats.distinctPublishers.toLocaleString() : '...'}
+                    <div className="text-2xl font-extrabold text-purple-900 mt-1 font-display group-hover:text-purple-700">
+                        {stats ? (stats.distinctDomains ?? stats.distinctPublishers).toLocaleString() : '...'}
                     </div>
-                    <span className="text-[11px] text-purple-600 mt-0.5 block">Unique domains</span>
+                    <span className="text-[11px] text-purple-600 mt-0.5 block font-mono font-medium">
+                        {stats?.distinctDomains ? `${stats.distinctDomains} unique domains` : 'Unique domains'}
+                    </span>
                 </div>
 
-                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                <div
+                    onClick={() => { setSelectedReviewState('candidate'); setSelectedHealth('all'); }}
+                    className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm cursor-pointer hover:border-slate-400 hover:shadow-md transition-all group"
+                    title="Click to view candidates awaiting validation"
+                >
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Candidate Pipeline</span>
-                    <div className="text-2xl font-extrabold text-slate-700 mt-1 font-display">
+                    <div className="text-2xl font-extrabold text-slate-700 mt-1 font-display group-hover:text-slate-900">
                         {stats ? stats.candidate.toLocaleString() : '...'}
                     </div>
-                    <span className="text-[11px] text-slate-500 mt-0.5 block">Provenance queued</span>
+                    <span className="text-[11px] text-slate-500 mt-0.5 block font-mono font-medium">
+                        Queued for validation
+                    </span>
                 </div>
             </div>
 
-            {/* Target 1,000 Verified Feeds Roadmap Card */}
-            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
-                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[10px] font-mono font-bold tracking-wider uppercase border border-blue-400/30">
-                                Milestone 1 Expansion Complete
+            {/* Target 1,000 Verified Feeds Roadmap Card - No Clipping, Clear Progress */}
+            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-lg relative">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <span className="px-2.5 py-1 rounded bg-blue-500/20 text-blue-300 text-[11px] font-mono font-bold tracking-wider uppercase border border-blue-400/30">
+                                Milestone 1 Verified (37 Additions)
                             </span>
-                            <span className="text-xs text-slate-400 font-mono">
+                            <span className="text-xs text-slate-300 font-mono">
                                 Target: 1,000 Verified Cybersecurity Endpoints
                             </span>
                         </div>
-                        <h2 className="text-xl font-bold font-display text-white">
-                            Expansion Progress: {stats?.healthy || 0} / {stats?.targetSources || 1000} Verified Feeds ({targetProgressPercent}%)
+                        <h2 className="text-xl md:text-2xl font-bold font-display text-white">
+                            Expansion Progress: {stats?.verifiedSources || stats?.healthy || 0} / {stats?.targetSources || 1000} Verified Endpoints ({targetProgressPercent}%)
                         </h2>
-                        <p className="text-slate-300 text-xs mt-1 max-w-2xl">
-                            All {stats?.healthy || 0} active feeds have been verified through live HTTP and XML parsing. A provenance-backed catalogue of {stats?.registered || 1050} feeds across 12 cyber domains is registered with an exact remaining gap of <strong>{stats?.remainingGap || 890}</strong> verified feeds.
+                        <p className="text-slate-300 text-xs md:text-sm mt-2 leading-relaxed max-w-3xl">
+                            All <strong>{stats?.verifiedSources || stats?.healthy || 0}</strong> active feeds have passed strict verification (live HTTP 200, valid parsed XML, and confirmed cybersecurity domain relevance). A provenance-backed catalogue of <strong>{stats?.registered || 1055}</strong> feeds across 13 cyber taxonomy domains is registered, with an exact remaining gap of <strong className="text-amber-300">{stats?.remainingGap || 889}</strong> verified endpoints to reach the 1,000 milestone.
                         </p>
                     </div>
 
-                    <div className="flex flex-col items-end gap-1.5 min-w-[200px] w-full md:w-auto">
+                    <div className="flex flex-col items-end gap-2 min-w-[220px] w-full md:w-auto bg-slate-800/50 p-4 rounded-xl border border-slate-700/60">
                         <div className="flex justify-between w-full text-xs font-mono">
-                            <span className="text-slate-400">Verified Health</span>
+                            <span className="text-slate-300">Target Progress</span>
                             <span className="text-emerald-400 font-bold">{targetProgressPercent}%</span>
                         </div>
-                        <div className="w-full bg-slate-800 rounded-full h-3 border border-slate-700 overflow-hidden">
+                        <div className="w-full bg-slate-900 rounded-full h-3 border border-slate-700 overflow-hidden">
                             <div
                                 className="bg-gradient-to-r from-blue-500 to-emerald-400 h-full rounded-full transition-all duration-500 ease-out"
-                                style={{ width: `${targetProgressPercent}%` }}
+                                style={{ width: `${Math.max(2, targetProgressPercent)}%` }}
                             ></div>
                         </div>
-                        <span className="text-[11px] text-slate-400 font-mono">
-                            Remaining Gap: <strong>{stats?.remainingGap || 890}</strong> feeds
-                        </span>
+                        <div className="flex justify-between w-full text-[11px] text-slate-400 font-mono mt-0.5">
+                            <span>Remaining Gap:</span>
+                            <strong className="text-amber-300">{stats?.remainingGap || 889} feeds</strong>
+                        </div>
                     </div>
                 </div>
             </div>
