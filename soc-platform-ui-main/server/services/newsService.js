@@ -143,7 +143,7 @@ export const fetchAndProcessNews = async () => {
                     const latencyMs = Date.now() - start;
                     recordCollectionResult(sourceId, {
                         success: false,
-                        httpStatus: 500,
+                        httpStatus: null,
                         latencyMs,
                         itemsCount: 0,
                         itemsAccepted: 0,

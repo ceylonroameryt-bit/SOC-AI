@@ -1,9 +1,17 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import Parser from 'rss-parser';
 import { generatePdfReport, generateDocxReport, exportThreatsToStix, escapeCsvField } from '../server/services/reportGenerator.js';
 import { assessSeverity } from '../server/services/severityEngine.js';
 import { clusterArticles } from '../server/services/clusteringEngine.js';
 import { classifyRecord, INTEL_CATEGORIES } from '../server/services/classificationEngine.js';
 import { assessRelevance, DEFAULT_ORG_PROFILE } from '../server/services/relevanceEngine.js';
+import { getFeedHealthRecords, getFeedHealthStats } from '../server/services/feedHealthService.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const NEWS_DATA_FILE = path.join(__dirname, '../server/data/news.json');
 
 const parser = new Parser({ timeout: 6000 });
 
@@ -299,142 +307,35 @@ const FALLBACK_NEWS = [
     }
 ];
 
-let NEWS_CACHE = [...FALLBACK_NEWS];
+let NEWS_CACHE = null;
 let CACHE_TIME = 0;
-const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
-
-const FEED_HEALTH = new Map();
-RSS_FEEDS.forEach(f => {
-    FEED_HEALTH.set(f.url, {
-        sourceId: `src-${f.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`,
-        name: f.name,
-        url: f.url,
-        category: f.category,
-        type: f.type,
-        status: 'healthy',
-        lastAttemptAt: new Date().toISOString(),
-        lastSuccessAt: new Date().toISOString(),
-        consecutiveFailures: 0,
-        averageLatencyMs: 240,
-        itemsLast24Hours: 0,
-        lastHttpStatus: 200,
-        lastError: null
-    });
-});
+const CACHE_TTL_MS = 60 * 1000; // 1 minute in-memory cache
 
 const ANALYST_STATES = new Map();
 
 async function getCachedNews() {
     const now = Date.now();
-    if (now - CACHE_TIME > CACHE_TTL_MS) {
+    if (!NEWS_CACHE || (now - CACHE_TIME > CACHE_TTL_MS)) {
         try {
-            const promises = RSS_FEEDS.map(async (f) => {
-                const start = Date.now();
-                try {
-                    const res = await parser.parseURL(f.url);
-                    const latency = Date.now() - start;
-                    const count = res?.items?.length || 0;
-                    FEED_HEALTH.set(f.url, {
-                        sourceId: `src-${f.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`,
-                        name: f.name,
-                        url: f.url,
-                        category: f.category,
-                        type: f.type,
-                        status: 'healthy',
-                        lastAttemptAt: new Date().toISOString(),
-                        lastSuccessAt: new Date().toISOString(),
-                        consecutiveFailures: 0,
-                        averageLatencyMs: latency,
-                        itemsLast24Hours: count,
-                        lastHttpStatus: 200,
-                        lastError: null
-                    });
-                    return res;
-                } catch (err) {
-                    const latency = Date.now() - start;
-                    const prev = FEED_HEALTH.get(f.url);
-                    const fails = (prev?.consecutiveFailures || 0) + 1;
-                    FEED_HEALTH.set(f.url, {
-                        sourceId: `src-${f.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`,
-                        name: f.name,
-                        url: f.url,
-                        category: f.category,
-                        type: f.type,
-                        status: fails >= 3 ? 'failed' : 'degraded',
-                        lastAttemptAt: new Date().toISOString(),
-                        lastSuccessAt: prev?.lastSuccessAt || null,
-                        consecutiveFailures: fails,
-                        averageLatencyMs: latency,
-                        itemsLast24Hours: prev?.itemsLast24Hours || 0,
-                        lastHttpStatus: 502,
-                        lastError: err.message ? err.message.slice(0, 100) : 'Fetch error'
-                    });
-                    return null;
+            if (fs.existsSync(NEWS_DATA_FILE)) {
+                const raw = fs.readFileSync(NEWS_DATA_FILE, 'utf8');
+                if (raw && raw.trim()) {
+                    const loaded = JSON.parse(raw);
+                    if (Array.isArray(loaded) && loaded.length > 0) {
+                        NEWS_CACHE = loaded;
+                        CACHE_TIME = now;
+                        return NEWS_CACHE;
+                    }
                 }
-            });
-            const results = await Promise.allSettled(promises);
-            const fresh = [];
-
-            results.forEach((r, idx) => {
-                if (r.status !== 'fulfilled' || !r.value) return;
-                const feed = r.value;
-                const meta = RSS_FEEDS[idx];
-                (feed.items || []).slice(0, 15).forEach(item => {
-                    const title = item.title || '';
-                    const contentSnippet = item.contentSnippet || '';
-                    const source = feed.title || meta.name;
-
-                    const sevResult = assessSeverity({
-                        title,
-                        contentSnippet,
-                        source,
-                    });
-                    const capitalizedSev = sevResult.severity === 'critical' ? 'Critical'
-                        : (sevResult.severity === 'high' ? 'High'
-                        : (sevResult.severity === 'medium' ? 'Medium'
-                        : (sevResult.severity === 'informational' ? 'Informational' : 'Low')));
-
-                    const classification = classifyRecord({
-                        title,
-                        contentSnippet,
-                        source,
-                        category: meta.category
-                    });
-
-                    fresh.push({
-                        title,
-                        link: item.link || '#',
-                        pubDate: item.pubDate || new Date().toISOString(),
-                        contentSnippet,
-                        source,
-                        severity: capitalizedSev,
-                        category: meta.category,
-                        sourceCategory: meta.category,
-                        intelCategory: classification.intelCategory,
-                        intelCategoryDisplay: classification.displayName,
-                        secondaryTopics: classification.secondaryTopics,
-                        contentType: classification.contentType,
-                        evidenceStatus: classification.evidenceStatus,
-                        classificationMethod: classification.method,
-                        classificationConfidence: classification.confidence,
-                        classificationReason: classification.reason,
-                        taxonomyVersion: classification.taxonomyVersion,
-                        fetchedAt: new Date().toISOString(),
-                    });
-                });
-            });
-
-            if (fresh.length > 0) {
-                const combined = [...fresh, ...FALLBACK_NEWS];
-                const seen = new Set();
-                NEWS_CACHE = combined.filter(i => {
-                    if (seen.has(i.link)) return false;
-                    seen.add(i.link);
-                    return true;
-                }).sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-                CACHE_TIME = now;
             }
-        } catch {}
+        } catch (err) {
+            console.warn('[API] Warning reading news data file:', err.message);
+        }
+
+        if (!NEWS_CACHE) {
+            NEWS_CACHE = [...FALLBACK_NEWS];
+            CACHE_TIME = now;
+        }
     }
     return NEWS_CACHE;
 }
@@ -808,38 +709,32 @@ export default async function handler(req, res) {
 
     // 12. Sources API
     if (pathname === '/api/sources') {
-        res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
-        return res.json(RSS_FEEDS.map(f => {
-            const h = FEED_HEALTH.get(f.url) || {
-                status: 'healthy',
-                lastAttemptAt: new Date().toISOString(),
-                consecutiveFailures: 0,
-                averageLatencyMs: 240,
-                itemsLast24Hours: 0,
-                lastHttpStatus: 200,
-            };
-            return {
-                ...f,
-                id: h.sourceId,
-                status: h.status,
-                health: h
-            };
-        }));
+        const page = parseInt(searchParams.get('page'), 10) || 1;
+        const limit = parseInt(searchParams.get('limit'), 10) || 50;
+        const search = searchParams.get('q') || searchParams.get('search');
+        const category = searchParams.get('category');
+        const health = searchParams.get('health');
+        const reviewState = searchParams.get('reviewState');
+        const language = searchParams.get('language');
+        const paginated = searchParams.get('paginated') === 'true' || searchParams.has('page');
+
+        if (paginated) {
+            const result = getFeedHealthRecords({ page, limit, search, category, health, reviewState, language });
+            res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+            return res.json(result);
+        }
+
+        const result = getFeedHealthRecords({ page: 1, limit: 5000, search, category, health, reviewState, language });
+        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+        return res.json(result.records);
     }
 
     if (pathname === '/api/sources/stats') {
-        res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
-        const stats = RSS_FEEDS.reduce((a, s) => { a[s.category] = (a[s.category] || 0) + 1; return a; }, {});
-        const healthCounts = { configured: RSS_FEEDS.length, healthy: 0, degraded: 0, failed: 0, disabled: 0 };
-        RSS_FEEDS.forEach(f => {
-            const st = FEED_HEALTH.get(f.url)?.status || 'healthy';
-            if (st in healthCounts) healthCounts[st]++;
-            else healthCounts.healthy++;
-        });
+        const stats = getFeedHealthStats();
+        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
         return res.json({
-            total: RSS_FEEDS.length,
-            health: healthCounts,
-            categories: stats
+            total: stats.registered,
+            ...stats
         });
     }
 
@@ -862,17 +757,12 @@ export default async function handler(req, res) {
         });
         const uniqueTitles24h = new Set(news24h.map(n => n.title));
 
-        const healthCounts = { configured: RSS_FEEDS.length, healthy: 0, degraded: 0, failed: 0, disabled: 0 };
-        RSS_FEEDS.forEach(f => {
-            const st = FEED_HEALTH.get(f.url)?.status || 'healthy';
-            if (st in healthCounts) healthCounts[st]++;
-            else healthCounts.healthy++;
-        });
+        const healthStats = getFeedHealthStats();
 
         const snapshot = {
             generatedAt: new Date().toISOString(),
             isStale: false,
-            lastSuccessfulIngestion: new Date().toISOString(),
+            lastSuccessfulIngestion: healthStats.snapshotGeneratedAt || new Date().toISOString(),
             news: {
                 latestCount: news.length,
                 total24h: news24h.length,
@@ -889,7 +779,7 @@ export default async function handler(req, res) {
                 medium: 0,
                 low: 0,
             },
-            sources: healthCounts,
+            sources: healthStats,
             mitre: {
                 activeTactics: 14,
                 activeTechniques: 33,
