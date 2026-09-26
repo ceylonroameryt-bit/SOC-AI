@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
 import { API_BASE } from '../config/api';
 
 interface Cluster {
@@ -15,6 +16,8 @@ interface Cluster {
 
 interface BriefData {
     content: string | null;
+    notice?: string;
+    sources?: Array<{ title: string; url: string; publisher: string; publishedAt?: string }>;
     fallback?: string;
     error?: string;
     cached?: boolean;
@@ -74,6 +77,8 @@ const MarkdownText = ({ text }: { text: string }) => {
 };
 
 export default function AIBrief() {
+    const [params] = useSearchParams();
+    const range = params.get('time') || params.get('range') || '24h';
     const [brief, setBrief] = useState<BriefData | null>(null);
     const [clusters, setClusters] = useState<ClustersData | null>(null);
     const [briefLoading, setBriefLoading] = useState(false);
@@ -81,16 +86,16 @@ export default function AIBrief() {
     const [clustersError, setClustersError] = useState<string | null>(null);
     const [expandedCluster, setExpandedCluster] = useState<string | null>(null);
 
-    const loadBrief = async () => {
+    const loadBrief = useCallback(async () => {
         setBriefLoading(true);
         try {
-            const resp = await fetch(`${API_BASE}/api/ai/brief`);
+            const resp = await fetch(`${API_BASE}/api/ai/brief?time=${encodeURIComponent(range)}`);
             setBrief(await resp.json());
         } catch { setBrief({ content: null, error: 'Failed to connect to server.' }); }
         finally { setBriefLoading(false); }
-    };
+    }, [range]);
 
-    const loadClusters = async () => {
+    const loadClusters = useCallback(async () => {
         setClustersLoading(true);
         setClustersError(null);
         try {
@@ -102,12 +107,12 @@ export default function AIBrief() {
             console.error('Failed to load clusters:', err);
             setClustersError(err instanceof Error ? err.message : 'Failed to load incident clusters');
         } finally { setClustersLoading(false); }
-    };
+    }, []);
 
     useEffect(() => {
         loadBrief();
         loadClusters();
-    }, []);
+    }, [loadBrief, loadClusters]);
 
     const briefContent = brief?.content || brief?.fallback;
 
@@ -116,17 +121,17 @@ export default function AIBrief() {
             {/* Header */}
             <div className="pb-4 border-b border-[#E2E8F0]">
                 <div className="flex items-center gap-2 mb-1.5">
-                    <span className="section-label">AI Threat Synthesis</span>
+                    <span className="section-label">Intelligence Briefing</span>
                     <span className="availability-chip">
                         <span className="chip-dot"></span>
                         Automated Sitrep
                     </span>
                 </div>
                 <h1 className="text-3xl font-extrabold font-display text-slate-900 flex items-center gap-3">
-                    <span>🤖</span> AI Intelligence Briefing
+                    <span>🤖</span> Intelligence Briefing
                 </h1>
                 <p className="text-slate-500 text-sm mt-1">
-                    LLM-powered executive briefings, vector synthesis, and de-duplicated incident clusters from today's intelligence stream.
+                    Source-linked briefings and grouped reports from the collected intelligence stream.
                 </p>
             </div>
 
@@ -159,21 +164,27 @@ export default function AIBrief() {
                                     <span className="dot dot-red"></span>
                                     <span className="dot dot-yellow"></span>
                                     <span className="dot dot-green"></span>
-                                    <span className="proj-img-url">AI Executive Summary Report</span>
+                                    <span className="proj-img-url">Intelligence Summary Report</span>
                                 </div>
                                 <span className="text-slate-400 text-xs font-mono pr-2">
-                                    {brief?.generatedAt ? new Date(brief.generatedAt).toLocaleString() : 'Live'}
+                                    {brief?.generatedAt ? new Date(brief.generatedAt).toLocaleString() : 'Timestamp unavailable'}
                                 </span>
                             </div>
                             <div className="p-6 bg-white">
                                 {briefContent ? (
-                                    <MarkdownText text={briefContent} />
+                                    <>
+                                        {brief?.notice && <p className="text-xs text-amber-800 mb-4">{brief.notice}</p>}
+                                        <MarkdownText text={briefContent} />
+                                        {brief?.sources && <ol className="mt-4 space-y-2 text-sm">{brief.sources.map((source, i) => (
+                                            <li key={source.url}>[{i + 1}] <a href={/^https?:\/\//i.test(source.url) ? source.url : undefined} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">{source.title}</a> — {source.publisher} · {source.publishedAt || 'Publication date unavailable'}</li>
+                                        ))}</ol>}
+                                        </>
                                 ) : (
                                     <div className="text-center py-10 text-slate-500 space-y-3">
                                         <p className="text-4xl">🤖</p>
-                                        <p className="font-bold text-slate-800">LLM Provider Not Configured</p>
-                                        <p className="text-sm">Configure <code className="text-[#1E3A8A] font-bold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">OPENAI_API_KEY</code> or <code className="text-[#1E3A8A] font-bold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">OLLAMA_URL</code> in your environment.</p>
-                                        <p className="text-xs text-slate-400">Navigate to Settings → Integration Settings to view configuration guides.</p>
+                                        <p className="font-bold text-slate-800">Briefing unavailable</p>
+                                        <p className="text-sm">No source-backed briefing is available for this reporting window.</p>
+                                        <p className="text-xs text-slate-400">Try another time range or refresh the briefing.</p>
                                     </div>
                                 )}
                             </div>

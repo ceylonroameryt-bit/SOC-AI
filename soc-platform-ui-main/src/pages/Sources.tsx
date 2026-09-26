@@ -10,6 +10,7 @@ interface Source {
     category: string;
     status?: string;
     description?: string;
+    health?: { lastSuccessAt?: string | null; lastError?: string | null };
 }
 
 const Sources = () => {
@@ -51,7 +52,7 @@ const Sources = () => {
                         <span className="section-label">Feed Ingestion</span>
                         <span className="availability-chip">
                             <span className="chip-dot"></span>
-                            {sources.length} Active Feeds
+                            {sources.length} Configured Feeds
                         </span>
                     </div>
                     <h1 className="text-3xl font-extrabold font-display text-slate-900 flex items-center gap-3">
@@ -59,7 +60,7 @@ const Sources = () => {
                         Intelligence Sources
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">
-                        Active data collection nodes and automated ingest points across clear and dark web networks
+                        Configured public feeds with measured collection health
                     </p>
                 </div>
 
@@ -94,8 +95,8 @@ const Sources = () => {
                         <Globe className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="text-base font-bold font-display text-slate-900">Dark Web & Hidden Services Collection</h2>
-                        <p className="text-xs text-slate-500">Methodology used to monitor underground cyber intelligence</p>
+                        <h2 className="text-base font-bold font-display text-slate-900">Collection methodology</h2>
+                        <p className="text-xs text-slate-500">Source provenance and limits of collected reporting</p>
                     </div>
                 </div>
 
@@ -103,30 +104,30 @@ const Sources = () => {
                     <div className="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-sm">
                         <h3 className="font-bold text-slate-900 mb-1.5 flex items-center gap-2 text-xs">
                             <span className="w-2 h-2 rounded-full bg-blue-700"></span>
-                            Tor Network Crawling
+                            Third-party reporting
                         </h3>
                         <p className="text-xs text-slate-600 leading-relaxed">
-                            Collectors utilize <span className="font-semibold text-slate-800">Tor proxies</span> to route traffic to <strong>.onion</strong> hidden services, indexing ransomware leak sites and darknet forums.
+                            Ransomware intelligence is collected from public third-party feeds, including Ransomware.live. This does not imply direct access to hidden services.
                         </p>
                     </div>
 
                     <div className="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-sm">
                         <h3 className="font-bold text-slate-900 mb-1.5 flex items-center gap-2 text-xs">
                             <span className="w-2 h-2 rounded-full bg-blue-700"></span>
-                            Marketplace Monitoring
+                            Unverified claims
                         </h3>
                         <p className="text-xs text-slate-600 leading-relaxed">
-                            Automated crawlers track illicit marketplaces for credential dumps, initial access broker listings, and compromised infrastructure.
+                            Victim listings and threat actor claims require corroboration. A feed entry is not independent confirmation of a breach.
                         </p>
                     </div>
 
                     <div className="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-sm">
                         <h3 className="font-bold text-slate-900 mb-1.5 flex items-center gap-2 text-xs">
                             <span className="w-2 h-2 rounded-full bg-blue-700"></span>
-                            Chat & Telegram Scraping
+                            Collection health
                         </h3>
                         <p className="text-xs text-slate-600 leading-relaxed">
-                            Continuous ingestion from open and invite-only <span className="font-semibold text-slate-800">threat actor channels</span> where threat groups claim DDoS and breach activity.
+                            Health reflects collection attempts, not the accuracy of source claims. Unknown status means no measurement is available.
                         </p>
                     </div>
                 </div>
@@ -155,9 +156,9 @@ const Sources = () => {
                                     >
                                         <ExternalLink className="w-4 h-4" />
                                     </a>
-                                    <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                        Active
+                                    <span className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${source.status === 'healthy' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
+
+                                        {source.status || 'unknown'}
                                     </span>
                                 </div>
                             </div>
@@ -165,6 +166,8 @@ const Sources = () => {
                             <h3 className="text-base font-bold font-display text-slate-900 mb-1.5 group-hover:text-[#1E3A8A] transition-colors truncate" title={source.name}>
                                 {source.name}
                             </h3>
+                            <p className="text-xs text-slate-500">Last success: {source.health?.lastSuccessAt ? new Date(source.health.lastSuccessAt).toLocaleString() : 'Not measured'}</p>
+                            {source.health?.lastError && <p className="text-xs text-amber-800 break-words">{source.health.lastError}</p>}
                         </div>
 
                         <div className="flex flex-col gap-1 mt-4 pt-3 border-t border-[#E2E8F0]">

@@ -28,7 +28,8 @@ interface EnrichmentResult {
     enrichment?: {
         epssScore?: number;
         epssPercentile?: number;
-        isKEV: boolean;
+        isKEV: boolean | null;
+        epssDate?: string | null;
         nvdLink: string;
         error?: string;
     };
@@ -345,6 +346,8 @@ export default function Enrichment() {
                                         <h3 className="text-slate-900 font-bold font-display flex items-center gap-2 text-base">
                                             <span className="text-lg">📋</span> CVE Exploitation Metrics
                                         </h3>
+                                        {result.enrichment.isKEV === null && <span className="text-xs text-amber-800">KEV lookup unavailable</span>}
+                                        {result.enrichment.epssDate && <span className="text-xs text-slate-500">EPSS as of {result.enrichment.epssDate}</span>}
                                         {result.enrichment.isKEV && (
                                             <span className="px-2.5 py-0.5 bg-red-100 text-red-800 border border-red-200 text-xs font-bold rounded-full">
                                                 🔴 CISA KEV — ACTIVELY EXPLOITED
@@ -355,7 +358,7 @@ export default function Enrichment() {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="bg-slate-50 rounded-xl p-4 text-center border border-slate-200">
                                                 <p className="text-3xl font-extrabold font-display text-orange-600">
-                                                    {result.enrichment.epssScore !== null
+                                                    {result.enrichment.epssScore != null
                                                         ? `${((result.enrichment.epssScore || 0) * 100).toFixed(1)}%`
                                                         : 'N/A'}
                                                 </p>
@@ -363,7 +366,7 @@ export default function Enrichment() {
                                             </div>
                                             <div className="bg-slate-50 rounded-xl p-4 text-center border border-slate-200">
                                                 <p className="text-3xl font-extrabold font-display text-[#1E3A8A]">
-                                                    {result.enrichment.epssPercentile !== null
+                                                    {result.enrichment.epssPercentile != null
                                                         ? `${((result.enrichment.epssPercentile || 0) * 100).toFixed(0)}th`
                                                         : 'N/A'}
                                                 </p>

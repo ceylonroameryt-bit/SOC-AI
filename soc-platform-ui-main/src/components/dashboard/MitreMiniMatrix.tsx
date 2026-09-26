@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Target, ArrowUpRight, Flame, Shield, ChevronRight, FileSearch, Code2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -22,116 +23,15 @@ export interface TacticItem {
     techniques: TechniqueItem[];
 }
 
-const DEFAULT_TACTICS: TacticItem[] = [
-    {
-        id: 'TA0043', name: 'Reconnaissance', shortName: 'Recon', icon: '🛰️', color: '#38bdf8', hitCount: 207,
-        techniques: [
-            { techniqueId: 'T1595', name: 'Active Scanning', tacticId: 'TA0043', hitCount: 142 },
-            { techniqueId: 'T1592', name: 'Gather Victim Host Information', tacticId: 'TA0043', hitCount: 65 }
-        ]
-    },
-    {
-        id: 'TA0042', name: 'Resource Development', shortName: 'Resource Dev', icon: '🏗️', color: '#818cf8', hitCount: 55,
-        techniques: [
-            { techniqueId: 'T1583', name: 'Acquire Infrastructure', tacticId: 'TA0042', hitCount: 38 },
-            { techniqueId: 'T1588', name: 'Obtain Capabilities', tacticId: 'TA0042', hitCount: 17 }
-        ]
-    },
-    {
-        id: 'TA0001', name: 'Initial Access', shortName: 'Initial Access', icon: '🚪', color: '#f87171', hitCount: 2544,
-        techniques: [
-            { techniqueId: 'T1190', name: 'Exploit Public-Facing Application', tacticId: 'TA0001', hitCount: 2180 },
-            { techniqueId: 'T1566', name: 'Phishing', tacticId: 'TA0001', hitCount: 245 },
-            { techniqueId: 'T1078', name: 'Valid Accounts', tacticId: 'TA0001', hitCount: 119 }
-        ]
-    },
-    {
-        id: 'TA0002', name: 'Execution', shortName: 'Execution', icon: '⚡', color: '#fb923c', hitCount: 192,
-        techniques: [
-            { techniqueId: 'T1059', name: 'Command and Scripting Interpreter', tacticId: 'TA0002', hitCount: 134 },
-            { techniqueId: 'T1204', name: 'User Execution', tacticId: 'TA0002', hitCount: 58 }
-        ]
-    },
-    {
-        id: 'TA0003', name: 'Persistence', shortName: 'Persistence', icon: '⚓', color: '#facc15', hitCount: 92,
-        techniques: [
-            { techniqueId: 'T1053', name: 'Scheduled Task/Job', tacticId: 'TA0003', hitCount: 54 },
-            { techniqueId: 'T1547', name: 'Boot or Logon Autostart Execution', tacticId: 'TA0003', hitCount: 38 }
-        ]
-    },
-    {
-        id: 'TA0004', name: 'Privilege Escalation', shortName: 'Priv Esc', icon: '📈', color: '#a3e635', hitCount: 204,
-        techniques: [
-            { techniqueId: 'T1068', name: 'Exploitation for Privilege Escalation', tacticId: 'TA0004', hitCount: 168 },
-            { techniqueId: 'T1548', name: 'Abuse Elevation Control Mechanism', tacticId: 'TA0004', hitCount: 36 }
-        ]
-    },
-    {
-        id: 'TA0005', name: 'Defense Evasion', shortName: 'Def Evasion', icon: '🥷', color: '#34d399', hitCount: 115,
-        techniques: [
-            { techniqueId: 'T1070', name: 'Indicator Removal', tacticId: 'TA0005', hitCount: 68 },
-            { techniqueId: 'T1027', name: 'Obfuscated Files or Information', tacticId: 'TA0005', hitCount: 47 }
-        ]
-    },
-    {
-        id: 'TA0006', name: 'Credential Access', shortName: 'Cred Access', icon: '🔑', color: '#2dd4bf', hitCount: 109,
-        techniques: [
-            { techniqueId: 'T1110', name: 'Brute Force', tacticId: 'TA0006', hitCount: 64 },
-            { techniqueId: 'T1555', name: 'Credentials from Password Stores', tacticId: 'TA0006', hitCount: 45 }
-        ]
-    },
-    {
-        id: 'TA0007', name: 'Discovery', shortName: 'Discovery', icon: '🧭', color: '#22d3ee', hitCount: 70,
-        techniques: [
-            { techniqueId: 'T1082', name: 'System Information Discovery', tacticId: 'TA0007', hitCount: 42 },
-            { techniqueId: 'T1018', name: 'Remote System Discovery', tacticId: 'TA0007', hitCount: 28 }
-        ]
-    },
-    {
-        id: 'TA0008', name: 'Lateral Movement', shortName: 'Lateral Move', icon: '↔️', color: '#60a5fa', hitCount: 78,
-        techniques: [
-            { techniqueId: 'T1021', name: 'Remote Services', tacticId: 'TA0008', hitCount: 52 },
-            { techniqueId: 'T1570', name: 'Lateral Tool Transfer', tacticId: 'TA0008', hitCount: 26 }
-        ]
-    },
-    {
-        id: 'TA0009', name: 'Collection', shortName: 'Collection', icon: '📦', color: '#a78bfa', hitCount: 70,
-        techniques: [
-            { techniqueId: 'T1560', name: 'Archive Collected Data', tacticId: 'TA0009', hitCount: 45 },
-            { techniqueId: 'T1005', name: 'Data from Local System', tacticId: 'TA0009', hitCount: 25 }
-        ]
-    },
-    {
-        id: 'TA0011', name: 'Command & Control', shortName: 'C2', icon: '📡', color: '#c084fc', hitCount: 223,
-        techniques: [
-            { techniqueId: 'T1071', name: 'Application Layer Protocol', tacticId: 'TA0011', hitCount: 160 },
-            { techniqueId: 'T1573', name: 'Encrypted Channel', tacticId: 'TA0011', hitCount: 63 }
-        ]
-    },
-    {
-        id: 'TA0010', name: 'Exfiltration', shortName: 'Exfiltration', icon: '📤', color: '#f472b6', hitCount: 130,
-        techniques: [
-            { techniqueId: 'T1041', name: 'Exfiltration Over C2 Channel', tacticId: 'TA0010', hitCount: 88 },
-            { techniqueId: 'T1567', name: 'Exfiltration Over Web Service', tacticId: 'TA0010', hitCount: 42 }
-        ]
-    },
-    {
-        id: 'TA0040', name: 'Impact', shortName: 'Impact', icon: '💥', color: '#ef4444', hitCount: 593,
-        techniques: [
-            { techniqueId: 'T1486', name: 'Data Encrypted for Impact', tacticId: 'TA0040', hitCount: 472 },
-            { techniqueId: 'T1489', name: 'Service Stop', tacticId: 'TA0040', hitCount: 71 },
-            { techniqueId: 'T1485', name: 'Data Destruction', tacticId: 'TA0040', hitCount: 28 },
-            { techniqueId: 'T1491', name: 'Defacement', tacticId: 'TA0040', hitCount: 22 }
-        ]
-    },
-];
-
 const MitreMiniMatrix = () => {
-    const [tactics, setTactics] = useState<TacticItem[]>(DEFAULT_TACTICS);
+    const [rangeParams] = useSearchParams();
+    const range = rangeParams.get('time') || rangeParams.get('range') || '24h';
+    const [error, setError] = useState(false);
+    const [tactics, setTactics] = useState<TacticItem[]>([]);
     const [selectedTacticId, setSelectedTacticId] = useState<string>('TA0001');
 
     useEffect(() => {
-        fetch(`${API_BASE}/api/mitre/heatmap`)
+        fetch(`${API_BASE}/api/mitre/heatmap?time=${encodeURIComponent(range)}`)
             .then(res => (res.ok ? res.json() : null))
             .then(data => {
                 if (data?.tactics && Array.isArray(data.tactics)) {
@@ -169,7 +69,7 @@ const MitreMiniMatrix = () => {
                         };
                     });
 
-                    if (mapped.length > 0) {
+                    if (Array.isArray(mapped)) {
                         setTactics(mapped);
                         // Default to highest-hit tactic
                         const topTactic = [...mapped].sort((a, b) => b.hitCount - a.hitCount)[0];
@@ -179,8 +79,8 @@ const MitreMiniMatrix = () => {
                     }
                 }
             })
-            .catch(() => {});
-    }, []);
+            .catch(() => setError(true));
+    }, [range]);
 
     const selectedTactic = tactics.find(t => t.id === selectedTacticId) || tactics[0];
 
@@ -210,7 +110,7 @@ const MitreMiniMatrix = () => {
                             </span>
                         </div>
                         <p className="text-[11px] text-slate-500 mt-0.5">
-                            Real-time technique extraction mapped across incoming adversary telemetry
+                            Automated keyword matches in collected reports; review source evidence before use
                         </p>
                     </div>
                 </div>
@@ -258,7 +158,7 @@ const MitreMiniMatrix = () => {
                                 <span
                                     className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md border ${getHitBadgeClass(t.hitCount)}`}
                                 >
-                                    {t.hitCount.toLocaleString()} hits
+                                    {t.hitCount.toLocaleString()} report matches
                                 </span>
                             </div>
                         </button>
@@ -289,7 +189,7 @@ const MitreMiniMatrix = () => {
 
                         <div className="flex items-center gap-2 text-xs">
                             <span className="text-slate-500 font-mono text-[11px]">
-                                Phase Total: <strong className="text-slate-900 font-semibold">{selectedTactic.hitCount.toLocaleString()}</strong> hits
+                                Phase Total: <strong className="text-slate-900 font-semibold">{selectedTactic.hitCount.toLocaleString()}</strong> report matches
                             </span>
                             <Link
                                 to={`/mitre`}
@@ -316,7 +216,7 @@ const MitreMiniMatrix = () => {
                                                     {tech.techniqueId}
                                                 </span>
                                                 <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${getHitBadgeClass(tech.hitCount)}`}>
-                                                    {tech.hitCount.toLocaleString()} hits
+                                                    {tech.hitCount.toLocaleString()} report matches
                                                 </span>
                                             </div>
                                             <h5 className="text-xs font-bold text-slate-900 leading-snug line-clamp-2" title={tech.name}>
@@ -363,27 +263,12 @@ const MitreMiniMatrix = () => {
                     <span className="flex items-center gap-1 text-red-600 font-semibold mr-1">
                         <Flame className="w-3.5 h-3.5" /> Top Observed:
                     </span>
-                    <button
-                        type="button"
-                        onClick={() => setSelectedTacticId('TA0001')}
-                        className="px-2 py-0.5 rounded bg-red-50 text-red-700 font-semibold border border-red-200 hover:bg-red-100 transition-colors cursor-pointer"
-                    >
-                        Initial Access (2,544)
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setSelectedTacticId('TA0040')}
-                        className="px-2 py-0.5 rounded bg-orange-50 text-orange-700 font-semibold border border-orange-200 hover:bg-orange-100 transition-colors cursor-pointer"
-                    >
-                        Impact (593)
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setSelectedTacticId('TA0011')}
-                        className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-semibold border border-purple-200 hover:bg-purple-100 transition-colors cursor-pointer"
-                    >
-                        C2 (223)
-                    </button>
+                    {[...tactics].filter(t => t.hitCount > 0).sort((a, b) => b.hitCount - a.hitCount).slice(0, 3).map(t => (
+                        <button key={t.id} type="button" onClick={() => setSelectedTacticId(t.id)} className="px-2 py-0.5 rounded border border-slate-200">
+                            {t.shortName} ({t.hitCount.toLocaleString()})
+                        </button>
+                    ))}
+                    {tactics.length === 0 && <span>{error ? 'Mappings unavailable' : 'Loading mappings…'}</span>}
                 </div>
                 <div className="flex items-center gap-3">
                     <Link to="/mitre-news" className="text-blue-600 hover:underline font-medium">

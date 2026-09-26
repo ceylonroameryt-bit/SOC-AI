@@ -113,7 +113,7 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
         const enriched = await enrichCVE('CVE-2024-3400');
         assert.ok(enriched);
         assert.equal(enriched.cveId, 'CVE-2024-3400');
-        assert.equal(typeof enriched.isKEV, 'boolean');
+        assert.ok(enriched.isKEV === null || typeof enriched.isKEV === 'boolean', 'Unknown KEV status must remain null');
         assert.equal(typeof (enriched.epssScore ?? 0), 'number');
     });
 
@@ -163,7 +163,7 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
         const uniqueSources = getUniqueSources();
         const summary = getFeedHealthStats();
         assert.equal(summary.configured, uniqueSources.length);
-        const sum = summary.healthy + summary.degraded + summary.failed + summary.disabled;
+        const sum = summary.healthy + summary.degraded + summary.failed + summary.disabled + summary.unknown + summary.delayed;
         assert.equal(sum, summary.configured, 'Sum of health buckets must exactly match configured sources');
     });
 

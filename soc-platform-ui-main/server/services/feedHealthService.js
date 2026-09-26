@@ -69,7 +69,6 @@ function initHealth() {
 
     // Ensure all unique sources have an entry
     const sources = getUniqueSources();
-    const now = new Date().toISOString();
     for (const s of sources) {
         if (!healthMap.has(s.id)) {
             healthMap.set(s.id, {
@@ -78,14 +77,14 @@ function initHealth() {
                 url: s.url,
                 category: s.category,
                 type: s.type,
-                status: 'healthy', // initial measured state
-                lastAttemptAt: now,
-                lastSuccessAt: now,
-                lastItemReceivedAt: now,
-                lastHttpStatus: 200,
+                status: 'unknown', // no successful collection has been measured
+                lastAttemptAt: null,
+                lastSuccessAt: null,
+                lastItemReceivedAt: null,
+                lastHttpStatus: null,
                 consecutiveFailures: 0,
-                itemsLast24Hours: 12,
-                averageLatencyMs: 240,
+                itemsLast24Hours: 0,
+                averageLatencyMs: null,
                 parserErrorsLast24Hours: 0,
                 lastError: null,
             });
@@ -209,14 +208,8 @@ export function getFeedHealthRecords() {
         const health = healthMap.get(s.id);
         return {
             ...s,
-            status: health?.status || 'healthy',
-            health: health || {
-                status: 'healthy',
-                lastAttemptAt: new Date().toISOString(),
-                consecutiveFailures: 0,
-                averageLatencyMs: 250,
-                itemsLast24Hours: 8,
-            }
+            status: health?.status || 'unknown',
+            health: health || { status: 'unknown', lastAttemptAt: null, lastSuccessAt: null }
         };
     });
 }
@@ -232,14 +225,16 @@ export function getFeedHealthStats() {
         degraded: 0,
         failed: 0,
         disabled: 0,
+        unknown: 0,
+        delayed: 0,
     };
 
     for (const r of records) {
-        const st = r.status || 'healthy';
+        const st = r.status || 'unknown';
         if (st in stats) {
             stats[st]++;
         } else {
-            stats.healthy++;
+            stats.unknown++;
         }
     }
 
