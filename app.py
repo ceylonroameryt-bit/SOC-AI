@@ -14,7 +14,6 @@ from pydantic import BaseModel, Field
 from fastapi import FastAPI, HTTPException, Security, Depends
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 # Initialize FastAPI App
 app = FastAPI(

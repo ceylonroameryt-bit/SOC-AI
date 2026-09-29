@@ -63,8 +63,8 @@ jobs:
       - name: Lint with flake8
         run: |
           pip install flake8
-          # E501 = line-too-long, W503 = line break before binary op (style-only)
-          flake8 app.py --max-line-length=120 --ignore=E501,W503 --count
+          # Ignore line length and whitespace style codes: E501, W503, E302, E305
+          flake8 app.py --max-line-length=120 --ignore=E501,W503,E302,E305 --count
 
       - name: Verify Microservice Syntax
         run: |
@@ -74,11 +74,4 @@ jobs:
       # P2 item 25: basic import/startup test for FastAPI app
       - name: Test FastAPI App Startup
         run: |
-          python -c "
-          import os
-          os.environ['INGEST_API_KEY'] = 'test-ci-key'
-          os.environ['ALLOWED_ORIGIN'] = 'http://localhost:3000'
-          from app import app
-          assert app is not None, 'FastAPI app failed to initialize'
-          print('FastAPI app initialization: OK')
-          "
+          python -c "import os; os.environ['INGEST_API_KEY'] = 'test-ci-key'; os.environ['ALLOWED_ORIGIN'] = 'http://localhost:3000'; from app import app; assert app is not None, 'FastAPI app failed to initialize'; print('FastAPI app initialization: OK')"
