@@ -46,7 +46,7 @@ router.get('/snapshot', async (req, res) => {
         const snapshot = {
             generatedAt: new Date().toISOString(),
             isStale: false,
-            lastSuccessfulIngestion: getFeedHealthRecords().map(r => r.health?.lastSuccessAt).filter(Boolean).sort().at(-1) || null,
+            lastSuccessfulIngestion: (getFeedHealthRecords()?.records || []).map(r => r.health?.lastSuccessAt).filter(Boolean).sort().at(-1) || null,
             news: newsMetrics(news, range),
             threats: {
                 total: threats.length,

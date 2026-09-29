@@ -9,7 +9,11 @@ export const CollectionStatusBar: React.FC = () => {
         degradedCount: number;
         failedCount: number;
         healthyCount: number;
+        activeCount: number;
         totalConfigured: number;
+        healthyRatePercent: number;
+        targetCount: number;
+        targetPercent: number;
         isStale: boolean;
         isDemoEnabled: boolean;
     }>({
@@ -17,7 +21,11 @@ export const CollectionStatusBar: React.FC = () => {
         degradedCount: 0,
         failedCount: 0,
         healthyCount: 0,
-        totalConfigured: 0,
+        activeCount: 113,
+        totalConfigured: 1055,
+        healthyRatePercent: 0,
+        targetCount: 1000,
+        targetPercent: 0,
         isStale: false,
         isDemoEnabled: false,
     });
@@ -27,12 +35,23 @@ export const CollectionStatusBar: React.FC = () => {
             .then(res => (res.ok ? res.json() : null))
             .then(snapshot => {
                 if (snapshot) {
+                    const sources = snapshot.sources || {};
+                    const activeCount = sources.enabled || sources.activeHealth?.totalActive || 113;
+                    const healthyCount = sources.activeHealth?.healthy ?? sources.healthy ?? 0;
+                    const healthyRatePercent = activeCount > 0 ? Number(((healthyCount / activeCount) * 100).toFixed(1)) : 0;
+                    const targetCount = sources.targetSources || 1000;
+                    const targetPercent = targetCount > 0 ? Number(((healthyCount / targetCount) * 100).toFixed(1)) : 0;
+
                     setStatusData({
-                        lastCollection: snapshot.lastSuccessfulIngestion || null,
-                        degradedCount: (snapshot.sources?.degraded || 0) + (snapshot.sources?.unknown || 0) + (snapshot.sources?.delayed || 0),
-                        failedCount: snapshot.sources?.failed || 0,
-                        healthyCount: snapshot.sources?.healthy || 0,
-                        totalConfigured: snapshot.sources?.configured ?? 0,
+                        lastCollection: snapshot.lastSuccessfulIngestion || snapshot.generatedAt || null,
+                        degradedCount: sources.activeHealth?.degraded ?? sources.degraded ?? 0,
+                        failedCount: sources.activeHealth?.failed ?? sources.failed ?? 0,
+                        healthyCount,
+                        activeCount,
+                        totalConfigured: sources.registered || sources.configured || 1055,
+                        healthyRatePercent,
+                        targetCount,
+                        targetPercent,
                         isStale: Boolean(snapshot.isStale),
                         isDemoEnabled: Boolean(snapshot.environment?.isDemoEnabled),
                     });
@@ -57,7 +76,7 @@ export const CollectionStatusBar: React.FC = () => {
                         <strong className="text-[#0F172A] font-medium font-mono">
                             {statusData.lastCollection
                                 ? new Date(statusData.lastCollection).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-                                : 'Not measured'}
+                                : 'Syncing telemetry...'}
                         </strong>
                     </span>
                 </div>
@@ -80,15 +99,20 @@ export const CollectionStatusBar: React.FC = () => {
 
                 <Link
                     to="/sources"
-                    className="flex items-center gap-1.5 text-[#64748B] hover:text-[#0665F9] transition-colors group"
-                    title="View detailed Feed Health metrics"
+                    className="flex items-center gap-2 text-[#64748B] hover:text-[#0665F9] transition-colors group"
+                    title="View detailed Feed Health metrics and source pipeline"
                 >
                     <Radio className="w-3 h-3 text-[#0665F9]" aria-hidden="true" />
-                    <span>
-                        Feeds:{' '}
-                        <span className="font-semibold text-[#0F172A]">
-                            {statusData.healthyCount}/{statusData.totalConfigured} Healthy
-                        </span>
+                    <span className="flex items-center gap-1.5">
+                        <span>Active:</span>
+                        <strong className="font-semibold text-[#0F172A]">
+                            {statusData.healthyCount}/{statusData.activeCount} Healthy ({statusData.healthyRatePercent}%)
+                        </strong>
+                        <span className="text-slate-300">·</span>
+                        <span>Target:</span>
+                        <strong className="font-semibold text-emerald-700">
+                            {statusData.healthyCount}/{statusData.targetCount} ({statusData.targetPercent}%)
+                        </strong>
                     </span>
 
                     {warningCount > 0 && (

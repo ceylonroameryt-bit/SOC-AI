@@ -437,12 +437,18 @@ const crc32Table = (() => {
 })();
 
 /**
- * Escapes fields for CSV format
+ * Escapes fields for CSV format.
+ * P0 item 6: Prevents CSV formula injection (DDE / spreadsheet injection attack).
+ * Prefixes values starting with = + - @ or \t / \r with a single quote.
  */
 export function escapeCsvField(field) {
     if (field === null || field === undefined) return '';
-    const str = String(field);
-    if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+    let str = String(field);
+    // Prefix formula-injection trigger characters with a single quote
+    if (str.length > 0 && /^[=+\-@\t\r]/.test(str)) {
+        str = `'${str}`;
+    }
+    if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r') || str.includes("'")) {
         return `"${str.replace(/"/g, '""')}"`;
     }
     return str;

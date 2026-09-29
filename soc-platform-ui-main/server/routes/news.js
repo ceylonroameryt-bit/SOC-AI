@@ -9,7 +9,9 @@ const router = express.Router();
 router.get('/', (req, res) => {
     try {
         const rawNews = getNews();
-        const limit = parseInt(req.query.limit) || 100;
+        // P1 item 21: clamp limit 1–1000, default 100
+        const rawLimit = parseInt(req.query.limit);
+        const limit = Math.min(1000, Math.max(1, isNaN(rawLimit) ? 100 : rawLimit));
         const { severity, category, intelCategory, q } = req.query;
 
         // Ensure runtime data contract: all records must have classification fields

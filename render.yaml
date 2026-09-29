@@ -15,6 +15,8 @@ services:
         sync: false # Set in Render Dashboard with Supabase / Neon connection string
       - key: INGEST_API_KEY
         generateValue: true
+      - key: NOTIFICATION_API_KEY
+        generateValue: true
       - key: VIRUSTOTAL_API_KEY
         sync: false
       - key: ABUSEIPDB_API_KEY
@@ -25,8 +27,12 @@ services:
         sync: false
       - key: DISCORD_WEBHOOK_URL
         sync: false
+      - key: ALLOWED_ORIGIN
+        sync: false # Set to your Vercel frontend URL: https://soc-ai-six.vercel.app
 
   # ── 2. AI Microservice (Python FastAPI) ───────────────────────────────────────
+  # P2 item 29: OPENAI_API_KEY removed — app.py does NOT use it.
+  # AI_SERVICE_URL aligned to port 8000 (default uvicorn port).
   - type: web
     name: no-entry-ai-microservice
     runtime: python
@@ -36,5 +42,11 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
-      - key: OPENAI_API_KEY
-        sync: false
+      - key: PORT
+        value: 8000
+      - key: INGEST_API_KEY
+        sync: false # Must match the backend service's INGEST_API_KEY
+      - key: ALLOWED_ORIGIN
+        sync: false # Set to your Vercel frontend URL
+      # AI_SERVICE_URL on the backend should be set to this service's Render URL
+      # e.g., https://no-entry-ai-microservice.onrender.com

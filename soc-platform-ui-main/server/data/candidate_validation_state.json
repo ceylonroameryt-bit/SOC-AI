@@ -1,0 +1,442 @@
+{
+  "startedAt": "2026-09-26T16:23:34.360Z",
+  "lastUpdatedAt": "2026-09-26T16:23:57.929Z",
+  "attempted": 60,
+  "approved": 36,
+  "rejected": 24,
+  "rejectionBreakdown": {
+    "not_found": 0,
+    "access_restricted": 5,
+    "timeout": 1,
+    "parser_error": 0,
+    "empty_feed": 0,
+    "not_a_feed": 2,
+    "irrelevant": 0,
+    "other": 0,
+    "network_error": 9,
+    "irrelevant_content": 5,
+    "server_error": 2
+  },
+  "processedIds": {
+    "dave-conroy": {
+      "timestamp": "2026-09-26T16:23:34.444Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "NETWORK_ERROR",
+      "rejectionReason": "Network transport error: fetch failed"
+    },
+    "snowming04-s-blog": {
+      "timestamp": "2026-09-26T16:23:34.462Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "NETWORK_ERROR",
+      "rejectionReason": "Network transport error: fetch failed"
+    },
+    "vitalik-buterin-s-website": {
+      "timestamp": "2026-09-26T16:23:34.472Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "NETWORK_ERROR",
+      "rejectionReason": "Network transport error: fetch failed"
+    },
+    "rdist": {
+      "timestamp": "2026-09-26T16:23:34.633Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "quantakrypto-post-quantum-cryptography": {
+      "timestamp": "2026-09-26T16:23:34.651Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "xiaoxia-pg": {
+      "timestamp": "2026-09-26T16:23:35.070Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "arthurchiao-s-blog": {
+      "timestamp": "2026-09-26T16:23:35.153Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "a-few-thoughts-on-cryptographic-engineering": {
+      "timestamp": "2026-09-26T16:23:35.176Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "fleetsmith-blog": {
+      "timestamp": "2026-09-26T16:23:35.179Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "NETWORK_ERROR",
+      "rejectionReason": "Network transport error: fetch failed"
+    },
+    "armin-ronacher-s-thoughts-and-writings": {
+      "timestamp": "2026-09-26T16:23:35.201Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "sukka-s-blog": {
+      "timestamp": "2026-09-26T16:23:35.279Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "weiyigeek-blog": {
+      "timestamp": "2026-09-26T16:23:35.321Z",
+      "approved": false,
+      "httpStatus": 403,
+      "errorCategory": "ACCESS_RESTRICTED",
+      "rejectionReason": "HTTP 403 Forbidden / Publisher WAF Restriction"
+    },
+    "coding-in-security": {
+      "timestamp": "2026-09-26T16:23:35.372Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source": {
+      "timestamp": "2026-09-26T16:23:35.614Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "cloud-world": {
+      "timestamp": "2026-09-26T16:23:35.747Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "zifangsky": {
+      "timestamp": "2026-09-26T16:23:36.131Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "NETWORK_ERROR",
+      "rejectionReason": "Network transport error: fetch failed"
+    },
+    "c0refast": {
+      "timestamp": "2026-09-26T16:23:36.721Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "jiajun": {
+      "timestamp": "2026-09-26T16:23:37.149Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-2": {
+      "timestamp": "2026-09-26T16:23:37.280Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "mohuishou": {
+      "timestamp": "2026-09-26T16:23:37.292Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "no-headback": {
+      "timestamp": "2026-09-26T16:23:37.310Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "verne-in-github": {
+      "timestamp": "2026-09-26T16:23:37.328Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-4": {
+      "timestamp": "2026-09-26T16:23:38.423Z",
+      "approved": false,
+      "httpStatus": 200,
+      "errorCategory": "NOT_A_FEED",
+      "rejectionReason": "HTML document returned instead of RSS/Atom XML feed"
+    },
+    "source-3": {
+      "timestamp": "2026-09-26T16:23:38.476Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-1": {
+      "timestamp": "2026-09-26T16:23:43.192Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "TIMEOUT",
+      "rejectionReason": "Connection timed out (8s limit)"
+    },
+    "maxiee-blog": {
+      "timestamp": "2026-09-26T16:23:52.828Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "web3rover-monthly": {
+      "timestamp": "2026-09-26T16:23:52.879Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "random-ascii-tech-blog-of-bruce-dawson": {
+      "timestamp": "2026-09-26T16:23:53.042Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rob-zolkos": {
+      "timestamp": "2026-09-26T16:23:53.092Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "attify-blog-iot-security-pentesting-and-exploitation": {
+      "timestamp": "2026-09-26T16:23:53.105Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "mozilla-hacks-the-web-developer-blog": {
+      "timestamp": "2026-09-26T16:23:53.138Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pen-test-partners": {
+      "timestamp": "2026-09-26T16:23:53.305Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "der-flounder": {
+      "timestamp": "2026-09-26T16:23:53.335Z",
+      "approved": false,
+      "httpStatus": 200,
+      "errorCategory": "IRRELEVANT_CONTENT",
+      "rejectionReason": "Content does not demonstrate cybersecurity domain relevance"
+    },
+    "taxodium": {
+      "timestamp": "2026-09-26T16:23:53.379Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "cve": {
+      "timestamp": "2026-09-26T16:23:53.381Z",
+      "approved": false,
+      "httpStatus": 403,
+      "errorCategory": "ACCESS_RESTRICTED",
+      "rejectionReason": "HTTP 403 Forbidden / Publisher WAF Restriction"
+    },
+    "the-world-of-it-amp-cyber-security-ehacking-net": {
+      "timestamp": "2026-09-26T16:23:53.421Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "NETWORK_ERROR",
+      "rejectionReason": "Network transport error: fetch failed"
+    },
+    "web-reflection": {
+      "timestamp": "2026-09-26T16:23:54.099Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hackerone-hacker-activity": {
+      "timestamp": "2026-09-26T16:23:54.113Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "nosec": {
+      "timestamp": "2026-09-26T16:23:54.144Z",
+      "approved": false,
+      "httpStatus": 403,
+      "errorCategory": "ACCESS_RESTRICTED",
+      "rejectionReason": "HTTP 403 Forbidden / Publisher WAF Restriction"
+    },
+    "seebug": {
+      "timestamp": "2026-09-26T16:23:54.158Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "NETWORK_ERROR",
+      "rejectionReason": "Network transport error: fetch failed"
+    },
+    "the-morning-paper": {
+      "timestamp": "2026-09-26T16:23:54.321Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rsa-blog": {
+      "timestamp": "2026-09-26T16:23:54.345Z",
+      "approved": false,
+      "httpStatus": 200,
+      "errorCategory": "NOT_A_FEED",
+      "rejectionReason": "HTML document returned instead of RSS/Atom XML feed"
+    },
+    "bunnie-s-blog": {
+      "timestamp": "2026-09-26T16:23:54.415Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "security-boulevard": {
+      "timestamp": "2026-09-26T16:23:54.441Z",
+      "approved": false,
+      "httpStatus": 403,
+      "errorCategory": "ACCESS_RESTRICTED",
+      "rejectionReason": "HTTP 403 Forbidden / Publisher WAF Restriction"
+    },
+    "tianyong-tang": {
+      "timestamp": "2026-09-26T16:23:54.459Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "NETWORK_ERROR",
+      "rejectionReason": "Network transport error: fetch failed"
+    },
+    "source-5": {
+      "timestamp": "2026-09-26T16:23:54.656Z",
+      "approved": false,
+      "httpStatus": 500,
+      "errorCategory": "SERVER_ERROR",
+      "rejectionReason": "HTTP 500 (Internal Server Error)"
+    },
+    "source-8": {
+      "timestamp": "2026-09-26T16:23:54.715Z",
+      "approved": false,
+      "httpStatus": 200,
+      "errorCategory": "IRRELEVANT_CONTENT",
+      "rejectionReason": "Content does not demonstrate cybersecurity domain relevance"
+    },
+    "tenable-blog-1": {
+      "timestamp": "2026-09-26T16:23:54.882Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-7": {
+      "timestamp": "2026-09-26T16:23:54.940Z",
+      "approved": false,
+      "httpStatus": 521,
+      "errorCategory": "SERVER_ERROR",
+      "rejectionReason": "HTTP 521 ()"
+    },
+    "google-online-security-blog": {
+      "timestamp": "2026-09-26T16:23:54.979Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "sploitus-com-exploits-rss-feed": {
+      "timestamp": "2026-09-26T16:23:55.188Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-11": {
+      "timestamp": "2026-09-26T16:23:55.228Z",
+      "approved": false,
+      "httpStatus": 403,
+      "errorCategory": "ACCESS_RESTRICTED",
+      "rejectionReason": "HTTP 403 Forbidden / Publisher WAF Restriction"
+    },
+    "life-likes-a-matrix": {
+      "timestamp": "2026-09-26T16:23:55.304Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "packet-storm-1": {
+      "timestamp": "2026-09-26T16:23:55.519Z",
+      "approved": false,
+      "httpStatus": null,
+      "errorCategory": "NETWORK_ERROR",
+      "rejectionReason": "Network transport error: fetch failed"
+    },
+    "infosecmatter": {
+      "timestamp": "2026-09-26T16:23:55.600Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "secwiki-news": {
+      "timestamp": "2026-09-26T16:23:55.603Z",
+      "approved": false,
+      "httpStatus": 200,
+      "errorCategory": "IRRELEVANT_CONTENT",
+      "rejectionReason": "Content does not demonstrate cybersecurity domain relevance"
+    },
+    "source-10": {
+      "timestamp": "2026-09-26T16:23:55.838Z",
+      "approved": false,
+      "httpStatus": 200,
+      "errorCategory": "IRRELEVANT_CONTENT",
+      "rejectionReason": "Content does not demonstrate cybersecurity domain relevance"
+    },
+    "sec-news": {
+      "timestamp": "2026-09-26T16:23:56.023Z",
+      "approved": false,
+      "httpStatus": 200,
+      "errorCategory": "IRRELEVANT_CONTENT",
+      "rejectionReason": "Content does not demonstrate cybersecurity domain relevance"
+    },
+    "source-6": {
+      "timestamp": "2026-09-26T16:23:56.547Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-9": {
+      "timestamp": "2026-09-26T16:23:57.909Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    }
+  }
+}

@@ -202,10 +202,20 @@ export const getDbSeverityStats = async () => {
     }
 };
 
+export const closeDb = async () => {
+    if (pool) {
+        try {
+            await pool.end();
+            isConnected = false;
+        } catch {}
+    }
+};
+
 export default {
     isDbConnected,
     insertThreat,
     insertIOCs,
     getThreatsFromDb,
     getDbSeverityStats,
+    closeDb,
 };

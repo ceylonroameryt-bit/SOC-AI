@@ -8,7 +8,7 @@ const IntelligenceWorkspace = lazy(() => import('./pages/IntelligenceWorkspace')
 const Dashboard      = lazy(() => import('./pages/Dashboard'));
 const Sources        = lazy(() => import('./pages/Sources'));
 const Threats        = lazy(() => import('./pages/Threats'));
-const Archives       = lazy(() => import('./pages/Archives'));
+const Explore        = lazy(() => import('./pages/Explore'));
 const Enrichment     = lazy(() => import('./pages/Enrichment'));
 const DetectionsHub  = lazy(() => import('./pages/DetectionsHub'));
 const MitreHeatmap   = lazy(() => import('./pages/MitreHeatmap'));
@@ -68,7 +68,8 @@ function App() {
 
               {/* Intelligence Archives & Critical Radar */}
               <Route path="threats"      element={<Threats />} />
-              <Route path="archives"     element={<Archives />} />
+              <Route path="archives"     element={<Navigate to="/explore" replace />} />
+              <Route path="explore"      element={<Explore />} />
               <Route path="critical"     element={<CriticalThreatsView />} />
               <Route path="ai"           element={<AIBrief />} />
               <Route path="metrics"      element={<div className="p-6 h-full flex flex-col bg-white"><h2 className="text-2xl font-bold font-sans text-slate-900 mb-6">Severity Metrics</h2><div className="flex-1 min-h-0"><SeverityChart /></div></div>} />

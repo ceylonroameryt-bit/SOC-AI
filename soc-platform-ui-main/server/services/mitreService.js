@@ -216,19 +216,49 @@ const TECHNIQUE_KEYWORD_MAP = [
     { id: 'T1496', tactic: 'TA0040', name: 'Resource Hijacking', keywords: ['cryptominer', 'crypto mining', 'xmrig', 'monero miner', 'coin miner'] },
 ];
 
+// ── MITRE keyword matching helpers ───────────────────────────────────────────
+
+/**
+ * Build a RegExp for a keyword that uses word boundaries (\b) to prevent
+ * substring false positives (e.g., "rce" should not match "resource").
+ *
+ * Short keywords that are substrings of common English words are listed in
+ * EXACT_KEYWORDS — they must appear as standalone tokens.
+ */
+const SHORT_EXACT_KEYWORDS = new Set([
+    'rce', 'bec', 'lpe', 'smb', 'wmi', 'vps', 'c2', 'rdp',
+    'tor', 'dos', 'rat', 'apt',
+]);
+
+const KEYWORD_REGEX_CACHE = new Map();
+
+function keywordRegex(kw) {
+    if (KEYWORD_REGEX_CACHE.has(kw)) return KEYWORD_REGEX_CACHE.get(kw);
+    // Escape special regex chars in keyword
+    const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // For short/ambiguous keywords enforce full word boundary on both sides
+    const pattern = SHORT_EXACT_KEYWORDS.has(kw)
+        ? `(?<![a-zA-Z])${escaped}(?![a-zA-Z])` // word-boundary equivalent for ASCII
+        : `\\b${escaped}\\b`;
+    const rx = new RegExp(pattern, 'i');
+    KEYWORD_REGEX_CACHE.set(kw, rx);
+    return rx;
+}
+
 let techniqueCatalogue = TECHNIQUE_KEYWORD_MAP;
 console.log(`[MITRE] Loaded ${techniqueCatalogue.length} technique mappings.`);
 
 /**
  * Map a piece of text to ATT&CK techniques and increment hit counters.
+ * P1 item 11: uses word-boundary regex matching instead of plain includes().
  */
 export const mapTextToTechniques = (text, newsItemId = null, recordHit = true) => {
     if (!text) return [];
-    const lower = text.toLowerCase();
     const matched = [];
 
     for (const technique of techniqueCatalogue) {
-        if (technique.keywords.some(kw => lower.includes(kw))) {
+        // P1 item 11: test each keyword with its word-boundary regex
+        if (technique.keywords.some(kw => keywordRegex(kw).test(text))) {
             if (recordHit) {
                 const current = techniqueHits.get(technique.id) || { count: 0, items: [] };
                 current.count += 1;
@@ -243,6 +273,53 @@ export const mapTextToTechniques = (text, newsItemId = null, recordHit = true) =
         }
     }
     return matched;
+};
+
+/**
+ * Enrich a single article object with MITRE ATT&CK technique and tactic details.
+ * Mutates the article in place AND returns it for chaining.
+ *
+ * Sets:
+ *   mitreTechniques      - array of resolved technique objects
+ *   mitreTactics         - array of unique tactic objects
+ *   isMitreCategorized   - boolean
+ *   mappingMethod        - 'keyword-heuristic' (always labelled honestly)
+ *   mappingTimestamp     - ISO-8601 when this enrichment ran
+ *
+ * @param {object} item  - Article record (must have title, contentSnippet, link)
+ * @returns {object} mutated article
+ */
+export const enrichArticleWithMitre = (item) => {
+    const text = `${item.title || ''} ${item.contentSnippet || ''}`;
+    const matchedIds = mapTextToTechniques(text, item.link || item.id, false);
+
+    const matchedTechniques = matchedIds.map(techId => {
+        const tech  = techniqueCatalogue.find(t => t.id === techId);
+        const tactic = MITRE_TACTICS.find(t => t.id === tech?.tactic);
+        return {
+            id:         techId,
+            name:       tech?.name || techId,
+            tacticId:   tech?.tactic || 'Unknown',
+            tacticName: tactic?.name || 'Unknown',
+            tacticColor: tactic?.color || '#38bdf8',
+            tacticIcon:  tactic?.icon  || '🛡️',
+            mitreUrl:   `https://attack.mitre.org/techniques/${techId}/`,
+        };
+    });
+
+    const matchedTacticIds = new Set(matchedTechniques.map(t => t.tacticId));
+    const matchedTactics = Array.from(matchedTacticIds).map(id => {
+        const found = MITRE_TACTICS.find(t => t.id === id);
+        return found || { id, name: id, shortName: id, icon: '🛡️', color: '#38bdf8' };
+    });
+
+    item.mitreTechniques     = matchedTechniques;
+    item.mitreTactics        = matchedTactics;
+    item.isMitreCategorized  = matchedTechniques.length > 0;
+    // Honest labels: all current mappings are keyword heuristics, not ML or analyst-confirmed
+    item.mappingMethod       = matchedTechniques.length > 0 ? 'keyword-heuristic' : null;
+    item.mappingTimestamp    = new Date().toISOString();
+    return item;
 };
 
 /**
@@ -300,11 +377,30 @@ export const getCategorizedNews = (options = {}) => {
         techniqueId,
         severity,
         search,
+        source,
+        dateFrom,
+        dateTo,
+        mappedOnly,
         page = 1,
         limit = 50,
     } = options;
 
-    const allNews = getNews();
+    let allNews = getNews();
+
+    // ── Date filter (server-side, inclusive start / exclusive end) ──────────
+    const fromMs = dateFrom ? new Date(dateFrom).getTime() : null;
+    const toMs   = dateTo   ? new Date(dateTo).getTime()   : null;
+    if (fromMs !== null || toMs !== null) {
+        allNews = allNews.filter(item => {
+            if (!item.pubDate) return false;
+            const ms = new Date(item.pubDate).getTime();
+            if (isNaN(ms)) return false;
+            if (fromMs !== null && ms < fromMs) return false;
+            if (toMs   !== null && ms >= toMs)  return false;
+            return true;
+        });
+    }
+
     if (!allNews || allNews.length === 0) {
         return {
             articles: [],
@@ -317,50 +413,30 @@ export const getCategorizedNews = (options = {}) => {
     }
 
     // Process and enrich each article with MITRE details & IOCs
-    // Reuses mapTextToTechniques() to avoid duplicating keyword-matching logic
+    // Uses enrichArticleWithMitre() as single source of truth for keyword-matching
     const categorizedArticles = allNews.map((item, idx) => {
+        const enriched = enrichArticleWithMitre({ ...item });
         const text = `${item.title || ''} ${item.contentSnippet || ''}`;
-
-        // Use the single source-of-truth matching function (read-only, don't increment counter on GET)
-        const matchedIds = mapTextToTechniques(text, item.link || item.id, false);
-
-        // Resolve full technique details from matched IDs
-        const matchedTechniques = matchedIds.map(techId => {
-            const tech = techniqueCatalogue.find(t => t.id === techId);
-            const tactic = MITRE_TACTICS.find(t => t.id === tech?.tactic);
-            return {
-                id: techId,
-                name: tech?.name || techId,
-                tacticId: tech?.tactic || 'Unknown',
-                tacticName: tactic?.name || 'Unknown',
-                tacticColor: tactic?.color || '#38bdf8',
-                tacticIcon: tactic?.icon || '🛡️',
-                mitreUrl: `https://attack.mitre.org/techniques/${techId}/`
-            };
-        });
-
-        // Unique tactic objects
-        const matchedTacticIds = new Set(matchedTechniques.map(t => t.tacticId));
-        const matchedTactics = Array.from(matchedTacticIds).map(id => {
-            const found = MITRE_TACTICS.find(t => t.id === id);
-            return found || { id, name: id, shortName: id, icon: '🛡️', color: '#38bdf8' };
-        });
-
-        // Fast extraction of IOCs
         const extracted = extractIOCs(text);
 
         return {
             id: item.id || `news-${idx}-${encodeURIComponent((item.title || '').slice(0, 20))}`,
             title: item.title || 'Untitled Threat Alert',
             link: item.link || '#',
-            pubDate: item.pubDate || new Date().toISOString(),
+            // pubDate is publisher-reported; null means unknown — never fabricated
+            pubDate: item.pubDate || null,
+            pubDateMissing: item.pubDateMissing || !item.pubDate,
+            ingestedAt: item.ingestedAt || item.fetchedAt || null,
             contentSnippet: item.contentSnippet || '',
             source: item.source || 'Threat Intelligence Feed',
             severity: item.severity || 'Medium',
             category: item.category || 'General Info',
-            mitreTechniques: matchedTechniques,
-            mitreTactics: matchedTactics,
-            isMitreCategorized: matchedTechniques.length > 0,
+            intelCategory: item.intelCategory || null,
+            mitreTechniques: enriched.mitreTechniques,
+            mitreTactics: enriched.mitreTactics,
+            isMitreCategorized: enriched.isMitreCategorized,
+            mappingMethod: enriched.mappingMethod,
+            mappingTimestamp: enriched.mappingTimestamp,
             extractedIOCs: extracted,
         };
     });
@@ -414,7 +490,7 @@ export const getCategorizedNews = (options = {}) => {
 
     if (tacticId && tacticId !== 'all') {
         filtered = filtered.filter(art =>
-            art.mitreTactics.some(t => t.id.toLowerCase() === tacticId.toLowerCase() || t.shortName.toLowerCase() === tacticId.toLowerCase())
+            art.mitreTactics.some(t => t.id.toLowerCase() === tacticId.toLowerCase() || t.shortName?.toLowerCase() === tacticId.toLowerCase())
         );
     }
 
@@ -430,6 +506,11 @@ export const getCategorizedNews = (options = {}) => {
         );
     }
 
+    if (source && source !== 'all') {
+        const srcLower = source.toLowerCase();
+        filtered = filtered.filter(art => (art.source || '').toLowerCase().includes(srcLower));
+    }
+
     if (search && search.trim()) {
         const q = search.toLowerCase();
         filtered = filtered.filter(art =>
@@ -438,6 +519,12 @@ export const getCategorizedNews = (options = {}) => {
             art.source.toLowerCase().includes(q) ||
             art.mitreTechniques.some(t => t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q))
         );
+    }
+
+    if (mappedOnly === 'true') {
+        filtered = filtered.filter(art => art.isMitreCategorized);
+    } else if (mappedOnly === 'false') {
+        filtered = filtered.filter(art => !art.isMitreCategorized);
     }
 
     // Sort by publication date descending
