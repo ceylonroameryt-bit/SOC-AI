@@ -30,8 +30,11 @@ import { getUniqueSources, recordCollectionResult } from './services/feedHealthS
 import { collectFeed, executeCollectionPool } from './services/collectorEngine.js';
 import { assessSeverity } from './services/severityEngine.js';
 import { classifyRecord } from './services/classificationEngine.js';
-import { insertThreat, insertIOCs, isDbConnected } from './db/db.js';
+import { insertThreat, insertIOCs, isDbConnected, closeDb } from './db/db.js';
 import { extractIOCs } from './services/enrichmentService.js';
+import { deriveArticleId, parsePubDate, invalidateNewsCache } from './services/newsService.js';
+import { enforceContentRestrictions } from './services/permissionService.js';
+import { startCollectionRun, completeCollectionRun, failCollectionRun } from './services/collectionRunService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -148,9 +151,11 @@ async function runCollector() {
     acquireLock();
 
     const startTime = Date.now();
+    const runRecord = startCollectionRun('cli', { concurrency: CONCURRENCY, sourceFilter });
+
     console.log(`\n======================================================`);
     console.log(`🛡️  NO ENTRY SOC — Threat Intelligence Collector CLI v2.0`);
-    console.log(`Started at: ${new Date().toISOString()}`);
+    console.log(`Started at: ${new Date().toISOString()} | Run ID: ${runRecord.runId}`);
     console.log(`Options: dryRun=${isDryRun}, force=${isForce}, concurrency=${CONCURRENCY}`);
     console.log(`======================================================\n`);
 
@@ -166,8 +171,13 @@ async function runCollector() {
 
     if (allSources.length === 0) {
         console.warn(`[COLLECTOR] No eligible active sources found.`);
+        completeCollectionRun(runRecord.runId, {
+            sources: { attempted: 0, succeeded: 0, notModified304: 0, failed: 0, skipped: 0 }
+        });
+        clearTimeout(runWatchdog);
         releaseLock();
-        process.exit(0);
+        await closeDb();
+        return;
     }
 
     console.log(`[COLLECTOR] Fetching ${allSources.length} active sources with bounded pool (${CONCURRENCY})...`);
@@ -176,6 +186,14 @@ async function runCollector() {
     const existingLinks = new Set(existingNews.map(n => n.link));
     const newItems = [];
     const headerUpdates = [];
+    const rejectionReasons = {
+        duplicate_link: 0,
+        missing_required_fields: 0,
+        content_policy_filtered: 0
+    };
+
+    let lastSuccessfulFetch = null;
+    let lastSuccessfulArticleWrite = null;
 
     const fetchResults = await executeCollectionPool(allSources, CONCURRENCY, (completed, total, res) => {
         if (completed % 25 === 0 || completed === total) {
@@ -196,6 +214,7 @@ async function runCollector() {
         if (notModified) {
             notModifiedFeeds++;
             successfulFeeds++;
+            lastSuccessfulFetch = new Date().toISOString();
             console.log(`  [304 NOT MODIFIED] ${source.name} (${latencyMs}ms)`);
             recordCollectionResult(sourceId, {
                 success: true,
@@ -228,6 +247,7 @@ async function runCollector() {
         }
 
         successfulFeeds++;
+        lastSuccessfulFetch = new Date().toISOString();
         const rawItems = feed?.items || [];
         totalReceived += rawItems.length;
 
@@ -238,19 +258,21 @@ async function runCollector() {
         for (const raw of rawItems.slice(0, limitArg)) {
             if (!raw || !raw.link || !raw.title) {
                 feedRejected++;
+                rejectionReasons.missing_required_fields++;
                 continue;
             }
 
             // Deduplication check
             if (existingLinks.has(raw.link)) {
                 feedRejected++;
+                rejectionReasons.duplicate_link++;
                 continue;
             }
 
             // Normalization
             const title = String(raw.title).trim();
             const snippet = String(raw.contentSnippet || raw.content || '').slice(0, 1000).trim();
-            const pubDate = raw.pubDate ? new Date(raw.pubDate).toISOString() : null;
+            const pubDate = parsePubDate(raw.pubDate);
             if (pubDate && !latestPubDate) latestPubDate = pubDate;
 
             // Strict Severity Assessment
@@ -273,10 +295,12 @@ async function runCollector() {
             });
 
             const record = {
+                id: deriveArticleId(raw.link),
                 title,
                 link: raw.link,
-                pubDate: pubDate || new Date().toISOString(),
-                publishedAt: pubDate, // preserves null/unknown if missing
+                pubDate: pubDate, // null when missing — never fabricated
+                pubDateMissing: pubDate === null,
+                publishedAt: pubDate,
                 ingestedAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 contentSnippet: snippet,
@@ -296,8 +320,9 @@ async function runCollector() {
                 fetchedAt: new Date().toISOString()
             };
 
+            const safeRecord = enforceContentRestrictions(record, sourceId);
             existingLinks.add(raw.link);
-            newItems.push(record);
+            newItems.push(safeRecord);
             feedAccepted++;
             totalAccepted++;
         }
@@ -340,6 +365,8 @@ async function runCollector() {
     if (newItems.length > 0 && !isDryRun) {
         const combined = [...newItems, ...existingNews].sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
         saveNews(combined);
+        lastSuccessfulArticleWrite = new Date().toISOString();
+        invalidateNewsCache();
         console.log(`[COLLECTOR] ✅ Persisted ${newItems.length} new records to disk.`);
 
         // Persist to PostgreSQL if connected
@@ -365,12 +392,37 @@ async function runCollector() {
         console.log(`[COLLECTOR] ℹ️  All sources up to date. No new publications.`);
     }
 
+    completeCollectionRun(runRecord.runId, {
+        sources: {
+            attempted: allSources.length,
+            succeeded: successfulFeeds,
+            notModified304: notModifiedFeeds,
+            failed: failedFeeds,
+            skipped: 0
+        },
+        entries: {
+            parsed: totalReceived,
+            accepted: totalAccepted,
+            rejected: totalRejected,
+            rejectionReasons,
+            inserted: newItems.length,
+            updated: 0,
+            deduplicated: rejectionReasons.duplicate_link
+        },
+        lastSuccessfulFetch,
+        lastSuccessfulArticleWrite: newItems.length > 0 ? lastSuccessfulArticleWrite : null
+    });
+
+    clearTimeout(runWatchdog);
     releaseLock();
-    process.exit(0);
+    await closeDb();
 }
 
-runCollector().catch(err => {
+runCollector().catch(async (err) => {
     console.error(`[COLLECTOR] ❌ Fatal error:`, err);
+    try { failCollectionRun(runRecord?.runId, err); } catch {}
+    clearTimeout(runWatchdog);
     releaseLock();
-    process.exit(1);
+    await closeDb();
+    process.exitCode = 1;
 });

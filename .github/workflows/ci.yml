@@ -31,6 +31,11 @@ jobs:
         working-directory: soc-platform-ui-main
         run: npm run lint
 
+      # P2 item 25: npm audit at high level blocks CI on new high/critical vulns
+      - name: Security Audit
+        working-directory: soc-platform-ui-main
+        run: npm audit --audit-level=high
+
       - name: Run Test Suite & Build
         working-directory: soc-platform-ui-main
         run: npm test
@@ -54,6 +59,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # P2 item 25: real Python linting step (not just syntax check)
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          # E501 = line-too-long, W503 = line break before binary op (style-only)
+          flake8 app.py --max-line-length=120 --ignore=E501,W503 --count
+
       - name: Verify Microservice Syntax
         run: |
           python -m py_compile app.py
+          echo "Python syntax check passed."
+
+      # P2 item 25: basic import/startup test for FastAPI app
+      - name: Test FastAPI App Startup
+        run: |
+          python -c "
+          import os
+          os.environ['INGEST_API_KEY'] = 'test-ci-key'
+          os.environ['ALLOWED_ORIGIN'] = 'http://localhost:3000'
+          from app import app
+          assert app is not None, 'FastAPI app failed to initialize'
+          print('FastAPI app initialization: OK')
+          "

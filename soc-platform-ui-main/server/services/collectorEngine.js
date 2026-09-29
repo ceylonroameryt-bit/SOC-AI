@@ -16,7 +16,7 @@ const REGISTRY_FILE = path.join(__dirname, '../data/sources_registry.json');
 const DATA_FILE = path.join(__dirname, '../data/news.json');
 
 const REQUEST_TIMEOUT_MS = 10 * 1000; // 10 second timeout per request
-const MAX_BODY_BYTES = 10 * 1024 * 1024; // 10 MB max response size limit (permits large XML archives)
+export const MAX_BODY_BYTES = 32 * 1024 * 1024; // 32 MB max response size limit (permits large XML archives like CISA)
 const MAX_RETRIES = 2;
 const MAX_ARTICLES_RETENTION = 10000;
 
@@ -24,7 +24,7 @@ const parser = new Parser({
     timeout: REQUEST_TIMEOUT_MS,
     headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 NoEntrySOC-Collector/2.0 (+https://soc-ai-six.vercel.app/)',
-        'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8'
+        'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*;q=0.8'
     }
 });
 
@@ -181,7 +181,7 @@ export async function collectFeed(source) {
                         success: false,
                         httpStatus: response.status,
                         latencyMs,
-                        error: `Payload exceeds max limit (${(contentLength / 1024 / 1024).toFixed(1)}MB > 5MB)`,
+                        error: `Payload exceeds max limit (${(contentLength / 1024 / 1024).toFixed(1)}MB > 32MB)`,
                         errorCategory: 'OVERSIZED_PAYLOAD',
                         feed: null
                     };
@@ -195,7 +195,7 @@ export async function collectFeed(source) {
                         success: false,
                         httpStatus: response.status,
                         latencyMs,
-                        error: `Response body exceeds 5MB size limit`,
+                        error: `Response body exceeds 32MB size limit`,
                         errorCategory: 'OVERSIZED_PAYLOAD',
                         feed: null
                     };

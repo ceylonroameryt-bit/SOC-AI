@@ -9,7 +9,7 @@
     "start": "node server/server.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "node --test tests/feed_reliability.test.js tests/platform_verification.test.js && npm run build",
+    "test": "node --test tests/security_fixes.test.js tests/feed_reliability.test.js tests/platform_verification.test.js && npm run build",
     "collector": "node server/collector.js",
     "preview": "vite preview"
   },
@@ -24,7 +24,7 @@
     "helmet": "^8.1.0",
     "lucide-react": "^0.563.0",
     "node-cron": "^4.2.1",
-    "nodemailer": "^8.0.1",
+    "nodemailer": "^10.0.12",
     "pg": "^8.23.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

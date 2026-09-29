@@ -9,6 +9,7 @@ interface TelemetryData {
     activeTechniques: number | null;
     kevCount: number | null;
     sourcesConfigured: number | null;
+    sourcesActive: number | null;
     sourcesHealthy: number | null;
     sourcesDegraded: number | null;
     isStale: boolean;
@@ -27,6 +28,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         activeTechniques: null,
         kevCount: null,
         sourcesConfigured: null,
+        sourcesActive: null,
         sourcesHealthy: null,
         sourcesDegraded: null,
         isStale: false,
@@ -47,9 +49,10 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
                     highCount: snapshot.news?.high ?? null,
                     activeTechniques: snapshot.mitre?.activeTechniques ?? null,
                     kevCount: snapshot.kev?.total ?? null,
-                    sourcesConfigured: snapshot.sources?.configured ?? null,
-                    sourcesHealthy: snapshot.sources?.healthy ?? null,
-                    sourcesDegraded: snapshot.sources?.degraded ?? null,
+                    sourcesConfigured: snapshot.sources?.registered ?? snapshot.sources?.configured ?? null,
+                    sourcesActive: snapshot.sources?.enabled ?? snapshot.sources?.activeHealth?.totalActive ?? null,
+                    sourcesHealthy: snapshot.sources?.activeHealthy ?? snapshot.sources?.activeHealth?.healthy ?? snapshot.sources?.healthy ?? null,
+                    sourcesDegraded: snapshot.sources?.activeDegraded ?? snapshot.sources?.activeHealth?.degraded ?? snapshot.sources?.degraded ?? null,
                     isStale: Boolean(snapshot.isStale),
                 });
                 setHasError(false);
@@ -124,12 +127,16 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         },
         {
             title: 'Ingestion Pipeline',
-            value: stats.sourcesConfigured !== null ? `${stats.sourcesHealthy ?? 0}/${stats.sourcesConfigured}` : 'Unavailable',
-            sub: stats.sourcesDegraded ? `${stats.sourcesDegraded} degraded feeds` : 'Measured source health',
+            value: stats.sourcesActive !== null 
+                ? `${stats.sourcesHealthy ?? 0}/${stats.sourcesActive}` 
+                : (stats.sourcesConfigured !== null ? `${stats.sourcesHealthy ?? 0}/${stats.sourcesConfigured}` : 'Unavailable'),
+            sub: stats.sourcesActive && stats.sourcesActive > 0
+                ? `${Math.round(((stats.sourcesHealthy ?? 0) / stats.sourcesActive) * 100)}% active healthy (${stats.sourcesDegraded ?? 0} degraded)`
+                : (stats.sourcesDegraded ? `${stats.sourcesDegraded} degraded feeds` : 'Measured source health'),
             icon: Radio,
-            tag: stats.sourcesHealthy && stats.sourcesConfigured && stats.sourcesHealthy === stats.sourcesConfigured 
-                ? 'Healthy' 
-                : (stats.sourcesHealthy ?? 0) > 0 ? 'Measured Collection' : 'Offline',
+            tag: stats.sourcesHealthy && stats.sourcesActive && stats.sourcesHealthy === stats.sourcesActive 
+                ? '100% Healthy' 
+                : (stats.sourcesHealthy ?? 0) > 0 ? 'Active / Measured' : 'Offline',
             color: 'from-amber-500/10 to-yellow-500/5',
             border: 'border-amber-200/80',
             badgeBg: 'bg-slate-50 text-slate-700 border-slate-200',

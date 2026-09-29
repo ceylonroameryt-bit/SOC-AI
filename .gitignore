@@ -30,3 +30,17 @@ yarn-error.log*
 .DS_Store
 .vscode/
 .idea/
+
+# P2 item 26: Runtime data files — generated on demand, NOT committed
+# These can grow to many MB and contain transient operational data
+soc-platform-ui-main/server/data/news.json
+soc-platform-ui-main/server/data/threats.json
+soc-platform-ui-main/server/data/analyst_actions.json
+soc-platform-ui-main/server/data/feed_health.json
+soc-platform-ui-main/server/data/collection_runs.json
+
+# Remove stray test files (P2 item 26)
+test_threats.js
+test_threats.cjs
+soc-platform-ui-main/test_threats.js
+soc-platform-ui-main/test_threats.cjs

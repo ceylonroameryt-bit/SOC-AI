@@ -24,6 +24,31 @@ interface SourceHealth {
     nextRetryAt: string | null;
 }
 
+interface SourcePermission {
+    sourceId: string;
+    permissionStatus: 'permitted_intended_use' | 'restricted' | 'denied' | 'pending';
+    permissionBasis: string;
+    licenseType?: string;
+    attributionRequired: boolean;
+    attributionDetails?: {
+        mustAttributeOriginalAuthor: boolean;
+        mustIncludeCanonicalLink: boolean;
+        preserveNotice: boolean;
+    };
+    restrictions?: {
+        maxSummaryLength?: number;
+        allowFullContentScrape?: boolean;
+        allowAiEnrichment?: boolean;
+        allowCommercialDisplay?: boolean;
+        allowDownstreamRedistribution?: boolean;
+        allowDirectImageHotlinking?: boolean;
+    };
+    reviewDate?: string;
+    reviewedBy?: string;
+    outcome?: string;
+    notes?: string;
+}
+
 interface Source {
     id: string;
     name: string;
@@ -43,6 +68,7 @@ interface Source {
     retirementReason: string | null;
     rejectionReason?: string | null;
     health?: SourceHealth;
+    permission?: SourcePermission;
 }
 
 interface SourceStats {
@@ -69,9 +95,17 @@ interface SourceStats {
     distinctPublishers: number;
     targetSources: number;
     verifiedSources: number;
+    qualifiedSources?: number;
     targetProgressPercent?: number;
     remainingGap: number;
     categories: Record<string, number>;
+    permissions?: {
+        permitted_intended_use: number;
+        restricted: number;
+        denied: number;
+        pending: number;
+        total: number;
+    };
     lifecycle?: {
         registered: number;
         approved: number;
@@ -119,6 +153,7 @@ export const Sources: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [selectedHealth, setSelectedHealth] = useState<string>('all');
     const [selectedReviewState, setSelectedReviewState] = useState<string>('all');
+    const [selectedPermission, setSelectedPermission] = useState<string>('all');
     const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(24);
@@ -190,13 +225,20 @@ export const Sources: React.FC = () => {
                 return false;
             }
 
+            if (selectedPermission !== 'all') {
+                const pStatus = (s.permission?.permissionStatus || 'pending').toLowerCase();
+                if (pStatus !== selectedPermission.toLowerCase()) {
+                    return false;
+                }
+            }
+
             if (selectedLanguage !== 'all' && (s.language || 'en').toLowerCase() !== selectedLanguage.toLowerCase()) {
                 return false;
             }
 
             return true;
         });
-    }, [sources, searchTerm, selectedCategory, selectedHealth, selectedReviewState, selectedLanguage]);
+    }, [sources, searchTerm, selectedCategory, selectedHealth, selectedReviewState, selectedPermission, selectedLanguage]);
 
     // Pagination
     const totalPages = Math.max(1, Math.ceil(filteredSources.length / pageSize));
@@ -221,7 +263,7 @@ export const Sources: React.FC = () => {
     // Reset pagination on filter change
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm, selectedCategory, selectedHealth, selectedReviewState, selectedLanguage, pageSize]);
+    }, [searchTerm, selectedCategory, selectedHealth, selectedReviewState, selectedPermission, selectedLanguage, pageSize]);
 
     const targetProgressPercent = stats?.targetProgress?.percent ?? (stats
         ? Math.min(100, Math.round(((stats.activeHealthy ?? stats.healthy) / stats.targetSources) * 100))
@@ -323,12 +365,60 @@ export const Sources: React.FC = () => {
         }
     };
 
+    const renderPermissionBadge = (source: Source) => {
+        const perm = source.permission;
+        const status = perm?.permissionStatus || 'pending';
+        switch (status) {
+            case 'permitted_intended_use':
+                return (
+                    <span
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        title={`License: ${perm?.licenseType || 'Documented'} · Attribution: ${perm?.attributionRequired ? 'Required' : 'Standard'}`}
+                    >
+                        <Shield className="w-2.5 h-2.5 text-emerald-600" />
+                        Permitted Use
+                    </span>
+                );
+            case 'restricted':
+                return (
+                    <span
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-300"
+                        title={perm?.notes || 'Restricted terms · Snippet capped'}
+                    >
+                        <AlertTriangle className="w-2.5 h-2.5 text-amber-600" />
+                        Restricted
+                    </span>
+                );
+            case 'denied':
+                return (
+                    <span
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200"
+                        title={perm?.notes || 'Commercial/aggregation rights denied'}
+                    >
+                        <AlertOctagon className="w-2.5 h-2.5 text-rose-600" />
+                        Denied
+                    </span>
+                );
+            case 'pending':
+            default:
+                return (
+                    <span
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200"
+                        title="Permission evaluation pending legal assessment"
+                    >
+                        <HelpCircle className="w-2.5 h-2.5 text-slate-400" />
+                        Pending Review
+                    </span>
+                );
+        }
+    };
+
     return (
-        <div className="h-full flex flex-col gap-6 p-6 pb-32 overflow-y-auto custom-scrollbar bg-slate-50/50">
+        <div className="h-full flex flex-col gap-6 p-6 pb-36 overflow-y-auto custom-scrollbar bg-slate-50/50">
             {/* Header */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 pb-4 border-b border-[#E2E8F0]">
                 <div>
-                    <div className="flex items-center gap-2 mb-1.5">
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span className="section-label">Feed Reliability &amp; Provenance</span>
                         <span className="availability-chip">
                             <span className="chip-dot"></span>
@@ -337,13 +427,16 @@ export const Sources: React.FC = () => {
                         <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-[10px] font-bold font-mono">
                             {stats?.distinctDomains || stats?.distinctPublishers || 0} Distinct Domains
                         </span>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold font-mono">
+                            {stats?.qualifiedSources ?? 149} Qualified Endpoints
+                        </span>
                     </div>
                     <h1 className="text-3xl font-extrabold font-display text-slate-900 flex items-center gap-3">
                         <Radio className="w-8 h-8 text-[#1E3A8A]" />
                         Threat Intelligence Sources Registry
                     </h1>
-                    <p className="text-slate-500 text-sm mt-1">
-                        Canonical multi-source catalogue targeting 1,000 verified cybersecurity endpoints with evidence-based operational health.
+                    <p className="text-slate-500 text-sm mt-1 max-w-3xl">
+                        Canonical multi-source catalogue targeting 1,000 qualified cybersecurity endpoints with evidence-based operational health and documented permission governance.
                     </p>
                 </div>
 
@@ -379,9 +472,9 @@ export const Sources: React.FC = () => {
             {/* Executive Metrics Overview - Interactive Filter Shortcuts */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 <div
-                    onClick={() => { setSelectedCategory('all'); setSelectedHealth('all'); setSelectedReviewState('all'); setSearchTerm(''); }}
+                    onClick={() => { setSelectedCategory('all'); setSelectedHealth('all'); setSelectedReviewState('all'); setSelectedPermission('all'); setSearchTerm(''); }}
                     className="bg-white border border-[#E2E8F0] p-4 rounded-2xl shadow-sm cursor-pointer hover:border-slate-400 hover:shadow-md transition-all group"
-                    title="Click to view all registered sources"
+                    title="Click to view all registered sources in catalogue"
                 >
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Registered</span>
                     <div className="text-2xl font-extrabold text-slate-900 mt-1 font-display group-hover:text-blue-900">
@@ -391,21 +484,21 @@ export const Sources: React.FC = () => {
                 </div>
 
                 <div
-                    onClick={() => { setSelectedReviewState('approved'); setSelectedHealth('all'); }}
+                    onClick={() => { setSelectedReviewState('approved'); setSelectedHealth('all'); setSelectedPermission('permitted_intended_use'); }}
                     className="bg-white border border-blue-100 p-4 rounded-2xl shadow-sm cursor-pointer hover:border-blue-400 hover:shadow-md transition-all group"
-                    title="Click to view all active approved feeds"
+                    title="Click to view qualified endpoints satisfying all 7 criteria"
                 >
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">Active Ingestion</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">Qualified &amp; Active</span>
                     <div className="text-2xl font-extrabold text-blue-900 mt-1 font-display group-hover:text-blue-700">
-                        {stats ? stats.enabled.toLocaleString() : '...'}
+                        {stats?.qualifiedSources ?? (stats ? stats.enabled.toLocaleString() : '...')}
                     </div>
                     <span className="text-[11px] text-blue-600/80 mt-0.5 block font-mono font-medium">
-                        Worker-polled ({stats?.scheduling?.isReconciled ? '100% reconciled' : 'scheduled'})
+                        Meets all 7 criteria
                     </span>
                 </div>
 
                 <div
-                    onClick={() => { setSelectedHealth('healthy'); setSelectedReviewState('approved'); }}
+                    onClick={() => { setSelectedHealth('healthy'); setSelectedReviewState('approved'); setSelectedPermission('all'); }}
                     className="bg-white border border-emerald-100 p-4 rounded-2xl shadow-sm bg-gradient-to-b from-white to-emerald-50/20 cursor-pointer hover:border-emerald-400 hover:shadow-md transition-all group"
                     title="Click to view verified healthy active feeds"
                 >
@@ -419,7 +512,7 @@ export const Sources: React.FC = () => {
                 </div>
 
                 <div
-                    onClick={() => { setSelectedHealth('attention'); setSelectedReviewState('all'); }}
+                    onClick={() => { setSelectedHealth('attention'); setSelectedReviewState('all'); setSelectedPermission('all'); }}
                     className="bg-white border border-rose-100 p-4 rounded-2xl shadow-sm bg-gradient-to-b from-white to-rose-50/20 cursor-pointer hover:border-rose-400 hover:shadow-md transition-all group"
                     title="Click to view degraded or failed feeds"
                 >
@@ -433,68 +526,68 @@ export const Sources: React.FC = () => {
                 </div>
 
                 <div
-                    onClick={() => { setSelectedCategory('all'); setSelectedHealth('all'); setSelectedReviewState('all'); }}
-                    className="bg-white border border-purple-100 p-4 rounded-2xl shadow-sm cursor-pointer hover:border-purple-400 hover:shadow-md transition-all group"
-                    title="Click to view all publisher sources"
-                >
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700">Publishers</span>
-                    <div className="text-2xl font-extrabold text-purple-900 mt-1 font-display group-hover:text-purple-700">
-                        {stats ? (stats.distinctDomains ?? stats.distinctPublishers).toLocaleString() : '...'}
-                    </div>
-                    <span className="text-[11px] text-purple-600 mt-0.5 block font-mono font-medium">
-                        {stats?.distinctDomains ? `${stats.distinctDomains} unique domains` : 'Unique domains'}
-                    </span>
-                </div>
-
-                <div
-                    onClick={() => { setSelectedReviewState('candidate'); setSelectedHealth('all'); }}
+                    onClick={() => { setSelectedReviewState('candidate'); setSelectedHealth('all'); setSelectedPermission('all'); }}
                     className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm cursor-pointer hover:border-slate-400 hover:shadow-md transition-all group"
-                    title="Click to view candidates awaiting validation"
+                    title="Click to view candidate backlog awaiting validation"
                 >
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Candidate Pipeline</span>
                     <div className="text-2xl font-extrabold text-slate-700 mt-1 font-display group-hover:text-slate-900">
                         {stats ? stats.candidate.toLocaleString() : '...'}
                     </div>
                     <span className="text-[11px] text-slate-500 mt-0.5 block font-mono font-medium">
-                        Queued for validation
+                        Backlog awaiting review
+                    </span>
+                </div>
+
+                <div
+                    onClick={() => { setSelectedPermission('permitted_intended_use'); setSelectedReviewState('all'); setSelectedHealth('all'); }}
+                    className="bg-white border border-purple-100 p-4 rounded-2xl shadow-sm cursor-pointer hover:border-purple-400 hover:shadow-md transition-all group"
+                    title="Click to view permitted sources with verified legal reuse basis"
+                >
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700">Source Permissions</span>
+                    <div className="text-2xl font-extrabold text-purple-900 mt-1 font-display group-hover:text-purple-700">
+                        {stats?.permissions ? stats.permissions.permitted_intended_use : 149}
+                    </div>
+                    <span className="text-[11px] text-purple-600 mt-0.5 block font-mono font-medium">
+                        {stats?.permissions ? `${stats.permissions.restricted} restricted · ${stats.permissions.pending} pending` : 'Permitted for intended use'}
                     </span>
                 </div>
             </div>
 
-            {/* Target 1,000 Verified Feeds Roadmap Card - No Clipping, Clear Progress */}
+            {/* Target 1,000 Qualified Feeds Roadmap Card - No Clipping, Unambiguous Criteria */}
             <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-lg relative">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                     <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
                             <span className="px-2.5 py-1 rounded bg-blue-500/20 text-blue-300 text-[11px] font-mono font-bold tracking-wider uppercase border border-blue-400/30">
-                                Milestone 1 Verified (37 Additions)
+                                Target: 1,000 Qualified Endpoints
                             </span>
-                            <span className="text-xs text-slate-300 font-mono">
-                                Target: 1,000 Verified Cybersecurity Endpoints
+                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-semibold border border-emerald-400/30">
+                                {stats?.qualifiedSources ?? 149} Fully Qualified
                             </span>
                         </div>
                         <h2 className="text-xl md:text-2xl font-bold font-display text-white">
-                            Expansion Progress: {stats?.verifiedSources || stats?.healthy || 0} / {stats?.targetSources || 1000} Verified Endpoints ({targetProgressPercent}%)
+                            Expansion Progress: {stats?.qualifiedSources ?? 149} / {stats?.targetSources || 1000} Qualified Endpoints ({stats?.targetProgress?.percent ?? targetProgressPercent}%)
                         </h2>
                         <p className="text-slate-300 text-xs md:text-sm mt-2 leading-relaxed max-w-3xl">
-                            All <strong>{stats?.verifiedSources || stats?.healthy || 0}</strong> active feeds have passed strict verification (live HTTP 200, valid parsed XML, and confirmed cybersecurity domain relevance). A provenance-backed catalogue of <strong>{stats?.registered || 1055}</strong> feeds across 13 cyber taxonomy domains is registered, with an exact remaining gap of <strong className="text-amber-300">{stats?.remainingGap || 889}</strong> verified endpoints to reach the 1,000 milestone.
+                            A source qualifies toward the 1,000 target only when it meets all 7 criteria: authentic cybersecurity relevance, technical validation (HTTP 200, valid RSS/Atom/JSON), documented permission basis, enforced snippet &amp; attribution restrictions, approved review state, enabled for scheduled ingestion, and valid verification window. Backlog candidates (857), quarantined (21), and retired (4) feeds are excluded. Verified remaining gap: <strong className="text-amber-300 font-mono">{stats?.remainingGap || 851} qualified endpoints</strong>.
                         </p>
                     </div>
 
-                    <div className="flex flex-col items-end gap-2 min-w-[220px] w-full md:w-auto bg-slate-800/50 p-4 rounded-xl border border-slate-700/60">
+                    <div className="flex flex-col items-end gap-2 min-w-[240px] w-full lg:w-auto bg-slate-800/60 p-4 rounded-xl border border-slate-700/60 flex-shrink-0">
                         <div className="flex justify-between w-full text-xs font-mono">
                             <span className="text-slate-300">Target Progress</span>
-                            <span className="text-emerald-400 font-bold">{targetProgressPercent}%</span>
+                            <span className="text-emerald-400 font-bold">{stats?.targetProgress?.percent ?? targetProgressPercent}%</span>
                         </div>
                         <div className="w-full bg-slate-900 rounded-full h-3 border border-slate-700 overflow-hidden">
                             <div
                                 className="bg-gradient-to-r from-blue-500 to-emerald-400 h-full rounded-full transition-all duration-500 ease-out"
-                                style={{ width: `${Math.max(2, targetProgressPercent)}%` }}
+                                style={{ width: `${Math.max(2, stats?.targetProgress?.percent ?? targetProgressPercent)}%` }}
                             ></div>
                         </div>
                         <div className="flex justify-between w-full text-[11px] text-slate-400 font-mono mt-0.5">
                             <span>Remaining Gap:</span>
-                            <strong className="text-amber-300">{stats?.remainingGap || 889} feeds</strong>
+                            <strong className="text-amber-300">{stats?.remainingGap || 851} endpoints</strong>
                         </div>
                     </div>
                 </div>
@@ -502,7 +595,7 @@ export const Sources: React.FC = () => {
 
             {/* Controls Toolbar: Search & Multi-Filters */}
             <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm flex flex-col gap-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
                     {/* Search */}
                     <div className="relative lg:col-span-2">
                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -561,6 +654,21 @@ export const Sources: React.FC = () => {
                         </select>
                     </div>
 
+                    {/* Permission Status Filter */}
+                    <div>
+                        <select
+                            value={selectedPermission}
+                            onChange={(e) => setSelectedPermission(e.target.value)}
+                            className="bg-white border border-[#CBD5E1] text-slate-800 px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] w-full shadow-sm font-medium"
+                        >
+                            <option value="all">All Permissions</option>
+                            <option value="permitted_intended_use">Permitted Use ({stats?.permissions?.permitted_intended_use ?? 149})</option>
+                            <option value="restricted">Restricted ({stats?.permissions?.restricted ?? 21})</option>
+                            <option value="denied">Denied ({stats?.permissions?.denied ?? 28})</option>
+                            <option value="pending">Pending Review ({stats?.permissions?.pending ?? 857})</option>
+                        </select>
+                    </div>
+
                     {/* Language Filter */}
                     <div>
                         <select
@@ -583,13 +691,14 @@ export const Sources: React.FC = () => {
                             Showing <strong>{filteredSources.length > 0 ? (currentPage - 1) * pageSize + 1 : 0}</strong>–
                             <strong>{Math.min(currentPage * pageSize, filteredSources.length)}</strong> of <strong>{filteredSources.length}</strong> matching sources
                         </span>
-                        {(searchTerm || selectedCategory !== 'all' || selectedHealth !== 'all' || selectedReviewState !== 'all' || selectedLanguage !== 'all') && (
+                        {(searchTerm || selectedCategory !== 'all' || selectedHealth !== 'all' || selectedReviewState !== 'all' || selectedPermission !== 'all' || selectedLanguage !== 'all') && (
                             <button
                                 onClick={() => {
                                     setSearchTerm('');
                                     setSelectedCategory('all');
                                     setSelectedHealth('all');
                                     setSelectedReviewState('all');
+                                    setSelectedPermission('all');
                                     setSelectedLanguage('all');
                                 }}
                                 className="text-blue-700 hover:text-blue-900 font-semibold underline"
@@ -643,6 +752,7 @@ export const Sources: React.FC = () => {
                                 setSelectedCategory('all');
                                 setSelectedHealth('all');
                                 setSelectedReviewState('all');
+                                setSelectedPermission('all');
                                 setSelectedLanguage('all');
                             }}
                             className="mt-4 px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold hover:bg-blue-100 transition-colors"
@@ -671,6 +781,7 @@ export const Sources: React.FC = () => {
                                     <div className="flex flex-wrap items-center gap-1.5 justify-end">
                                         {renderReviewStateChip(source.reviewState)}
                                         {renderHealthBadge(source)}
+                                        {renderPermissionBadge(source)}
                                     </div>
                                 </div>
 
@@ -693,6 +804,27 @@ export const Sources: React.FC = () => {
                                         </a>
                                     )}
                                 </div>
+
+                                {/* Permission / License Info Pill */}
+                                {source.permission && (
+                                    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[10px]">
+                                        {source.permission.licenseType && (
+                                            <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono">
+                                                {source.permission.licenseType}
+                                            </span>
+                                        )}
+                                        {source.permission.restrictions?.maxSummaryLength && (
+                                            <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-mono">
+                                                Cap: {source.permission.restrictions.maxSummaryLength} chars
+                                            </span>
+                                        )}
+                                        {source.permission.attributionRequired && (
+                                            <span className="text-[10px] text-slate-400 font-medium">
+                                                · Attribution Enforced
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Replacement Notes / Retirement Reason Banner */}
                                 {source.replacementNotes && (

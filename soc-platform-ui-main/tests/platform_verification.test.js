@@ -5,6 +5,7 @@ import http from 'node:http';
 process.env.NODE_ENV = 'test';
 process.env.APP_MODE = 'production';
 process.env.ENABLE_DEMO_DATA = 'false';
+process.env.INGEST_API_KEY = process.env.INGEST_API_KEY || 'test-platform-key';
 
 import app from '../server/server.js';
 import { assessSeverity } from '../server/services/severityEngine.js';
@@ -163,7 +164,7 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
         const uniqueSources = getUniqueSources();
         const summary = getFeedHealthStats();
         assert.equal(summary.configured, uniqueSources.length);
-        const sum = summary.healthy + summary.degraded + summary.failed + summary.disabled;
+        const sum = summary.healthy + summary.degraded + summary.failed + summary.disabled + (summary.delayed || 0) + (summary.unknown || 0);
         assert.equal(sum, summary.configured, 'Sum of health buckets must exactly match configured sources');
     });
 
@@ -466,7 +467,10 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
         // 1. Status transition
         const statusRes = await fetch(`${baseUrl}/api/analyst/action`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': process.env.INGEST_API_KEY
+            },
             body: JSON.stringify({
                 recordId: testRecordId,
                 actionType: 'status_change',
@@ -481,7 +485,10 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
         // 2. Note added
         const noteRes = await fetch(`${baseUrl}/api/analyst/action`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': process.env.INGEST_API_KEY
+            },
             body: JSON.stringify({
                 recordId: testRecordId,
                 actionType: 'note_added',

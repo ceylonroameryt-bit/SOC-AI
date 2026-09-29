@@ -7,11 +7,14 @@ Sigma rule generation, and automated SOC remediation workflows.
 import os
 import re
 import math
+import secrets
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel, Field
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Security, Depends
+from fastapi.security.api_key import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 # Initialize FastAPI App
 app = FastAPI(
@@ -22,14 +25,52 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS Middleware
+# CORS Middleware — P0 item 4: allowlist from env, no wildcard+credentials
+_raw_origin = os.environ.get("ALLOWED_ORIGIN", "")
+ALLOWED_ORIGINS: list[str] = [
+    o.strip() for o in _raw_origin.split(",") if o.strip()
+] or ["http://localhost:5173", "http://localhost:3000"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-API-Key"],
 )
+
+# ── API Key dependency for /api/v1/* endpoints ────────────────────────────────
+API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
+AUTH_HEADER_NAME = APIKeyHeader(name="Authorization", auto_error=False)
+
+
+def _get_ingest_api_key() -> Optional[str]:
+    return os.environ.get("INGEST_API_KEY", "").strip() or None
+
+
+async def require_api_key(
+    x_api_key: Optional[str] = Security(API_KEY_HEADER),
+    authorization: Optional[str] = Security(AUTH_HEADER_NAME),
+) -> str:
+    """Fail-closed API key check using constant-time comparison."""
+    expected = _get_ingest_api_key()
+    if not expected:
+        raise HTTPException(status_code=503, detail="Service unavailable: INGEST_API_KEY not configured.")
+
+    # Support both X-API-Key header and Authorization: Bearer <key>
+    provided = x_api_key
+    if not provided and authorization and authorization.startswith("Bearer "):
+        provided = authorization[len("Bearer "):].strip()
+
+    if not provided:
+        raise HTTPException(status_code=401, detail="Unauthorized. Provide a valid X-API-Key header.")
+
+    # Constant-time comparison
+    if not secrets.compare_digest(expected.encode(), provided.encode()):
+        raise HTTPException(status_code=401, detail="Unauthorized. Invalid API key.")
+
+    return provided
+
 
 # ── Pydantic Request/Response Models ──────────────────────────────────────────
 
@@ -103,7 +144,7 @@ def health():
 # ── Executive Briefing Generator ──────────────────────────────────────────────
 
 @app.post("/api/v1/briefing", response_model=BriefingResponse, tags=["AI Pipeline"])
-def generate_briefing(payload: BriefingRequest):
+def generate_briefing(payload: BriefingRequest, _key: str = Depends(require_api_key)):
     articles = payload.articles
     if not articles:
         raise HTTPException(status_code=400, detail="Article list cannot be empty.")
@@ -167,7 +208,7 @@ def cosine_similarity(v1: Dict[str, float], v2: Dict[str, float]) -> float:
     return dot_product / (mag1 * mag2)
 
 @app.post("/api/v1/cluster", response_model=ClusterResponse, tags=["AI Pipeline"])
-def cluster_articles(payload: ClusterRequest):
+def cluster_articles(payload: ClusterRequest, _key: str = Depends(require_api_key)):
     articles = payload.articles
     threshold = payload.similarity_threshold or 0.30
 
@@ -243,7 +284,7 @@ def cluster_articles(payload: ClusterRequest):
 # ── SOC Analyst Remediation Playbook ──────────────────────────────────────────
 
 @app.post("/api/v1/remediate", tags=["SOC Automation"])
-def generate_remediation_playbook(payload: RemediationRequest):
+def generate_remediation_playbook(payload: RemediationRequest, _key: str = Depends(require_api_key)):
     t_type = (payload.threat_type or "").lower()
     sev = payload.severity
 
@@ -279,7 +320,7 @@ def generate_remediation_playbook(payload: RemediationRequest):
 # ── Sigma Detection Rule Generator ────────────────────────────────────────────
 
 @app.post("/api/v1/sigma", tags=["Detection Engineering"])
-def generate_sigma_rule(payload: SigmaGenRequest):
+def generate_sigma_rule(payload: SigmaGenRequest, _key: str = Depends(require_api_key)):
     ioc = payload.indicator.strip()
     rule_title = payload.title or f"Detection for {ioc}"
     severity = payload.severity.lower()

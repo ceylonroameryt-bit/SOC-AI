@@ -80,11 +80,11 @@ const PRIMARY_NAV_ITEMS: NavSection[] = [
         path: '/threats',
         icon: ShieldAlert,
         description: 'Adversary campaigns & incident radar',
-        activePaths: ['/threats', '/critical', '/archives'],
+        activePaths: ['/threats', '/critical', '/explore'],
         subLinks: [
             { label: 'Incident Threats', path: '/threats', icon: ShieldAlert },
             { label: 'Critical Radar', path: '/critical', icon: Flame },
-            { label: 'Archives', path: '/archives', icon: Archive },
+            { label: 'Explore', path: '/explore', icon: Archive },
         ],
     },
     {

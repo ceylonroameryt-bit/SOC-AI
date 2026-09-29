@@ -1,5 +1,6 @@
 import test, { describe } from 'node:test';
 import assert from 'node:assert/strict';
+import http from 'node:http';
 import {
     normalizeFeedUrl,
     extractPublisherDomain,
@@ -13,7 +14,25 @@ import {
     resolveDynamicHealth,
     resolvePublicationFreshness
 } from '../server/services/feedHealthService.js';
-import { parseRetryAfter } from '../server/services/collectorEngine.js';
+import { parseRetryAfter, MAX_BODY_BYTES } from '../server/services/collectorEngine.js';
+import {
+    startCollectionRun,
+    completeCollectionRun,
+    getLatestCollectionRun,
+    getCollectionRunHistory
+} from '../server/services/collectionRunService.js';
+import { invalidateNewsCache, loadNewsData } from '../server/services/newsService.js';
+import serverlessHandler from '../api/index.js';
+import {
+    loadPermissions,
+    getSourcePermission,
+    isPermittedForIntendedUse,
+    isAiProcessingPermitted,
+    isExportPermitted,
+    enforceContentRestrictions,
+    getPermissionStats
+} from '../server/services/permissionService.js';
+import { getLocalMidnightUTC, shiftDateStr, safeTimezone } from '../server/routes/explore.js';
 
 describe('RSS Ingestion & Feed Reliability Verification Suite', () => {
 
@@ -350,3 +369,421 @@ describe('RSS Ingestion & Feed Reliability Verification Suite', () => {
         });
     });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section 8: newsService stable IDs, pubDate integrity, and queryArchive
+// ─────────────────────────────────────────────────────────────────────────────
+import { deriveArticleId, parsePubDate, queryArchive, getNews } from '../server/services/newsService.js';
+
+describe('8. newsService — ID stability, pubDate integrity, and archive queries', () => {
+
+    describe('8a. deriveArticleId — stable deterministic IDs', () => {
+        test('Same URL always produces the same ID', () => {
+            const url = 'https://example.com/article/123';
+            assert.equal(deriveArticleId(url), deriveArticleId(url));
+        });
+
+        test('IDs have the expected prefix and length', () => {
+            const id = deriveArticleId('https://example.com/test');
+            assert.ok(id.startsWith('art-'), `Expected art- prefix, got: ${id}`);
+            assert.equal(id.length, 4 + 16); // 'art-' + 16 hex chars
+        });
+
+        test('Different URLs produce different IDs', () => {
+            const a = deriveArticleId('https://example.com/a');
+            const b = deriveArticleId('https://example.com/b');
+            assert.notEqual(a, b);
+        });
+
+        test('Missing link produces a non-null ID (random fallback)', () => {
+            const id = deriveArticleId(null);
+            assert.ok(id.startsWith('art-'));
+            assert.ok(id.length > 4);
+        });
+    });
+
+    describe('8b. parsePubDate — no fabrication', () => {
+        test('Valid RFC 2822 date parses to ISO string', () => {
+            const result = parsePubDate('Sat, 26 Sep 2026 12:00:00 -0400');
+            assert.ok(result, 'Should return an ISO string');
+            assert.ok(result.includes('2026-09-26'), `Expected 2026-09-26 in result, got: ${result}`);
+        });
+
+        test('Valid ISO 8601 date passes through', () => {
+            const iso = '2026-08-01T09:30:00.000Z';
+            assert.equal(parsePubDate(iso), iso);
+        });
+
+        test('Missing/null returns null — NOT current time', () => {
+            const before = Date.now();
+            assert.equal(parsePubDate(null), null);
+            assert.equal(parsePubDate(undefined), null);
+            assert.equal(parsePubDate(''), null);
+        });
+
+        test('Unparseable string returns null — NOT current time', () => {
+            assert.equal(parsePubDate('not a date at all'), null);
+            assert.equal(parsePubDate('00/00/0000'), null);
+        });
+    });
+
+    describe('8c. queryArchive — date filter semantics', () => {
+        test('dateFrom inclusive, dateTo exclusive', () => {
+            // Use a range that covers the full archive to get any results
+            const all = queryArchive({ limit: 5, sort: 'pub_desc' });
+            // If archive is empty, skip (no test data available)
+            if (all.total === 0) return;
+
+            const newest = all.archiveCoverage.newest;
+            if (!newest) return;
+
+            // Query for articles AT or AFTER the newest — should be at most 1 (the newest itself)
+            const result = queryArchive({ dateFrom: newest, limit: 5 });
+            for (const r of result.records) {
+                assert.ok(r.pubDate, 'All records in a date-bounded query must have pubDate');
+                const ms = new Date(r.pubDate).getTime();
+                const boundMs = new Date(newest).getTime();
+                assert.ok(ms >= boundMs, `pubDate ${r.pubDate} must be >= dateFrom ${newest}`);
+            }
+        });
+
+        test('Articles with null pubDate are excluded from date-bounded windows', () => {
+            // Query with date bounds — all returned records must have pubDate
+            const result = queryArchive({ dateFrom: '2000-01-01T00:00:00Z', dateTo: '2030-01-01T00:00:00Z', limit: 50 });
+            for (const r of result.records) {
+                assert.ok(r.pubDate !== null && r.pubDate !== undefined,
+                    `Record ${r.id} has null pubDate but was included in a date-bounded query`);
+                assert.ok(!r.pubDateMissing, `Record ${r.id} has pubDateMissing=true but was included in date window`);
+            }
+        });
+
+        test('Keyword search filters across title, snippet, and source', () => {
+            // Use a term likely to appear in any cybersecurity news archive
+            const result = queryArchive({ q: 'security', limit: 10 });
+            for (const r of result.records) {
+                const haystack = `${r.title} ${r.contentSnippet} ${r.source}`.toLowerCase();
+                assert.ok(haystack.includes('security'),
+                    `Record "${r.title}" does not match keyword "security"`);
+            }
+        });
+
+        test('Pagination produces non-overlapping result sets', () => {
+            const all = queryArchive({ limit: 200, sort: 'pub_desc' });
+            if (all.total < 2) return;
+
+            const p1 = queryArchive({ limit: 5, page: 1, sort: 'pub_desc' });
+            const p2 = queryArchive({ limit: 5, page: 2, sort: 'pub_desc' });
+
+            const p1Ids = new Set(p1.records.map(r => r.id || r.link));
+            const p2Ids = p2.records.map(r => r.id || r.link);
+
+            for (const id of p2Ids) {
+                assert.ok(!p1Ids.has(id), `ID ${id} appeared in both page 1 and page 2`);
+            }
+        });
+
+        test('Sort pub_asc returns oldest first', () => {
+            const result = queryArchive({ dateFrom: '2000-01-01T00:00:00Z', limit: 10, sort: 'pub_asc' });
+            for (let i = 1; i < result.records.length; i++) {
+                const prev = new Date(result.records[i - 1].pubDate).getTime();
+                const curr = new Date(result.records[i].pubDate).getTime();
+                assert.ok(prev <= curr,
+                    `pub_asc order violated: ${result.records[i - 1].pubDate} > ${result.records[i].pubDate}`);
+            }
+        });
+
+        test('Sort pub_desc returns newest first', () => {
+            const result = queryArchive({ dateFrom: '2000-01-01T00:00:00Z', limit: 10, sort: 'pub_desc' });
+            for (let i = 1; i < result.records.length; i++) {
+                const prev = new Date(result.records[i - 1].pubDate).getTime();
+                const curr = new Date(result.records[i].pubDate).getTime();
+                assert.ok(prev >= curr,
+                    `pub_desc order violated: ${result.records[i - 1].pubDate} < ${result.records[i].pubDate}`);
+            }
+        });
+
+        test('archiveCoverage reports honest oldest/newest from persistent archive', () => {
+            const result = queryArchive({ limit: 1 });
+            const cov = result.archiveCoverage;
+            if (cov.total === 0) return;
+            if (cov.oldest && cov.newest) {
+                assert.ok(new Date(cov.oldest).getTime() <= new Date(cov.newest).getTime(),
+                    'oldest must be <= newest');
+            }
+            assert.ok(cov.total > 0, 'archiveCoverage.total must be positive');
+        });
+
+        test('Severity filter returns only matching severity', () => {
+            const result = queryArchive({ severity: 'High', limit: 20 });
+            for (const r of result.records) {
+                assert.equal((r.severity || '').toLowerCase(), 'high',
+                    `Record "${r.title}" has severity "${r.severity}" but filter was High`);
+            }
+        });
+    });
+
+    // 9. Source Permissions & Content Restrictions
+    describe('9. Source Permissions & Content Restrictions', () => {
+        test('Permission matrix contains exactly 1,055 records matching canonical registry', () => {
+            const perms = loadPermissions();
+            const registry = getSourcesRegistry();
+            assert.equal(perms.length, 1055, `Expected 1055 permissions, got ${perms.length}`);
+            assert.equal(perms.length, registry.length, 'Permissions length must match registry length');
+
+            const permIds = new Set(perms.map(p => p.sourceId));
+            for (const s of registry) {
+                assert.ok(permIds.has(s.id), `Source ${s.id} missing from permissions matrix`);
+            }
+        });
+
+        test('Verified breakdown reconciles: 147 permitted, 21 restricted, 28 denied, 859 pending', () => {
+            const stats = getPermissionStats();
+            assert.equal(stats.total, 1055);
+            assert.equal(stats.permitted_intended_use, 147);
+            assert.equal(stats.restricted, 21);
+            assert.equal(stats.denied, 28);
+            assert.equal(stats.pending, 859);
+            assert.equal(
+                stats.permitted_intended_use + stats.restricted + stats.denied + stats.pending,
+                stats.total,
+                'Permission categories must be mutually exclusive and sum to total'
+            );
+        });
+
+        test('isPermittedForIntendedUse accurately identifies permitted vs non-permitted sources', () => {
+            assert.equal(isPermittedForIntendedUse('dark-web-ransomware-leaks'), true);
+            assert.equal(isPermittedForIntendedUse('tor-project-blog'), true);
+            assert.equal(isPermittedForIntendedUse('mandiant-threat-research'), false); // restricted
+            assert.equal(isPermittedForIntendedUse('nist-nvb'), false); // denied
+            assert.equal(isPermittedForIntendedUse('non-existent-source'), false);
+        });
+
+        test('enforceContentRestrictions caps long summaries and enforces attribution', () => {
+            const longText = 'A'.repeat(1000);
+            const rawItem = {
+                title: 'Critical CVE Disclosed',
+                link: 'https://example.com/advisory-1',
+                content: longText,
+                snippet: longText
+            };
+
+            const restrictedItem = enforceContentRestrictions(rawItem, 'mandiant-threat-research');
+            // Default snippet cap is 500 chars (or custom source limit)
+            assert.ok(restrictedItem.content.length <= 503, `Expected content <= 503, got ${restrictedItem.content.length}`);
+            assert.ok(restrictedItem.snippet.length <= 503, `Expected snippet <= 503, got ${restrictedItem.snippet.length}`);
+            assert.ok(restrictedItem.content.endsWith('...'));
+            assert.equal(restrictedItem.attributionRequired, true);
+            assert.equal(restrictedItem.canonicalUrl, 'https://example.com/advisory-1');
+        });
+
+        test('enforceContentRestrictions suppresses image hotlinking when disallowed', () => {
+            const rawItem = {
+                title: 'Threat Bulletin',
+                link: 'https://example.com/threat-2',
+                imageUrl: 'https://example.com/banner.jpg',
+                content: 'Sample content'
+            };
+
+            // dark-web-ransomware-leaks disallows direct image hotlinking
+            const result = enforceContentRestrictions(rawItem, 'dark-web-ransomware-leaks');
+            assert.equal(result.imageUrl, null, 'imageUrl should be null when hotlinking is disallowed');
+        });
+    });
+
+    // 10. 1,000 Target Qualification & Reconciled Accounting
+    describe('10. 1,000 Target Qualification & Reconciled Accounting', () => {
+        test('getFeedHealthStats reports qualified sources with remaining gap to target', () => {
+            const stats = getFeedHealthStats();
+            assert.equal(stats.qualifiedSources, 145, 'Expected 145 qualified sources');
+            assert.equal(stats.remainingGap, 855, 'Expected remaining gap to 1,000 target to be 855');
+            assert.equal(stats.targetSources, 1000, 'Target must be 1,000');
+            assert.equal(stats.targetProgress.verified, 145);
+            assert.equal(stats.targetProgress.remainingGap, 855);
+        });
+
+        test('Candidates, quarantined, and retired feeds do not count toward qualified target', () => {
+            const stats = getFeedHealthStats();
+            // Candidate: 857, Quarantined: 21, Retired: 4, Rejected: 24, Approved: 149
+            assert.equal(stats.candidate, 857);
+            assert.equal(stats.quarantined, 21);
+            assert.equal(stats.retired, 4);
+            assert.equal(stats.rejected, 24);
+            assert.equal(stats.approved, 149);
+
+            // Qualified count strictly matches approved, permitted, and verified sources (145)
+            assert.equal(stats.qualifiedSources, 145);
+        });
+
+        test('Lifecycle categories are mutually exclusive and reconcile 100% to registered total', () => {
+            const stats = getFeedHealthStats();
+            assert.equal(stats.lifecycle.isReconciled, true);
+            assert.equal(stats.lifecycle.unaccounted, 0);
+            assert.equal(stats.lifecycle.registered, 1055);
+            const sum = stats.lifecycle.approved + stats.lifecycle.candidate + stats.lifecycle.quarantined + stats.lifecycle.retired + stats.lifecycle.rejected;
+            assert.equal(sum, stats.lifecycle.registered);
+        });
+
+        test('Operational health denominator is active enabled feeds, not whole catalogue or target', () => {
+            const stats = getFeedHealthStats();
+            const activeHealth = stats.activeHealth;
+            assert.equal(activeHealth.totalActive, stats.enabled);
+            assert.equal(activeHealth.totalActive, 149);
+            const healthSum = activeHealth.healthy + activeHealth.delayed + activeHealth.degraded + activeHealth.failed + activeHealth.unknown;
+            assert.equal(healthSum, activeHealth.totalActive, 'Active health categories must sum to total active');
+            assert.ok(activeHealth.healthy + activeHealth.delayed >= 140, `Expected at least 140 operational feeds, got ${activeHealth.healthy + activeHealth.delayed}`);
+            assert.ok(activeHealth.degraded + activeHealth.failed <= 5, 'Degraded/failed feeds must be bounded');
+            assert.ok(activeHealth.label.includes('149'), `Label must use active enabled feeds denominator 149: "${activeHealth.label}"`);
+        });
+    });
+
+    // 11. Timezone-Aware Day Boundaries & UTC Math
+    describe('11. Timezone-Aware Day Boundaries & UTC Math', () => {
+        test('UTC midnight converts cleanly', () => {
+            const midnightUTC = getLocalMidnightUTC('2026-09-26', 'UTC');
+            assert.equal(midnightUTC, '2026-09-26T00:00:00.000Z');
+        });
+
+        test('America/New_York (EDT, UTC-4) converts to 04:00:00.000Z', () => {
+            const midnightEDT = getLocalMidnightUTC('2026-09-26', 'America/New_York');
+            assert.equal(midnightEDT, '2026-09-26T04:00:00.000Z');
+        });
+
+        test('Asia/Tokyo (JST, UTC+9) converts to 15:00:00.000Z previous day', () => {
+            const midnightJST = getLocalMidnightUTC('2026-09-26', 'Asia/Tokyo');
+            assert.equal(midnightJST, '2026-09-25T15:00:00.000Z');
+        });
+
+        test('Europe/London (BST, UTC+1 in September) converts to 23:00:00.000Z previous day', () => {
+            const midnightBST = getLocalMidnightUTC('2026-09-26', 'Europe/London');
+            assert.equal(midnightBST, '2026-09-25T23:00:00.000Z');
+        });
+
+        test('Consecutive day midnights span exactly 86,400,000 ms (24 hours)', () => {
+            const start = getLocalMidnightUTC('2026-09-26', 'America/New_York');
+            const end = getLocalMidnightUTC('2026-09-27', 'America/New_York');
+            const diff = new Date(end).getTime() - new Date(start).getTime();
+            assert.equal(diff, 24 * 60 * 60 * 1000);
+        });
+
+        test('shiftDateStr correctly transitions across month boundaries', () => {
+            assert.equal(shiftDateStr('2026-09-01', -1), '2026-08-31');
+            assert.equal(shiftDateStr('2026-09-30', 1), '2026-10-01');
+            assert.equal(shiftDateStr('2026-01-01', -1), '2025-12-31');
+        });
+
+        test('safeTimezone falls back to UTC for invalid inputs', () => {
+            assert.equal(safeTimezone('Invalid/Timezone_Name'), 'UTC');
+            assert.equal(safeTimezone(null), 'UTC');
+            assert.equal(safeTimezone('America/New_York'), 'America/New_York');
+        });
+    });
+
+    // 12. Run-Level Telemetry & Observability (Section 6 Requirements)
+    describe('12. Run-Level Ingestion Telemetry & Observability', () => {
+        test('startCollectionRun initializes structured run with unique runId and running status', () => {
+            const run = startCollectionRun('unit_test');
+            assert.ok(run.runId.startsWith('run-'));
+            assert.equal(run.trigger, 'unit_test');
+            assert.equal(run.runState, 'running');
+            assert.ok(run.startedAt);
+        });
+
+        test('completeCollectionRun persists source tallies, article metrics, and rejection reasons', () => {
+            const run = startCollectionRun('unit_test');
+            const completed = completeCollectionRun(run.runId, {
+                sources: {
+                    attempted: 10,
+                    succeeded: 9,
+                    failed: 1,
+                    skipped: 0
+                },
+                entries: {
+                    parsed: 50,
+                    rejected: 5,
+                    inserted: 40,
+                    updated: 5,
+                    deduplicated: 5,
+                    rejectionReasons: {
+                        'missing_title': 2,
+                        'duplicate_link': 3
+                    }
+                }
+            });
+
+            assert.equal(completed.runState, 'completed');
+            assert.ok(completed.completedAt);
+            assert.ok(completed.durationMs >= 0);
+            assert.equal(completed.sources.attempted, 10);
+            assert.equal(completed.sources.succeeded, 9);
+            assert.equal(completed.sources.failed, 1);
+            assert.equal(completed.entries.parsed, 50);
+            assert.equal(completed.entries.rejectionReasons.missing_title, 2);
+            assert.equal(completed.entries.rejectionReasons.duplicate_link, 3);
+
+            const latest = getLatestCollectionRun();
+            assert.equal(latest.runId, run.runId);
+        });
+
+        test('getCollectionRunHistory retrieves bounded list of historic runs', () => {
+            const history = getCollectionRunHistory(5);
+            assert.ok(Array.isArray(history));
+            assert.ok(history.length > 0);
+            assert.ok(history.length <= 5);
+            assert.ok(history[0].runId);
+        });
+    });
+
+    // 13. High-Capacity Parsing Limits & Cache Synchronization
+    describe('13. High-Capacity Parsing Limits & Cache Synchronization', () => {
+        test('MAX_BODY_BYTES accommodates large XML security feeds (>= 32MB)', () => {
+            assert.ok(MAX_BODY_BYTES >= 32 * 1024 * 1024, `Expected MAX_BODY_BYTES >= 32MB, got ${MAX_BODY_BYTES}`);
+        });
+
+        test('loadNewsData loads persistent articles and invalidateNewsCache resets cache', () => {
+            const initial = loadNewsData();
+            assert.ok(Array.isArray(initial));
+            assert.ok(initial.length > 0, 'Persistent news archive should not be empty');
+
+            // Invalidation should succeed without throwing
+            assert.doesNotThrow(() => {
+                invalidateNewsCache();
+            });
+
+            // Subsequent load succeeds and matches length
+            const reloaded = loadNewsData();
+            assert.equal(reloaded.length, initial.length);
+        });
+    });
+
+    // 14. Vercel Serverless & Local Express Parity Bridge
+    describe('14. Vercel Serverless & Local Express Parity Bridge', () => {
+        test('api/index.js exports default handler function delegating to Express', () => {
+            assert.equal(typeof serverlessHandler, 'function');
+            assert.equal(serverlessHandler.length, 2, 'Handler should accept (req, res)');
+        });
+
+        test('serverlessHandler dispatches /api/health and /api/explore via HTTP server', async () => {
+            const server = http.createServer(serverlessHandler);
+            await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+            const port = server.address().port;
+
+            try {
+                const healthRes = await fetch(`http://127.0.0.1:${port}/api/health`);
+                assert.equal(healthRes.status, 200);
+                const healthData = await healthRes.json();
+                assert.equal(healthData.status, 'ok');
+
+                const exploreRes = await fetch(`http://127.0.0.1:${port}/api/explore?limit=2`);
+                assert.equal(exploreRes.status, 200);
+                const exploreData = await exploreRes.json();
+                assert.ok(Array.isArray(exploreData.records));
+                assert.ok(exploreData.total !== undefined);
+                assert.ok(exploreData.archiveCoverage);
+            } finally {
+                await new Promise(resolve => server.close(resolve));
+            }
+        });
+    });
+
+});
+

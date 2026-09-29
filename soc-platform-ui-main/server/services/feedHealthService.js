@@ -10,6 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getSourcePermission, getPermissionStats } from './permissionService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -324,6 +325,7 @@ export function getFeedHealthRecords({
     category = null,
     health = null,
     reviewState = null,
+    permissionStatus = null,
     search = null,
     language = null,
     page = 1,
@@ -367,7 +369,8 @@ export function getFeedHealthRecords({
                 lastError: h?.lastError || s.retirementReason || s.rejectionReason || null,
                 errorCategory: h?.errorCategory || s.errorCategory || null,
                 nextRetryAt: h?.nextRetryAt || null
-            }
+            },
+            permission: getSourcePermission(s.id) || null
         };
     });
 
@@ -392,6 +395,13 @@ export function getFeedHealthRecords({
 
     if (reviewState && reviewState !== 'all') {
         records = records.filter(r => r.reviewState.toLowerCase() === reviewState.toLowerCase());
+    }
+
+    if (permissionStatus && permissionStatus !== 'all') {
+        records = records.filter(r => {
+            const pStatus = r.permission?.permissionStatus?.toLowerCase();
+            return pStatus === permissionStatus.toLowerCase();
+        });
     }
 
     if (language && language !== 'all') {
@@ -509,12 +519,27 @@ export function getFeedHealthStats() {
     stats.distinctDomains = domains.size;
     stats.distinctPublishers = publishers.size;
 
-    // Verified sources count = active healthy feeds satisfying verified criteria
-    stats.verifiedSources = stats.activeHealthy;
+    // Strict Qualification toward 1,000 Target:
+    // Requires: approved, enabled, valid permission, passed technical validation, no sustained failures
+    let qualifiedCount = 0;
+    for (const s of registry) {
+        if (s.reviewState === 'approved' && s.enabled) {
+            const h = healthMap.get(s.id);
+            const perm = getSourcePermission(s.id);
+            const isPermitted = perm?.permissionOutcome === 'permitted_for_intended_use';
+            const isTechnicallySound = h && (h.status === 'healthy' || h.status === 'delayed' || h.lastSuccessAt) && (h.consecutiveFailures < 3);
+            if (isPermitted && isTechnicallySound) {
+                qualifiedCount++;
+            }
+        }
+    }
+
+    stats.qualifiedSources = qualifiedCount;
+    stats.verifiedSources = qualifiedCount;
     stats.targetProgressPercent = stats.targetSources > 0
-        ? Number(((stats.verifiedSources / stats.targetSources) * 100).toFixed(1))
+        ? Number(((stats.qualifiedSources / stats.targetSources) * 100).toFixed(1))
         : 0;
-    stats.remainingGap = Math.max(0, stats.targetSources - stats.verifiedSources);
+    stats.remainingGap = Math.max(0, stats.targetSources - stats.qualifiedSources);
 
     const activeHealthRatePercent = stats.enabled > 0
         ? Number(((stats.activeHealthy / stats.enabled) * 100).toFixed(1))
@@ -558,10 +583,12 @@ export function getFeedHealthStats() {
         targetProgress: {
             target: stats.targetSources,
             verified: stats.verifiedSources,
+            qualified: stats.qualifiedSources,
             percent: stats.targetProgressPercent,
             remainingGap: stats.remainingGap,
-            label: `${stats.verifiedSources} / ${stats.targetSources} verified operational endpoints (${stats.targetProgressPercent}%)`
+            label: `${stats.qualifiedSources} / ${stats.targetSources} qualified operational endpoints (${stats.targetProgressPercent}%)`
         },
+        permissions: getPermissionStats(),
         snapshotGeneratedAt: new Date().toISOString()
     };
 }
