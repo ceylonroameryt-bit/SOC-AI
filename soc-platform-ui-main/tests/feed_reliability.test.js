@@ -594,11 +594,11 @@ describe('8. newsService — ID stability, pubDate integrity, and archive querie
     describe('10. 1,000 Target Qualification & Reconciled Accounting', () => {
         test('getFeedHealthStats reports qualified sources with remaining gap to target', () => {
             const stats = getFeedHealthStats();
-            assert.equal(stats.qualifiedSources, 145, 'Expected 145 qualified sources');
-            assert.equal(stats.remainingGap, 855, 'Expected remaining gap to 1,000 target to be 855');
+            assert.equal(stats.qualifiedSources, 147, 'Expected 147 qualified sources');
+            assert.equal(stats.remainingGap, 853, 'Expected remaining gap to 1,000 target to be 853');
             assert.equal(stats.targetSources, 1000, 'Target must be 1,000');
-            assert.equal(stats.targetProgress.verified, 145);
-            assert.equal(stats.targetProgress.remainingGap, 855);
+            assert.equal(stats.targetProgress.verified, 147);
+            assert.equal(stats.targetProgress.remainingGap, 853);
         });
 
         test('Candidates, quarantined, and retired feeds do not count toward qualified target', () => {
@@ -610,8 +610,8 @@ describe('8. newsService — ID stability, pubDate integrity, and archive querie
             assert.equal(stats.rejected, 24);
             assert.equal(stats.approved, 149);
 
-            // Qualified count strictly matches approved, permitted, and verified sources (145)
-            assert.equal(stats.qualifiedSources, 145);
+            // Qualified count strictly matches approved, permitted, and verified sources (147)
+            assert.equal(stats.qualifiedSources, 147);
         });
 
         test('Lifecycle categories are mutually exclusive and reconcile 100% to registered total', () => {

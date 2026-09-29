@@ -49,7 +49,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
     // Sync time range from URL parameters if present
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        const urlTime = params.get('time') || params.get('range');
+        const urlTime = params.get('time') || params.get('range') || '24h';
         if (urlTime && ['24h', '7d', '30d', 'all'].includes(urlTime)) {
             setTimeRange(urlTime);
         }

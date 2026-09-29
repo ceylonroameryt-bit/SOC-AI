@@ -36,7 +36,7 @@ const KEV_REFRESH_MS = 24 * 60 * 60 * 1000;
 const fetchKEVCatalog = async () => {
     if (kevCatalog && Date.now() - kevLastFetch < KEV_REFRESH_MS) return kevCatalog;
     try {
-        const resp = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json');
+        const resp = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', { signal: AbortSignal.timeout(5000) });
         if (!resp.ok) throw new Error(`KEV fetch failed: ${resp.status}`);
         const data = await resp.json();
         kevCatalog = new Set((data.vulnerabilities || []).map(v => v.cveID));
@@ -44,7 +44,7 @@ const fetchKEVCatalog = async () => {
         console.log(`[KEV] Loaded ${kevCatalog.size} known exploited vulnerabilities.`);
     } catch (err) {
         console.error('[KEV] Failed to fetch catalog:', err.message);
-        kevCatalog = kevCatalog || new Set(); // keep stale data if available
+        // Preserve null when no catalog has ever been retrieved.
     }
     return kevCatalog;
 };
@@ -265,7 +265,8 @@ export const enrichCVE = async (cveId) => {
         cveId: cveId.toUpperCase(),
         epssScore: null,
         epssPercentile: null,
-        isKEV: false,
+        isKEV: null,
+        epssDate: null,
         kevDateAdded: null,
         nvdLink: `https://nvd.nist.gov/vuln/detail/${cveId}`,
         epssLink: `https://www.first.org/epss/`,
@@ -277,26 +278,27 @@ export const enrichCVE = async (cveId) => {
         // Fetch EPSS score
         const epssResp = await fetch(
             `https://api.first.org/data/v1/epss?cve=${cveId}`,
-            { headers: { 'Accept': 'application/json' } }
+            { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(5000) }
         );
         if (epssResp.ok) {
             const epssData = await epssResp.json();
             const entry = epssData?.data?.[0];
             if (entry) {
+                result.epssDate = entry.date || null;
                 result.epssScore = parseFloat(entry.epss || 0);
                 result.epssPercentile = parseFloat(entry.percentile || 0);
             }
         }
 
-        // Check CISA KEV
-        const kev = await fetchKEVCatalog();
-        result.isKEV = kev.has(result.cveId);
+
 
     } catch (err) {
         result.error = err.message;
         console.warn(`[EPSS/KEV] CVE enrichment failed for ${cveId}:`, err.message);
     }
 
+    const kev = await fetchKEVCatalog();
+    result.isKEV = kev ? kev.has(result.cveId) : null;
     setCache(cacheKey, result);
     return result;
 };

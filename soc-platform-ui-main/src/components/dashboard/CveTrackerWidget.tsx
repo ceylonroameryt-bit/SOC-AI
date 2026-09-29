@@ -6,74 +6,29 @@ import { API_BASE } from '../../config/api';
 interface CveItem {
     id: string;
     description: string;
-    cvss: number;
-    epss: number;
+    cvss: number | null;
+    epss: number | null;
     vendor: string;
     isKEV: boolean;
     dateAdded: string;
 }
 
-const FEATURED_CVES: CveItem[] = [
-    {
-        id: 'CVE-2024-3400',
-        description: 'Palo Alto PAN-OS Command Injection in GlobalProtect',
-        cvss: 10.0,
-        epss: 0.943,
-        vendor: 'Palo Alto',
-        isKEV: true,
-        dateAdded: 'Active Zero-Day',
-    },
-    {
-        id: 'CVE-2023-46805',
-        description: 'Ivanti Connect Secure Authentication Bypass',
-        cvss: 8.2,
-        epss: 0.884,
-        vendor: 'Ivanti',
-        isKEV: true,
-        dateAdded: 'Exploited in Wild',
-    },
-    {
-        id: 'CVE-2024-21887',
-        description: 'Ivanti Policy Secure Remote Command Execution',
-        cvss: 9.1,
-        epss: 0.912,
-        vendor: 'Ivanti',
-        isKEV: true,
-        dateAdded: 'Ransomware Chained',
-    },
-    {
-        id: 'CVE-2023-38831',
-        description: 'WinRAR Remote Code Execution via ZIP Spoofing',
-        cvss: 7.8,
-        epss: 0.765,
-        vendor: 'RARLAB',
-        isKEV: true,
-        dateAdded: 'Phishing Weaponized',
-    },
-    {
-        id: 'CVE-2021-44228',
-        description: 'Apache Log4j Log4Shell Remote Code Execution',
-        cvss: 10.0,
-        epss: 0.975,
-        vendor: 'Apache',
-        isKEV: true,
-        dateAdded: 'Active Perimeter Scans',
-    },
-];
-
 const CveTrackerWidget = () => {
+    const [catalogStatus, setCatalogStatus] = useState('');
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [cves, setCves] = useState<CveItem[]>(FEATURED_CVES);
+    const [cves, setCves] = useState<CveItem[]>([]);
 
     useEffect(() => {
         fetch(`${API_BASE}/api/dashboard/snapshot`)
             .then(res => (res.ok ? res.json() : null))
             .then(snapshot => {
-                if (snapshot?.kev?.featured && Array.isArray(snapshot.kev.featured) && snapshot.kev.featured.length > 0) {
+                if (snapshot?.kev?.featured && Array.isArray(snapshot.kev.featured)) {
                     setCves(snapshot.kev.featured);
+                    setCatalogStatus(`${snapshot.kev.status || 'unknown'} · updated ${snapshot.kev.lastUpdated || 'unknown'}`);
                 }
             })
-            .catch(() => {});
+            .catch(() => {}).finally(() => setLoading(false));
     }, []);
 
     const filteredCves = cves.filter(
@@ -93,10 +48,10 @@ const CveTrackerWidget = () => {
                     </div>
                     <div>
                         <h3 className="font-display text-sm font-bold text-slate-900 leading-tight">
-                            CISA KEV & Zero-Day Pulse
+                            CISA KEV Catalog
                         </h3>
                         <p className="text-[11px] text-slate-500">
-                            Actively exploited vulnerabilities under radar
+                            {catalogStatus || 'Known exploited vulnerabilities from CISA'}
                         </p>
                     </div>
                 </div>
@@ -123,6 +78,7 @@ const CveTrackerWidget = () => {
 
             {/* High Density CVE List */}
             <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-1 max-h-[320px]">
+                {cves.length === 0 && <p role="status" className="text-xs text-slate-600 p-3">{loading ? 'Loading catalog…' : 'Verified catalog data is unavailable. No estimated scores are shown.'}</p>}
                 {filteredCves.map((cve) => (
                     <div
                         key={cve.id}
@@ -141,10 +97,10 @@ const CveTrackerWidget = () => {
                             </div>
                             <div className="flex items-center gap-1.5 text-[11px]">
                                 <span className="font-mono font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded">
-                                    CVSS {cve.cvss}
+                                    CVSS {cve.cvss ?? 'N/A'}
                                 </span>
                                 <span className="font-mono text-slate-500 text-[10px]" title="Exploit Prediction Scoring System">
-                                    EPSS {(cve.epss * 100).toFixed(0)}%
+                                    EPSS {cve.epss === null ? 'N/A' : `${(cve.epss * 100).toFixed(0)}%`}
                                 </span>
                             </div>
                         </div>
@@ -156,7 +112,7 @@ const CveTrackerWidget = () => {
                         <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
                             <span>Vendor: <strong className="text-slate-700 font-semibold">{cve.vendor}</strong></span>
                             <div className="flex items-center gap-2">
-                                <span className="text-red-600 font-medium">{cve.dateAdded}</span>
+                                <span className="text-red-600 font-medium">Added {cve.dateAdded}</span>
                                 <Link
                                     to={`/enrich?ioc=${cve.id}`}
                                     className="text-blue-600 hover:underline flex items-center gap-0.5"

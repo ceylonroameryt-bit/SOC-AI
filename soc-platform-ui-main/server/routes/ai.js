@@ -1,3 +1,4 @@
+import { filterByRange } from '../services/dashboardEvidence.js';
 import express from 'express';
 import { generateExecutiveBrief, generateRemediationSteps } from '../services/aiService.js';
 import { clusterArticles } from '../services/clusteringEngine.js';
@@ -19,7 +20,7 @@ const aiLimiter = rateLimit({
 // GET /api/ai/brief — Daily executive briefing
 router.get('/brief', async (req, res) => {
     try {
-        const news = getNews().slice(0, 50);
+        const news = filterByRange(getNews(), req.query.time || req.query.range || '24h').slice(0, 50);
         const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
         const rawThreats = loadThreats();
         const threats = isDemoEnabled

@@ -96,6 +96,7 @@ export default function RuleLibrary() {
     };
 
     const totalRules = sigmaRules.length + yaraRules.length;
+    const techniques = [...new Set([...sigmaRules, ...yaraRules].flatMap(r => [...(r.tags || []), r.mitreTechnique || ''].join(' ').toUpperCase().match(/T\d{4}(?:\.\d{3})?/g) || []))];
 
     return (
         <div className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
@@ -106,14 +107,14 @@ export default function RuleLibrary() {
                         <span className="section-label">Detection Engineering</span>
                         <div className="availability-chip text-[10px] py-0.5 px-2">
                             <span className="chip-dot"></span>
-                            <span>SIEM &amp; EDR Ready</span>
+                            <span>Review before deployment</span>
                         </div>
                     </div>
                     <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
                         Detection Rule Library
                     </h1>
                     <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-2xl">
-                        Production-grade Sigma YAML, YARA signatures, and Splunk/KQL query logic mapped to MITRE ATT&amp;CK techniques.
+                        Sigma and YARA detection examples with ATT&amp;CK mappings. Validate against your logs and tune false positives before deployment.
                     </p>
                 </div>
             </div>
@@ -122,9 +123,9 @@ export default function RuleLibrary() {
             <div className="stats-strip">
                 <div className="stats-strip-inner">
                     <div className="strip-stat">
-                        <span className="strip-num">{totalRules || 48}<span className="strip-sup">+</span></span>
-                        <span className="strip-label">Compiled Rules</span>
-                        <span className="strip-sub">Active Defense</span>
+                        <span className="strip-num">{loading ? '…' : error ? 'Unavailable' : totalRules}</span>
+                        <span className="strip-label">Available Rules</span>
+                        <span className="strip-sub">Validation required</span>
                     </div>
                     <div className="strip-divider hidden md:block"></div>
                     <div className="strip-stat">
@@ -140,9 +141,9 @@ export default function RuleLibrary() {
                     </div>
                     <div className="strip-divider hidden md:block"></div>
                     <div className="strip-stat">
-                        <span className="strip-num">52<span className="strip-sup"> ATT&amp;CK</span></span>
+                        <span className="strip-num">{techniques.length}<span className="strip-sup"> ATT&amp;CK</span></span>
                         <span className="strip-label">Technique Coverage</span>
-                        <span className="strip-sub">T1059, T1078, T1003</span>
+                        <span className="strip-sub">{techniques.join(', ') || 'No technique mappings'}</span>
                     </div>
                 </div>
             </div>
@@ -322,7 +323,7 @@ export default function RuleLibrary() {
                                 <div className="text-center space-y-2">
                                     <p className="text-4xl">{tab === 'sigma' ? '⚡' : '🔬'}</p>
                                     <p className="font-display text-base font-semibold text-slate-800">Select a rule from the list to view syntax</p>
-                                    <p className="text-xs text-slate-500 font-mono">{filtered.length} {tab.toUpperCase()} production rules available</p>
+                                    <p className="text-xs text-slate-500 font-mono">{filtered.length} {tab.toUpperCase()} rules available</p>
                                 </div>
                             </div>
                         )}

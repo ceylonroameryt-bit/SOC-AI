@@ -1,6 +1,9 @@
+import { getNews } from '../services/newsService.js';
+import { filterByRange } from '../services/dashboardEvidence.js';
 import express from 'express';
 import {
     getHeatmapData,
+    mapTextToTechniques,
     getTopTechniques,
     getTactics,
     getCategorizedNews,
@@ -32,7 +35,16 @@ router.get('/news', (req, res) => {
 // GET /api/mitre/heatmap — Full heatmap data for all techniques
 router.get('/heatmap', (req, res) => {
     try {
-        const heatmap = getHeatmapData();
+        const selected = filterByRange(getNews(), req.query.time || req.query.range || 'all');
+        const hits = new Map();
+        for (const item of selected) {
+            for (const id of mapTextToTechniques(`${item.title || ''} ${item.contentSnippet || ''}`, null, false)) {
+                const links = hits.get(id) || [];
+                links.push(item.link || item.id);
+                hits.set(id, links);
+            }
+        }
+        const heatmap = getHeatmapData().map(t => ({ ...t, hitCount: hits.get(t.techniqueId)?.length || 0, linkedItems: (hits.get(t.techniqueId) || []).filter(Boolean) }));
         const tactics = getTactics();
 
         // Group techniques by tactic
