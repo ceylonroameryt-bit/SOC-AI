@@ -1,3 +1,5 @@
+import { sharedStorageRequired } from '../services/sharedSnapshotService.js';
+import { requireApiKeyMiddleware } from '../utils/auth.js';
 import express from 'express';
 import {
     getFeedHealthRecords,
@@ -109,20 +111,6 @@ router.get('/permissions', (req, res) => {
  * GET /api/sources/:id
  * Returns single source record with full health and permission evidence.
  */
-router.get('/:id', (req, res) => {
-    try {
-        const { id } = req.params;
-        const all = getFeedHealthRecords({ page: 1, limit: 5000 });
-        const record = all.records.find(s => s.id === id);
-        if (!record) {
-            return res.status(404).json({ error: 'Source not found in registry' });
-        }
-        res.setHeader('Cache-Control', 'public, s-maxage=60');
-        res.json(record);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to retrieve source' });
-    }
-});
 /**
  * GET /api/sources/runs
  * Returns history of background ingestion runs with Section 6 telemetry metrics.
@@ -164,7 +152,8 @@ router.get('/runs/latest', (req, res) => {
  * POST /api/sources/refresh
  * Triggers an ingestion run for active feeds.
  */
-router.post('/refresh', async (req, res) => {
+router.post('/refresh', requireApiKeyMiddleware('ADMIN_API_KEY'), async (req, res) => {
+    if (sharedStorageRequired()) return res.status(503).json({ error: 'Use the scheduled collector workflow to refresh shared intelligence.', code: 'COLLECTOR_REQUIRED' });
     try {
         const isAsync = req.query.async === 'true';
         if (isAsync) {
@@ -187,6 +176,21 @@ router.post('/refresh', async (req, res) => {
     } catch (error) {
         console.error('[SOURCES ROUTE] Error executing refresh:', error);
         res.status(500).json({ error: 'Failed to execute source refresh', details: error.message });
+    }
+});
+
+router.get('/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const all = getFeedHealthRecords({ page: 1, limit: 5000 });
+        const record = all.records.find(s => s.id === id);
+        if (!record) {
+            return res.status(404).json({ error: 'Source not found in registry' });
+        }
+        res.setHeader('Cache-Control', 'public, s-maxage=60');
+        res.json(record);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve source' });
     }
 });
 

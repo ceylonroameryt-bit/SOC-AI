@@ -10,6 +10,7 @@ const router = express.Router();
 
 let lastSnapshotCache = null;
 let lastSnapshotTime = 0;
+let lastPublication = null;
 const CACHE_TTL_MS = 30 * 1000; // 30 seconds
 
 /**
@@ -20,7 +21,10 @@ router.get('/snapshot', async (req, res) => {
     try {
         const now = Date.now();
         const range = req.query.time || req.query.range || '24h';
-        const forceRefresh = req.query.refresh === 'true' || lastSnapshotCache?.news?.range !== range;
+        const publication = res.getHeader('X-Data-Published-At') || null;
+        const publicationChanged = publication !== lastPublication;
+        lastPublication = publication;
+        const forceRefresh = publicationChanged || req.query.refresh === 'true' || lastSnapshotCache?.news?.range !== range;
 
         if (!forceRefresh && lastSnapshotCache && (now - lastSnapshotTime < CACHE_TTL_MS)) {
             res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');

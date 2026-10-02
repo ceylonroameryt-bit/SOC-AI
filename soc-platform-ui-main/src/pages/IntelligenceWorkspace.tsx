@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import {
     Calendar,
@@ -14,7 +14,7 @@ import {
     Bookmark,
     Layers,
 } from 'lucide-react';
-import { API_BASE } from '../config/api';
+import { API_BASE, readJson } from '../config/api';
 import type { TimeRange } from '../types/intelligence';
 import ReportDetailPanel, { type IntelligenceRecord } from '../components/workspace/ReportDetailPanel';
 import CategoryNavigation from '../components/workspace/CategoryNavigation';
@@ -88,16 +88,20 @@ export const IntelligenceWorkspace: React.FC = () => {
         [searchParams, setSearchParams]
     );
 
+    const requestVersion = useRef(0);
+
     // Fetch live intelligence records and telemetry
     const fetchData = useCallback(async () => {
+        const version = ++requestVersion.current;
         setIsLoading(true);
         setFetchError(null);
         try {
             const [snapshotRes, newsRes] = await Promise.allSettled([
-                fetch(`${API_BASE}/api/dashboard/snapshot`).then((r) => (r.ok ? r.json() : null)),
-                fetch(`${API_BASE}/api/news?limit=500`).then((r) => (r.ok ? r.json() : null)),
+                fetch(`${API_BASE}/api/dashboard/snapshot`).then(readJson),
+                fetch(`${API_BASE}/api/news?limit=500`).then(readJson),
             ]);
 
+            if (version !== requestVersion.current) return;
             let newsItems: IntelligenceRecord[] = [];
             if (newsRes.status === 'fulfilled' && newsRes.value) {
                 newsItems = Array.isArray(newsRes.value)
@@ -129,16 +133,18 @@ export const IntelligenceWorkspace: React.FC = () => {
                 if (found) setSelectedRecord(found);
             }
         } catch (err: unknown) {
+            if (version !== requestVersion.current) return;
             console.error('Failed to load intelligence workspace data:', err);
             const msg = err instanceof Error ? err.message : 'Error loading intelligence data';
             setFetchError(msg);
         } finally {
-            setIsLoading(false);
+            if (version === requestVersion.current) setIsLoading(false);
         }
     }, [urlSelectedId]);
 
     useEffect(() => {
         fetchData();
+        return () => { requestVersion.current++; };
     }, [fetchData]);
 
     // Handle escape key to close detail drawer or mobile overview

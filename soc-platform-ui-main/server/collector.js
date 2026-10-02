@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { canonicalArticleUrl, deduplicateArticles } from './services/articleIdentity.js';
 /**
  * collector.js — Standalone Production Threat Intelligence Collector CLI
  *
@@ -23,7 +24,10 @@
  *   node server/collector.js --force
  */
 
+import 'dotenv/config';
 import fs from 'fs';
+import { hasDatabase } from './db/db.js';
+import { readSharedSnapshot, applySharedSnapshot, publishSharedSnapshot } from './services/sharedSnapshotService.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getUniqueSources, recordCollectionResult } from './services/feedHealthService.js';
@@ -33,7 +37,7 @@ import { classifyRecord } from './services/classificationEngine.js';
 import { insertThreat, insertIOCs, isDbConnected, closeDb } from './db/db.js';
 import { extractIOCs } from './services/enrichmentService.js';
 import { deriveArticleId, parsePubDate, invalidateNewsCache } from './services/newsService.js';
-import { enforceContentRestrictions } from './services/permissionService.js';
+import { enforceContentRestrictions, getSourcePermission } from './services/permissionService.js';
 import { startCollectionRun, completeCollectionRun, failCollectionRun } from './services/collectionRunService.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -61,10 +65,11 @@ function acquireLock() {
             const lockData = JSON.parse(raw);
             const lockAgeMs = Date.now() - lockData.timestamp;
 
-            if (lockAgeMs < RUN_TIMEOUT_MS && !isForce) {
+            if (lockAgeMs < RUN_TIMEOUT_MS) {
                 console.warn(`[COLLECTOR] ⚠️  Lockfile exists (PID ${lockData.pid}, age: ${Math.round(lockAgeMs / 1000)}s). Exiting to prevent overlap.`);
                 process.exit(0);
             } else {
+                fs.unlinkSync(LOCK_FILE);
                 console.warn(`[COLLECTOR] ⚠️  Stale lockfile detected (age: ${Math.round(lockAgeMs / 1000)}s). Overriding stale lock.`);
             }
         } catch {
@@ -72,17 +77,19 @@ function acquireLock() {
         }
     }
 
+    // Exclusive creation prevents two simultaneous collectors from owning the lock.
     fs.writeFileSync(LOCK_FILE, JSON.stringify({
         pid: process.pid,
         timestamp: Date.now(),
         startedAt: new Date().toISOString()
-    }));
+    }), { flag: 'wx' });
 }
 
 function releaseLock() {
     if (fs.existsSync(LOCK_FILE)) {
         try {
-            fs.unlinkSync(LOCK_FILE);
+            const owner = JSON.parse(fs.readFileSync(LOCK_FILE, 'utf8'));
+            if (owner.pid === process.pid) fs.unlinkSync(LOCK_FILE);
         } catch {}
     }
 }
@@ -149,6 +156,19 @@ function updateRegistryEtags(updates) {
 // ─── Main Ingestion Execution ─────────────────────────────────────────────────
 async function runCollector() {
     acquireLock();
+    if (process.env.REQUIRE_SHARED_STORAGE === 'true' && !hasDatabase()) {
+        throw new Error('DATABASE_URL is required: collection cannot publish to the website');
+    }
+    let previousSnapshot = null;
+    if (hasDatabase()) {
+        try {
+            previousSnapshot = await readSharedSnapshot();
+            applySharedSnapshot(previousSnapshot);
+        } catch (error) {
+            // Only an uninitialized store can bootstrap; outages must not overwrite history.
+            if (error.code !== '42P01' && error.message !== 'No published collection available') throw error;
+        }
+    }
 
     const startTime = Date.now();
     const runRecord = startCollectionRun('cli', { concurrency: CONCURRENCY, sourceFilter });
@@ -159,7 +179,12 @@ async function runCollector() {
     console.log(`Options: dryRun=${isDryRun}, force=${isForce}, concurrency=${CONCURRENCY}`);
     console.log(`======================================================\n`);
 
-    let allSources = getUniqueSources().filter(s => s.enabled);
+    let allSources = getUniqueSources().filter(s => {
+        const permission = getSourcePermission(s.id);
+        return s.enabled && s.reviewState === 'approved' &&
+            permission?.permissionOutcome === 'permitted_for_intended_use' &&
+            permission.rules?.fetchingPermitted === true && permission.rules?.storingPermitted === true;
+    });
     if (sourceFilter) {
         allSources = allSources.filter(s =>
             s.id.toLowerCase().includes(sourceFilter) ||
@@ -169,6 +194,9 @@ async function runCollector() {
         console.log(`Filtered to ${allSources.length} sources matching "${sourceFilter}"`);
     }
 
+    if (allSources.length === 0 && process.env.REQUIRE_SHARED_STORAGE === 'true') {
+        throw new Error('No approved sources with documented fetch/store permission');
+    }
     if (allSources.length === 0) {
         console.warn(`[COLLECTOR] No eligible active sources found.`);
         completeCollectionRun(runRecord.runId, {
@@ -182,8 +210,8 @@ async function runCollector() {
 
     console.log(`[COLLECTOR] Fetching ${allSources.length} active sources with bounded pool (${CONCURRENCY})...`);
 
-    const existingNews = loadExistingNews();
-    const existingLinks = new Set(existingNews.map(n => n.link));
+    const existingNews = deduplicateArticles(previousSnapshot ? previousSnapshot.articles : loadExistingNews());
+    const existingLinks = new Set(existingNews.map(n => canonicalArticleUrl(n.link)));
     const newItems = [];
     const headerUpdates = [];
     const rejectionReasons = {
@@ -262,8 +290,14 @@ async function runCollector() {
                 continue;
             }
 
+            if (!canonicalArticleUrl(raw.link)) {
+                feedRejected++;
+                rejectionReasons.missing_required_fields++;
+                continue;
+            }
+
             // Deduplication check
-            if (existingLinks.has(raw.link)) {
+            if (existingLinks.has(canonicalArticleUrl(raw.link))) {
                 feedRejected++;
                 rejectionReasons.duplicate_link++;
                 continue;
@@ -321,7 +355,7 @@ async function runCollector() {
             };
 
             const safeRecord = enforceContentRestrictions(record, sourceId);
-            existingLinks.add(raw.link);
+            existingLinks.add(canonicalArticleUrl(raw.link));
             newItems.push(safeRecord);
             feedAccepted++;
             totalAccepted++;
@@ -349,7 +383,7 @@ async function runCollector() {
         console.log(`  [OK] ${source.name}: ${feedAccepted} accepted, ${feedRejected} dupes/filtered (${latencyMs}ms)`);
     }
 
-    if (headerUpdates.length > 0) {
+    if (!isDryRun && headerUpdates.length > 0) {
         updateRegistryEtags(headerUpdates);
     }
 
@@ -413,6 +447,12 @@ async function runCollector() {
         lastSuccessfulArticleWrite: newItems.length > 0 ? lastSuccessfulArticleWrite : null
     });
 
+    if (!isDryRun && hasDatabase()) {
+        const articles = [...newItems, ...existingNews].sort((a, b) =>
+            (Date.parse(b.pubDate) || 0) - (Date.parse(a.pubDate) || 0));
+        await publishSharedSnapshot(articles);
+        console.log('[COLLECTOR] Published articles, feed health and run history to shared storage.');
+    }
     clearTimeout(runWatchdog);
     releaseLock();
     await closeDb();

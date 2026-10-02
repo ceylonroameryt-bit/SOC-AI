@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Bug, ShieldAlert, Newspaper, AlertTriangle, ExternalLink, RefreshCw, Search, ChevronRight, ArrowUpDown } from 'lucide-react';
-import { API_BASE } from '../config/api';
+import { API_BASE, readJson } from '../config/api';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -143,6 +143,7 @@ export const VulnerabilitiesView: React.FC = () => {
 
     const [records, setRecords]     = useState<VulnRecord[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [fetchError, setFetchError] = useState<string | null>(null);
     const [lastUpdated, setLastUpdated] = useState<string>('Syncing...');
     const [kevFeatured, setKevFeatured] = useState<VulnRecord[]>([]);
     const [localSearch, setLocalSearch] = useState(searchParam);
@@ -160,12 +161,14 @@ export const VulnerabilitiesView: React.FC = () => {
 
     const fetchData = useCallback(async () => {
         setIsLoading(true);
+        setFetchError(null);
         try {
             const [newsRes, snapRes] = await Promise.allSettled([
-                fetch(`${API_BASE}/api/news?limit=500`).then(r => r.ok ? r.json() : []),
-                fetch(`${API_BASE}/api/dashboard/snapshot`).then(r => r.ok ? r.json() : null),
+                fetch(`${API_BASE}/api/news?limit=500`).then(readJson),
+                fetch(`${API_BASE}/api/dashboard/snapshot`).then(readJson),
             ]);
 
+            if (newsRes.status === 'rejected') throw newsRes.reason;
             // Extract vuln records from news feed
             const news = (newsRes.status === 'fulfilled' ? newsRes.value : []) as Record<string, unknown>[];
             const vulnItems = news.flatMap(item => {
@@ -210,6 +213,7 @@ export const VulnerabilitiesView: React.FC = () => {
             }
         } catch (e) {
             console.error('VulnerabilitiesView fetch error:', e);
+            setFetchError(e instanceof Error ? e.message : 'Unable to load vulnerability data.');
         } finally {
             setIsLoading(false);
         }
@@ -273,6 +277,7 @@ export const VulnerabilitiesView: React.FC = () => {
     return (
         <div className="h-full flex flex-col p-4 lg:p-6 space-y-5 max-w-[1600px] mx-auto w-full overflow-y-auto custom-scrollbar">
 
+            {fetchError && <div role="alert" className="border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{fetchError}</div>}
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-[#E2E8F0]">
                 <div>

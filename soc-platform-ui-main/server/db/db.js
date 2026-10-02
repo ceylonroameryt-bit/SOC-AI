@@ -16,6 +16,7 @@ const __dirname = path.dirname(__filename);
 
 let pool = null;
 let isConnected = false;
+let databaseReady = Promise.resolve();
 
 const DATABASE_URL = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL || process.env.POSTGRES_URL;
 
@@ -36,7 +37,7 @@ if (DATABASE_URL) {
         });
 
         // Initialize schema
-        initDatabase();
+        databaseReady = initDatabase();
     } catch (err) {
         console.warn('[DB] Failed to initialize PostgreSQL pool:', err.message);
     }
@@ -219,3 +220,11 @@ export default {
     getDbSeverityStats,
     closeDb,
 };
+
+// Await cold-start initialization before shared-state reads or collector writes.
+export const hasDatabase = () => Boolean(pool);
+export async function queryDatabase(text, values = []) {
+    await databaseReady;
+    if (!pool) throw new Error('Shared database is not configured');
+    return pool.query({ text, values, query_timeout: 8000 });
+}
