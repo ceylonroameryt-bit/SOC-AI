@@ -193,3 +193,5 @@ export function getCollectionRunHistory(limit = 20) {
     const runs = loadRuns();
     return runs.slice(0, Math.max(1, Math.min(100, limit)));
 }
+
+export function replaceCollectionRuns(records) { runsCache = records.slice(0, MAX_RUN_HISTORY); }

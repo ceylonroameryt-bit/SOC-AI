@@ -217,7 +217,8 @@ export default function Explore() {
     const fetchResults = useCallback(async () => {
         // Cancel any in-flight request
         if (abortRef.current) abortRef.current.abort();
-        abortRef.current = new AbortController();
+        const controller = new AbortController();
+        abortRef.current = controller;
 
         setLoading(true);
         setError(null);
@@ -244,24 +245,24 @@ export default function Explore() {
             params.set('limit', '25');
 
             const resp = await fetch(`${API_BASE}/api/explore?${params}`, {
-                signal: abortRef.current.signal,
+                signal: controller.signal,
             });
             if (!resp.ok) {
                 const err = await resp.json().catch(() => ({ error: resp.statusText }));
                 throw new Error(err.error || resp.statusText);
             }
             const json: ExploreResponse = await resp.json();
-            setData(json);
+            if (!controller.signal.aborted) setData(json);
         } catch (err: unknown) {
-            if (err instanceof Error && err.name === 'AbortError') return; // stale request
+            if (controller.signal.aborted || (err instanceof Error && err.name === 'AbortError')) return; // stale request
             setError(err instanceof Error ? err.message : 'Unknown error');
         } finally {
-            setLoading(false);
+            if (!controller.signal.aborted) setLoading(false);
         }
     }, [presetParam, dateFromParam, dateToParam, tzParam, qParam, sourceParam, categoryParam,
         severityParam, tacticParam, techniqueParam, mappedOnlyParam, sortParam, pageParam]);
 
-    useEffect(() => { fetchResults(); }, [fetchResults]);
+    useEffect(() => { fetchResults(); return () => abortRef.current?.abort(); }, [fetchResults]);
 
     // Check for midnight rollover every 60 seconds if in 'today' preset
     useEffect(() => {

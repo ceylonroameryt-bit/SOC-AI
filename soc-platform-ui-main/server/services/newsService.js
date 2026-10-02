@@ -1,3 +1,4 @@
+import { canonicalArticleUrl, deduplicateArticles } from './articleIdentity.js';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -56,7 +57,7 @@ export const validateLink = (link) => {
  */
 export const dedupeKey = (item) => {
     const safeLink = validateLink(item.link);
-    if (safeLink) return safeLink;
+    if (safeLink) return canonicalArticleUrl(safeLink);
     // No valid link — dedupe on title+source hash instead
     const fallback = `${(item.title || '').trim()}|${(item.source || '').trim()}`;
     return `no-link:${crypto.createHash('sha1').update(fallback).digest('hex').slice(0, 16)}`;
@@ -153,6 +154,8 @@ const determineCategory = (title, snippet) => {
 // IN-MEMORY CACHE WITH DISK MTIME SYNCHRONIZATION
 let NEWS_CACHE = [];
 let lastMtimeMs = 0;
+let sharedNews = null;
+export function setSharedNews(records) { sharedNews = records === null ? null : deduplicateArticles(records); }
 
 export const invalidateNewsCache = () => {
     NEWS_CACHE = [];
@@ -174,7 +177,7 @@ export const loadNewsData = () => {
         }
         const data = fs.readFileSync(targetFile, 'utf8');
         if (!data || !data.trim()) return NEWS_CACHE || [];
-        NEWS_CACHE = JSON.parse(data);
+        NEWS_CACHE = deduplicateArticles(JSON.parse(data));
         lastMtimeMs = stat.mtimeMs;
         return NEWS_CACHE;
     } catch (err) {
@@ -211,7 +214,7 @@ loadNewsData();
 
 export const fetchAndProcessNews = async (trigger = 'scheduled') => {
     // Use Cache directly
-    let existingNews = NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
+    let existingNews = getNews();
     let newItemsCount = 0;
     const runRecord = startCollectionRun(trigger, { concurrency: 10 });
     let totalParsed = 0;
@@ -424,9 +427,7 @@ export const fetchAndProcessNews = async (trigger = 'scheduled') => {
     }
 };
 
-export const getNews = () => {
-    return NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
-};
+export const getNews = () => sharedNews !== null ? sharedNews : loadNewsData();
 
 /**
  * queryArchive — server-side date-range + keyword + category + MITRE filter.
@@ -618,7 +619,7 @@ function deriveEvidenceStatus(title, snippet, classification) {
  * Called once on server startup after initial news load.
  */
 export function backfillClassification() {
-    const news = NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
+    const news = getNews();
     if (!news || news.length === 0) return;
 
     let updatedCount = 0;

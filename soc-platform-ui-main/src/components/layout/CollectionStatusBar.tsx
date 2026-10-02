@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Radio, Clock, AlertOctagon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { API_BASE } from '../../config/api';
+import { API_BASE, readJson } from '../../config/api';
 
 export const CollectionStatusBar: React.FC = () => {
+    const [unavailable, setUnavailable] = useState(false);
     const [statusData, setStatusData] = useState<{
         lastCollection: string | null;
         degradedCount: number;
@@ -21,8 +22,8 @@ export const CollectionStatusBar: React.FC = () => {
         degradedCount: 0,
         failedCount: 0,
         healthyCount: 0,
-        activeCount: 113,
-        totalConfigured: 1055,
+        activeCount: 0,
+        totalConfigured: 0,
         healthyRatePercent: 0,
         targetCount: 1000,
         targetPercent: 0,
@@ -32,23 +33,23 @@ export const CollectionStatusBar: React.FC = () => {
 
     useEffect(() => {
         fetch(`${API_BASE}/api/dashboard/snapshot`)
-            .then(res => (res.ok ? res.json() : null))
+            .then(readJson)
             .then(snapshot => {
                 if (snapshot) {
                     const sources = snapshot.sources || {};
-                    const activeCount = sources.enabled || sources.activeHealth?.totalActive || 113;
+                    const activeCount = sources.enabled ?? sources.activeHealth?.totalActive ?? 0;
                     const healthyCount = sources.activeHealth?.healthy ?? sources.healthy ?? 0;
                     const healthyRatePercent = activeCount > 0 ? Number(((healthyCount / activeCount) * 100).toFixed(1)) : 0;
                     const targetCount = sources.targetSources || 1000;
                     const targetPercent = targetCount > 0 ? Number(((healthyCount / targetCount) * 100).toFixed(1)) : 0;
 
                     setStatusData({
-                        lastCollection: snapshot.lastSuccessfulIngestion || snapshot.generatedAt || null,
+                        lastCollection: snapshot.lastSuccessfulIngestion || null,
                         degradedCount: sources.activeHealth?.degraded ?? sources.degraded ?? 0,
                         failedCount: sources.activeHealth?.failed ?? sources.failed ?? 0,
                         healthyCount,
                         activeCount,
-                        totalConfigured: sources.registered || sources.configured || 1055,
+                        totalConfigured: sources.registered ?? sources.configured ?? 0,
                         healthyRatePercent,
                         targetCount,
                         targetPercent,
@@ -57,8 +58,10 @@ export const CollectionStatusBar: React.FC = () => {
                     });
                 }
             })
-            .catch(() => {});
+            .catch(() => setUnavailable(true));
     }, []);
+
+    if (unavailable) return <footer role="alert" className="border-t border-amber-300 bg-amber-50 px-4 py-2 text-sm text-amber-900">Live intelligence is unavailable. Data shown may be outdated. Please reload to retry.</footer>;
 
     const warningCount = statusData.degradedCount + statusData.failedCount;
 

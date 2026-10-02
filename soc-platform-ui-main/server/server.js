@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { sharedSnapshotMiddleware, sharedStorageRequired } from './services/sharedSnapshotService.js';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -154,6 +155,7 @@ app.use((req, res, next) => {
 // ==========================================
 // API ROUTES (Must come before static/SPA catch-all)
 // ==========================================
+app.use('/api', sharedSnapshotMiddleware);
 app.use('/api/news',      newsRouter);
 app.use('/api/threats',   threatsRouter);
 app.use('/api/reports',   reportsRouter);
@@ -460,7 +462,7 @@ export function start(port = PORT) {
             console.log(`   Rate Limit: 500 req/15min (API), 10 req/15min (Email)\n`);
 
             // Initial data fetch + MITRE mapping + classification backfill
-            fetchAndProcessNews().then(news => {
+            if (!sharedStorageRequired()) fetchAndProcessNews().then(news => {
                 if (news?.length) processNewsForMitre(news);
                 try { backfillClassification(); } catch (e) {
                     console.warn('[CLASSIFICATION] Backfill warning:', e.message);
@@ -480,7 +482,7 @@ export function start(port = PORT) {
             }
 
             // Refresh news every 30 minutes + update MITRE heatmap
-            setInterval(() => {
+            if (!sharedStorageRequired()) setInterval(() => {
                 fetchAndProcessNews().then(news => {
                     if (news?.length) processNewsForMitre(news);
                 }).catch(err => console.error('[REFRESH] News refresh failed:', err.message));

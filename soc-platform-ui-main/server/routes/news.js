@@ -1,3 +1,5 @@
+import { sharedStorageRequired } from '../services/sharedSnapshotService.js';
+import { requireApiKeyMiddleware } from '../utils/auth.js';
 import { filterByRange, severityStats } from '../services/dashboardEvidence.js';
 import express from 'express';
 import { fetchAndProcessNews, getNews } from '../services/newsService.js';
@@ -64,7 +66,8 @@ router.get('/', (req, res) => {
 
 
 // Force refresh news feeds
-router.post('/refresh', async (req, res) => {
+router.post('/refresh', requireApiKeyMiddleware('ADMIN_API_KEY'), async (req, res) => {
+    if (sharedStorageRequired()) return res.status(503).json({ error: 'Use the scheduled collector workflow to refresh shared intelligence.', code: 'COLLECTOR_REQUIRED' });
     try {
         const news = await fetchAndProcessNews();
         res.json({ success: true, count: news.length });

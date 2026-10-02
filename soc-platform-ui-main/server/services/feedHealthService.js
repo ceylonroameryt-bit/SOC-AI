@@ -592,3 +592,9 @@ export function getFeedHealthStats() {
         snapshotGeneratedAt: new Date().toISOString()
     };
 }
+
+export function exportFeedHealth() { return Array.from(healthMap.values()); }
+export function replaceFeedHealth(records) {
+    healthMap.clear();
+    for (const record of records) if (record?.sourceId) healthMap.set(record.sourceId, record);
+}
