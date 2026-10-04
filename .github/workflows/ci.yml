@@ -25,7 +25,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: soc-platform-ui-main
-        run: npm ci
+        run: npm ci || npm install
 
       - name: Run Linter
         working-directory: soc-platform-ui-main

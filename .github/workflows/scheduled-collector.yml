@@ -41,7 +41,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: soc-platform-ui-main
-        run: npm ci --prefer-offline
+        run: npm ci --prefer-offline || npm install
 
       - name: Run Collector CLI
         working-directory: soc-platform-ui-main

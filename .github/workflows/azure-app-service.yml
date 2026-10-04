@@ -30,7 +30,7 @@ jobs:
       - name: Build frontend & server dependencies
         working-directory: soc-platform-ui-main
         run: |
-          npm ci
+          npm ci || npm install
           npm run build
 
       # P2 item 24: check secret availability in a step output, not in job-level `if`
