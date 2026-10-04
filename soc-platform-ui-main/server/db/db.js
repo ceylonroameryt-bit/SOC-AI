@@ -558,36 +558,27 @@ export const saveAnalystActionToDb = async ({ recordId, actionType, value, comme
     try {
         await client.query('BEGIN');
 
-        // Upsert analyst record
-        let statusUpdate = '';
-        let notesUpdate = '';
-        let assigneeUpdate = '';
-        let dismissUpdate = '';
+        const noteVal = actionType === 'note_added' ? value : null;
+        const dismissVal = actionType === 'dismissed' ? value : null;
+        const newStatus = actionType === 'status_change' ? value : (actionType === 'dismissed' ? 'closed' : null);
+        const assigneeVal = actionType === 'assignee_changed' ? value : null;
 
-        if (actionType === 'status_change') statusUpdate = `, status = '${value}'`;
-        if (actionType === 'note_added') notesUpdate = `, notes = $2`;
-        if (actionType === 'assignee_changed') assigneeUpdate = `, assignee = '${value}'`;
-        if (actionType === 'dismissed') {
-            statusUpdate = `, status = 'closed'`;
-            dismissUpdate = `, dismissed_reason = $3`;
-        }
-
-        const upsertRecordQuery = `
+        await client.query(`
             INSERT INTO analyst_records (record_id, status, notes, assignee, dismissed_reason, updated_by, updated_at)
-            VALUES ($1, 'new', '', NULL, NULL, $4, NOW())
+            VALUES ($1, COALESCE($2::text, 'new'), COALESCE($3::text, ''), $4::text, $5::text, $6::text, NOW())
             ON CONFLICT (record_id) DO UPDATE SET
-                updated_at = NOW(),
-                updated_by = $4
-                ${statusUpdate}
-                ${notesUpdate ? ', notes = $2' : ''}
-                ${assigneeUpdate ? ', assignee = ' + "'" + value + "'" : ''}
-                ${dismissUpdate ? ', dismissed_reason = $3' : ''};
-        `;
-
-        await client.query(upsertRecordQuery, [
+                status = COALESCE($2::text, analyst_records.status),
+                notes = CASE WHEN $3::text IS NOT NULL THEN $3::text ELSE analyst_records.notes END,
+                assignee = CASE WHEN $4::text IS NOT NULL THEN $4::text ELSE analyst_records.assignee END,
+                dismissed_reason = CASE WHEN $5::text IS NOT NULL THEN $5::text ELSE analyst_records.dismissed_reason END,
+                updated_by = $6::text,
+                updated_at = NOW();
+        `, [
             recordId,
-            actionType === 'note_added' ? value : '',
-            actionType === 'dismissed' ? value : '',
+            newStatus,
+            noteVal,
+            assigneeVal,
+            dismissVal,
             analystId || 'analyst'
         ]);
 
@@ -600,7 +591,7 @@ export const saveAnalystActionToDb = async ({ recordId, actionType, value, comme
         await client.query(insertActionQuery, [
             recordId,
             actionType,
-            value,
+            value ? String(value) : null,
             analystId || 'analyst',
             comment || null
         ]);
