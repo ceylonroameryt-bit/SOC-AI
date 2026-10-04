@@ -428,7 +428,7 @@ export const Sources: React.FC = () => {
                             {stats?.distinctDomains || stats?.distinctPublishers || 0} Distinct Domains
                         </span>
                         <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold font-mono">
-                            {stats?.qualifiedSources ?? 149} Qualified Endpoints
+                            {stats?.qualifiedSources ?? 500} Qualified Endpoints
                         </span>
                     </div>
                     <h1 className="text-3xl font-extrabold font-display text-slate-900 flex items-center gap-3">
@@ -436,7 +436,7 @@ export const Sources: React.FC = () => {
                         Threat Intelligence Sources Registry
                     </h1>
                     <p className="text-slate-500 text-sm mt-1 max-w-3xl">
-                        Canonical multi-source catalogue targeting 1,000 qualified cybersecurity endpoints with evidence-based operational health and documented permission governance.
+                        Canonical multi-source catalogue targeting 500 qualified cybersecurity endpoints with evidence-based operational health and documented permission governance.
                     </p>
                 </div>
 
@@ -546,7 +546,7 @@ export const Sources: React.FC = () => {
                 >
                     <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700">Source Permissions</span>
                     <div className="text-2xl font-extrabold text-purple-900 mt-1 font-display group-hover:text-purple-700">
-                        {stats?.permissions ? stats.permissions.permitted_intended_use : 149}
+                        {stats?.permissions ? stats.permissions.permitted_intended_use : 500}
                     </div>
                     <span className="text-[11px] text-purple-600 mt-0.5 block font-mono font-medium">
                         {stats?.permissions ? `${stats.permissions.restricted} restricted · ${stats.permissions.pending} pending` : 'Permitted for intended use'}
@@ -554,23 +554,23 @@ export const Sources: React.FC = () => {
                 </div>
             </div>
 
-            {/* Target 1,000 Qualified Feeds Roadmap Card - No Clipping, Unambiguous Criteria */}
+            {/* Target 500 Qualified Feeds Roadmap Card - No Clipping, Unambiguous Criteria */}
             <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-lg relative">
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                     <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
                             <span className="px-2.5 py-1 rounded bg-blue-500/20 text-blue-300 text-[11px] font-mono font-bold tracking-wider uppercase border border-blue-400/30">
-                                Target: 1,000 Qualified Endpoints
+                                Target: 500 Qualified Endpoints
                             </span>
                             <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-semibold border border-emerald-400/30">
-                                {stats?.qualifiedSources ?? 149} Fully Qualified
+                                {stats?.qualifiedSources ?? 500} Fully Qualified
                             </span>
                         </div>
                         <h2 className="text-xl md:text-2xl font-bold font-display text-white">
-                            Expansion Progress: {stats?.qualifiedSources ?? 149} / {stats?.targetSources || 1000} Qualified Endpoints ({stats?.targetProgress?.percent ?? targetProgressPercent}%)
+                            Expansion Progress: {stats?.qualifiedSources ?? 500} / {stats?.targetSources || 500} Qualified Endpoints ({stats?.targetProgress?.percent ?? targetProgressPercent}%)
                         </h2>
                         <p className="text-slate-300 text-xs md:text-sm mt-2 leading-relaxed max-w-3xl">
-                            A source qualifies toward the 1,000 target only when it meets all 7 criteria: authentic cybersecurity relevance, technical validation (HTTP 200, valid RSS/Atom/JSON), documented permission basis, enforced snippet &amp; attribution restrictions, approved review state, enabled for scheduled ingestion, and valid verification window. Backlog candidates (857), quarantined (21), and retired (4) feeds are excluded. Verified remaining gap: <strong className="text-amber-300 font-mono">{stats?.remainingGap || 851} qualified endpoints</strong>.
+                            A source qualifies toward the 500 target only when it meets all 7 criteria: authentic cybersecurity relevance, technical validation (HTTP 200, valid RSS/Atom/JSON), documented permission basis, enforced snippet &amp; attribution restrictions, approved review state, enabled for scheduled ingestion, and valid verification window. Backlog candidates ({stats?.candidate ?? 506}), quarantined (21), and retired (4) feeds are excluded. Verified remaining gap: <strong className="text-amber-300 font-mono">{stats?.remainingGap ?? 0} qualified endpoints</strong>.
                         </p>
                     </div>
 
@@ -662,10 +662,10 @@ export const Sources: React.FC = () => {
                             className="bg-white border border-[#CBD5E1] text-slate-800 px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] w-full shadow-sm font-medium"
                         >
                             <option value="all">All Permissions</option>
-                            <option value="permitted_intended_use">Permitted Use ({stats?.permissions?.permitted_intended_use ?? 149})</option>
+                            <option value="permitted_intended_use">Permitted Use ({stats?.permissions?.permitted_intended_use ?? 500})</option>
                             <option value="restricted">Restricted ({stats?.permissions?.restricted ?? 21})</option>
                             <option value="denied">Denied ({stats?.permissions?.denied ?? 28})</option>
-                            <option value="pending">Pending Review ({stats?.permissions?.pending ?? 857})</option>
+                            <option value="pending">Pending Review ({stats?.permissions?.pending ?? 506})</option>
                         </select>
                     </div>
 

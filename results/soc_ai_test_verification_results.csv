@@ -1,0 +1,180 @@
+Suite,Test_Name,Status,Duration_ms
+Blocks loopback IPv4 addresses,Blocks loopback IPv4 addresses,PASS,0.8898
+Blocks cloud metadata services (169.254.169.254),Blocks cloud metadata services (169.254.169.254),PASS,0.2647
+Blocks RFC 1918 private network addresses,Blocks RFC 1918 private network addresses,PASS,0.1145
+Blocks localhost and local hostnames,Blocks localhost and local hostnames,PASS,0.0917
+Allows public internet hosts,Allows public internet hosts,PASS,0.1762
+Validates redirect targets and blocks SSRF redirect chains,Validates redirect targets and blocks SSRF redirect chains,PASS,0.1935
+Validates redirect targets and blocks SSRF redirect chains,1. SSRF & Network Boundary Protection,PASS,2.5115
+Lowercases hostnames while preserving case-sensitive paths,Lowercases hostnames while preserving case-sensitive paths,PASS,0.2828
+Strips URL fragments and tracking parameters,Strips URL fragments and tracking parameters,PASS,0.1496
+Correctly extracts publisher domain,Correctly extracts publisher domain,PASS,0.253
+Correctly extracts publisher domain,2. URL Normalization & Deduplication,PASS,0.8662
+"Target 1,000 sources catalogue is populated","Target 1,000 sources catalogue is populated",PASS,0.1979
+All source IDs are strictly unique,All source IDs are strictly unique,PASS,0.4499
+Canonical feed URLs are unique across enabled sources,Canonical feed URLs are unique across enabled sources,PASS,0.3715
+Distinct publishers count is tracked and substantive,Distinct publishers count is tracked and substantive,PASS,0.2343
+Review states are strictly partitioned,Review states are strictly partitioned,PASS,0.2718
+Lifecycle states reconcile exactly to total registered catalogue,Lifecycle states reconcile exactly to total registered catalogue,PASS,5.712
+Scheduling states reconcile exactly to total registered catalogue,Scheduling states reconcile exactly to total registered catalogue,PASS,8.7384
+Candidate sources are not enabled by default,Candidate sources are not enabled by default,PASS,0.3197
+Milestone 1: At least 36 new verified sources exist with valid provenance,Milestone 1: At least 36 new verified sources exist with valid provenance,PASS,0.2081
+Repaired feeds have replacement notes preserved,Repaired feeds have replacement notes preserved,PASS,0.1078
+Retired sources have retirement reasons documented,Retired sources have retirement reasons documented,PASS,0.078
+Retired sources have retirement reasons documented,3. Canonical Registry Integrity & Scale Target,PASS,17.0162
+"Untested or candidate sources are marked disabled/unknown, never healthy","Untested or candidate sources are marked disabled/unknown, never healthy",PASS,0.1195
+Dynamic delayed calculation triggers when collection schedule is breached,Dynamic delayed calculation triggers when collection schedule is breached,PASS,0.106
+Recent successful fetch resolves to healthy,Recent successful fetch resolves to healthy,PASS,0.065
+Network errors do not fabricate HTTP status codes,Network errors do not fabricate HTTP status codes,PASS,0.0693
+Publication freshness separates content age from transport health,Publication freshness separates content age from transport health,PASS,0.0911
+Active health rate uses labelled denominator (healthy / enabled active),Active health rate uses labelled denominator (healthy / enabled active),PASS,4.841
+Target progress uses explicit denominator 500 without fabrication,Target progress uses explicit denominator 500 without fabrication,PASS,10.2392
+Target progress uses explicit denominator 500 without fabrication,4. Health Telemetry & Zero Fabrication,PASS,15.7173
+Parses Retry-After header with numeric delta-seconds,Parses Retry-After header with numeric delta-seconds,PASS,0.2604
+Parses Retry-After header with HTTP-Date,Parses Retry-After header with HTTP-Date,PASS,0.2145
+Gracefully falls back on invalid Retry-After,Gracefully falls back on invalid Retry-After,PASS,0.063
+Gracefully falls back on invalid Retry-After,5. Collector Engine Protocol Conformance,PASS,0.707
+Paginates records correctly,Paginates records correctly,PASS,9.9929
+Filters records by category,Filters records by category,PASS,10.6111
+Filters records by reviewState,Filters records by reviewState,PASS,17.2336
+Filters records by search query across name and domain,Filters records by search query across name and domain,PASS,7.6022
+"System stats accurately reports target, verified, and remaining gap","System stats accurately reports target, verified, and remaining gap",PASS,9.7428
+Candidate rejection records rejection reason and category,Candidate rejection records rejection reason and category,PASS,4.6383
+Candidate rejection records rejection reason and category,6. Sources API Pagination & Filtering,PASS,60.1412
+Candidate rejection records rejection reason and category,RSS Ingestion & Feed Reliability Verification Suite,PASS,97.6176
+Same URL always produces the same ID,Same URL always produces the same ID,PASS,0.6496
+IDs have the expected prefix and length,IDs have the expected prefix and length,PASS,0.1437
+Different URLs produce different IDs,Different URLs produce different IDs,PASS,0.1145
+Missing link produces a non-null ID (random fallback),Missing link produces a non-null ID (random fallback),PASS,0.3418
+Missing link produces a non-null ID (random fallback),8a. deriveArticleId — stable deterministic IDs,PASS,1.4255
+Valid RFC 2822 date parses to ISO string,Valid RFC 2822 date parses to ISO string,PASS,0.1714
+Valid ISO 8601 date passes through,Valid ISO 8601 date passes through,PASS,0.0551
+Missing/null returns null — NOT current time,Missing/null returns null — NOT current time,PASS,0.041
+Unparseable string returns null — NOT current time,Unparseable string returns null — NOT current time,PASS,0.0466
+Unparseable string returns null — NOT current time,8b. parsePubDate — no fabrication,PASS,0.4054
+"dateFrom inclusive, dateTo exclusive","dateFrom inclusive, dateTo exclusive",PASS,35.9337
+Articles with null pubDate are excluded from date-bounded windows,Articles with null pubDate are excluded from date-bounded windows,PASS,41.4519
+"Keyword search filters across title, snippet, and source","Keyword search filters across title, snippet, and source",PASS,94.0207
+Pagination produces non-overlapping result sets,Pagination produces non-overlapping result sets,PASS,54.9821
+Sort pub_asc returns oldest first,Sort pub_asc returns oldest first,PASS,62.5321
+Sort pub_desc returns newest first,Sort pub_desc returns newest first,PASS,41.973
+archiveCoverage reports honest oldest/newest from persistent archive,archiveCoverage reports honest oldest/newest from persistent archive,PASS,18.0815
+Severity filter returns only matching severity,Severity filter returns only matching severity,PASS,11.9022
+Severity filter returns only matching severity,8c. queryArchive — date filter semantics,PASS,361.3332
+"Permission matrix contains exactly 1,055 records matching canonical registry","Permission matrix contains exactly 1,055 records matching canonical registry",PASS,15.4536
+"Verified breakdown reconciles: 500 permitted, 21 restricted, 28 denied, 506 pending","Verified breakdown reconciles: 500 permitted, 21 restricted, 28 denied, 506 pending",PASS,0.6356
+isPermittedForIntendedUse accurately identifies permitted vs non-permitted sources,isPermittedForIntendedUse accurately identifies permitted vs non-permitted sources,PASS,0.1661
+enforceContentRestrictions caps long summaries and enforces attribution,enforceContentRestrictions caps long summaries and enforces attribution,PASS,0.2786
+enforceContentRestrictions suppresses image hotlinking when disallowed,enforceContentRestrictions suppresses image hotlinking when disallowed,PASS,0.1039
+enforceContentRestrictions suppresses image hotlinking when disallowed,9. Source Permissions & Content Restrictions,PASS,16.8371
+getFeedHealthStats reports qualified sources with remaining gap to target,getFeedHealthStats reports qualified sources with remaining gap to target,PASS,9.0255
+"Candidates, quarantined, and retired feeds do not count toward qualified target","Candidates, quarantined, and retired feeds do not count toward qualified target",PASS,4.8309
+Lifecycle categories are mutually exclusive and reconcile 100% to registered total,Lifecycle categories are mutually exclusive and reconcile 100% to registered total,PASS,7.6113
+"Operational health denominator is active enabled feeds, not whole catalogue or target","Operational health denominator is active enabled feeds, not whole catalogue or target",PASS,6.7036
+"Operational health denominator is active enabled feeds, not whole catalogue or target",10. 500 Target Qualification & Reconciled Accounting,PASS,29.2842
+UTC midnight converts cleanly,UTC midnight converts cleanly,PASS,15.1413
+"America/New_York (EDT, UTC-4) converts to 04:00:00.000Z","America/New_York (EDT, UTC-4) converts to 04:00:00.000Z",PASS,0.333
+"Asia/Tokyo (JST, UTC+9) converts to 15:00:00.000Z previous day","Asia/Tokyo (JST, UTC+9) converts to 15:00:00.000Z previous day",PASS,0.2539
+"Europe/London (BST, UTC+1 in September) converts to 23:00:00.000Z previous day","Europe/London (BST, UTC+1 in September) converts to 23:00:00.000Z previous day",PASS,0.2362
+"Consecutive day midnights span exactly 86,400,000 ms (24 hours)","Consecutive day midnights span exactly 86,400,000 ms (24 hours)",PASS,0.3816
+shiftDateStr correctly transitions across month boundaries,shiftDateStr correctly transitions across month boundaries,PASS,0.1161
+safeTimezone falls back to UTC for invalid inputs,safeTimezone falls back to UTC for invalid inputs,PASS,0.2958
+safeTimezone falls back to UTC for invalid inputs,11. Timezone-Aware Day Boundaries & UTC Math,PASS,16.9455
+startCollectionRun initializes structured run with unique runId and running status,startCollectionRun initializes structured run with unique runId and running status,PASS,2.053
+"completeCollectionRun persists source tallies, article metrics, and rejection reasons","completeCollectionRun persists source tallies, article metrics, and rejection reasons",PASS,1.6704
+getCollectionRunHistory retrieves bounded list of historic runs,getCollectionRunHistory retrieves bounded list of historic runs,PASS,0.2804
+getCollectionRunHistory retrieves bounded list of historic runs,12. Run-Level Ingestion Telemetry & Observability,PASS,4.1679
+MAX_BODY_BYTES accommodates large XML security feeds (>= 32MB),MAX_BODY_BYTES accommodates large XML security feeds (>= 32MB),PASS,0.0811
+loadNewsData loads persistent articles and invalidateNewsCache resets cache,loadNewsData loads persistent articles and invalidateNewsCache resets cache,PASS,206.4673
+loadNewsData loads persistent articles and invalidateNewsCache resets cache,13. High-Capacity Parsing Limits & Cache Synchronization,PASS,206.6349
+api/index.js exports default handler function delegating to Express,api/index.js exports default handler function delegating to Express,PASS,0.1334
+serverlessHandler dispatches /api/health and /api/explore via HTTP server,serverlessHandler dispatches /api/health and /api/explore via HTTP server,PASS,79.4789
+serverlessHandler dispatches /api/health and /api/explore via HTTP server,14. Vercel Serverless & Local Express Parity Bridge,PASS,79.7655
+serverlessHandler dispatches /api/health and /api/explore via HTTP server,"8. newsService — ID stability, pubDate integrity, and archive queries",PASS,717.1763
+1. Dashboard loads from /api/dashboard/snapshot with validated schema,1. Dashboard loads from /api/dashboard/snapshot with validated schema,PASS,913.8787
+2. Zero critical alerts displays 0 without fallback coercion to 18 or 420,2. Zero critical alerts displays 0 without fallback coercion to 18 or 420,PASS,0.1839
+3. Client telemetry handler handles unavailable snapshot safely,3. Client telemetry handler handles unavailable snapshot safely,PASS,5.0354
+4. Settings handles missing/undefined integration payloads without crashing,4. Settings handles missing/undefined integration payloads without crashing,PASS,5.6512
+5. Global search populates and filters archives accurately,5. Global search populates and filters archives accurately,PASS,0.1815
+6. IOC CVE enrichment returns enriched vulnerability telemetry,6. IOC CVE enrichment returns enriched vulnerability telemetry,PASS,280.287
+7. Report endpoint /api/reports/daily returns standard PDF-1.4 binary,7. Report endpoint /api/reports/daily returns standard PDF-1.4 binary,PASS,245.0603
+"8. Export endpoints return CSV, JSON, and STIX 2.1 files","8. Export endpoints return CSV, JSON, and STIX 2.1 files",PASS,1566.0172
+9. Demo data is excluded from production metrics and threats,9. Demo data is excluded from production metrics and threats,PASS,10.2389
+10. Feed-health totals match configured source records,10. Feed-health totals match configured source records,PASS,12.3426
+11. Hybrid clustering regression test prevents unrelated articles from grouping,11. Hybrid clustering regression test prevents unrelated articles from grouping,PASS,1.4936
+12. Email notification endpoint rejects unauthenticated requests with 401,12. Email notification endpoint rejects unauthenticated requests with 401,PASS,20.4258
+13. Severity engine accurately assesses evidence vs dampens marketing/opinion,13. Severity engine accurately assesses evidence vs dampens marketing/opinion,PASS,1.1109
+14. /api/news?intelCategory= returns only records matching the requested taxonomy category,14. /api/news?intelCategory= returns only records matching the requested taxonomy category,PASS,179.4253
+15. classifyRecord assigns needs-classification when evidence is truly insufficient,15. classifyRecord assigns needs-classification when evidence is truly insufficient,PASS,0.941
+16. classifyRecord does NOT assign threat categories to marketing or editorial content,16. classifyRecord does NOT assign threat categories to marketing or editorial content,PASS,0.2559
+17. GET /api/categories/counts returns valid structure with total and categories array,17. GET /api/categories/counts returns valid structure with total and categories array,PASS,4.4945
+18. Classified records preserve sourceCategory (reversible — original value is not lost),18. Classified records preserve sourceCategory (reversible — original value is not lost),PASS,16.9023
+"19. Non-operational content (webinars, funding) receives informational/low severity without threat inflation","19. Non-operational content (webinars, funding) receives informational/low severity without threat inflation",PASS,0.3104
+20. Ransomware victim claims receive High/Critical priority and unverified-claim evidence status,20. Ransomware victim claims receive High/Critical priority and unverified-claim evidence status,PASS,0.2883
+21. Organizational relevance detects watched perimeter assets with unverified exposure status,21. Organizational relevance detects watched perimeter assets with unverified exposure status,PASS,0.1903
+"22. Analyst action endpoint persists status transitions, notes, and dismissals","22. Analyst action endpoint persists status transitions, notes, and dismissals",PASS,11.734
+23. Sources API returns real measured telemetry without blind assumptions,23. Sources API returns real measured telemetry without blind assumptions,PASS,50.002
+23. Sources API returns real measured telemetry without blind assumptions,NO ENTRY SOC Intelligence Platform Verification Suite,PASS,3331.2243
+safeEqual returns true for equal strings,safeEqual returns true for equal strings,PASS,0.6061
+safeEqual returns false for different strings,safeEqual returns false for different strings,PASS,0.1407
+safeEqual returns false for empty string (fail closed),safeEqual returns false for empty string (fail closed),PASS,0.0995
+safeEqual returns false for non-strings (fail closed),safeEqual returns false for non-strings (fail closed),PASS,0.0879
+safeEqual returns false for different-length strings,safeEqual returns false for different-length strings,PASS,0.0867
+extractBearerToken parses Authorization: Bearer correctly,extractBearerToken parses Authorization: Bearer correctly,PASS,0.1354
+extractBearerToken returns null for non-Bearer header,extractBearerToken returns null for non-Bearer header,PASS,0.0725
+requireApiKey 503 when env key is unset (fail closed),requireApiKey 503 when env key is unset (fail closed),PASS,0.1909
+requireApiKey 401 when key is wrong,requireApiKey 401 when key is wrong,PASS,0.1436
+requireApiKey ok when X-API-Key matches,requireApiKey ok when X-API-Key matches,PASS,0.1302
+requireApiKey ok when Bearer token matches,requireApiKey ok when Bearer token matches,PASS,0.0938
+requireApiKey does NOT accept arbitrary long Bearer tokens (old bypass removed),requireApiKey does NOT accept arbitrary long Bearer tokens (old bypass removed),PASS,0.1053
+requireApiKey does NOT accept arbitrary long Bearer tokens (old bypass removed),"P0 Items 1&2: auth utilities (timing-safe, fail-closed)",PASS,5.4366
+POST /api/notifications/send without key returns 401 or 503,POST /api/notifications/send without key returns 401 or 503,PASS,38.8463
+POST /api/notifications/send with wrong key returns 401,POST /api/notifications/send with wrong key returns 401,PASS,9.3213
+POST /api/notifications/send with wrong key returns 401,P0 Item 1: /api/notifications/send rejects without auth,PASS,48.4068
+POST /api/v1/alerts without key returns 401/503,POST /api/v1/alerts without key returns 401/503,PASS,4.1562
+POST /api/v1/alerts with non-JSON body returns 400,POST /api/v1/alerts with non-JSON body returns 400,PASS,2.5952
+POST /api/v1/alerts with invalid severity returns 400,POST /api/v1/alerts with invalid severity returns 400,PASS,2.6476
+POST /api/v1/alerts with oversized type returns 400,POST /api/v1/alerts with oversized type returns 400,PASS,8.6
+POST /api/v1/alerts with valid payload returns 201,POST /api/v1/alerts with valid payload returns 201,PASS,17.226
+POST /api/v1/alerts with valid payload returns 201,P0 Item 2: /api/v1/alerts fail-closed and validation,PASS,35.6377
+GET /api/health response has no internal config fields,GET /api/health response has no internal config fields,PASS,3.7653
+GET /api/health response has no internal config fields,"P0 Item 9: /api/health only returns {status, timestamp}",PASS,3.9191
+"escapeCsvField prefixes ""=CMD|""/C c..."" with single quote","escapeCsvField prefixes ""=CMD|""/C c..."" with single quote",PASS,0.2493
+"escapeCsvField prefixes ""+cmd|""/C c..."" with single quote","escapeCsvField prefixes ""+cmd|""/C c..."" with single quote",PASS,0.0773
+"escapeCsvField prefixes ""-1+1..."" with single quote","escapeCsvField prefixes ""-1+1..."" with single quote",PASS,0.0418
+"escapeCsvField prefixes ""@SUM(1+1)..."" with single quote","escapeCsvField prefixes ""@SUM(1+1)..."" with single quote",PASS,0.025
+"escapeCsvField prefixes ""\\t=maliciou..."" with single quote","escapeCsvField prefixes ""\\t=maliciou..."" with single quote",PASS,0.0244
+"escapeCsvField prefixes ""\\r=maliciou..."" with single quote","escapeCsvField prefixes ""\\r=maliciou..."" with single quote",PASS,0.0225
+escapeCsvField leaves safe values unchanged,escapeCsvField leaves safe values unchanged,PASS,0.0659
+escapeCsvField quotes values containing commas,escapeCsvField quotes values containing commas,PASS,0.0507
+escapeCsvField quotes values containing commas,P0 Item 6: CSV formula injection prevention (escapeCsvField),PASS,0.7187
+detects IPv4 addresses,detects IPv4 addresses,PASS,0.542
+detects SHA256 hashes (64 hex),detects SHA256 hashes (64 hex),PASS,0.0608
+detects SHA1 hashes (40 hex),detects SHA1 hashes (40 hex),PASS,0.0432
+detects MD5 hashes (32 hex),detects MD5 hashes (32 hex),PASS,0.0296
+detects CVE identifiers,detects CVE identifiers,PASS,0.0285
+detects domains (multi-label),detects domains (multi-label),PASS,0.0926
+returns unknown for unrecognised values,returns unknown for unrecognised values,PASS,0.0943
+rejects 31-char hex (not a valid hash length),rejects 31-char hex (not a valid hash length),PASS,0.0964
+rejects 31-char hex (not a valid hash length),P0 Item 7: detectIOCType correctly identifies types,PASS,1.123
+validateLink accepts http URLs,validateLink accepts http URLs,PASS,0.2391
+validateLink accepts https URLs,validateLink accepts https URLs,PASS,0.0694
+validateLink rejects javascript: URLs,validateLink rejects javascript: URLs,PASS,0.035
+validateLink rejects data: URLs,validateLink rejects data: URLs,PASS,0.0372
+validateLink rejects \# (empty link),validateLink rejects \# (empty link),PASS,0.0309
+validateLink rejects relative paths,validateLink rejects relative paths,PASS,0.0429
+validateLink returns null for empty/null input,validateLink returns null for empty/null input,PASS,0.0488
+dedupeKey uses link when valid,dedupeKey uses link when valid,PASS,0.1597
+dedupeKey falls back to title+source hash when link is null,dedupeKey falls back to title+source hash when link is null,PASS,0.21
+dedupeKey does NOT collapse all link-less items onto same key (old bug),dedupeKey does NOT collapse all link-less items onto same key (old bug),PASS,0.0985
+dedupeKey does NOT collapse all link-less items onto same key (old bug),P0 Item 8: validateLink and dedupeKey,PASS,1.1958
+"""resource"" does NOT match ""rce"" keyword","""resource"" does NOT match ""rce"" keyword",PASS,4.5315
+"""because"" does NOT match ""bec"" keyword","""because"" does NOT match ""bec"" keyword",PASS,5.2018
+"""helped"" does NOT match ""lpe"" keyword","""helped"" does NOT match ""lpe"" keyword",PASS,0.2397
+"""smb"" as standalone word DOES match lateral movement","""smb"" as standalone word DOES match lateral movement",PASS,0.1375
+"""ransomware"" correctly maps to T1486 Impact","""ransomware"" correctly maps to T1486 Impact",PASS,0.1183
+"""powershell"" maps to T1059 Execution","""powershell"" maps to T1059 Execution",PASS,0.1287
+"""mimikatz"" maps to T1003 Credential Dumping","""mimikatz"" maps to T1003 Credential Dumping",PASS,0.1443
+"""mimikatz"" maps to T1003 Credential Dumping",P1 Item 11: MITRE word-boundary regex (no false positives on substrings),PASS,10.7037
+GET /api/ai/stats returns structured config state,GET /api/ai/stats returns structured config state,PASS,12.8171
+GET /api/ai/stats returns structured config state,P1 Item 23: /api/ai/stats reflects real configuration,PASS,12.9229

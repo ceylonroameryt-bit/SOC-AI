@@ -1,0 +1,42 @@
+ID,Timestamp,Severity,Type,Source,Description,Malicious_IPs,C2_Domains,SHA256,CVEs,External_Ingestion,Is_Simulated
+EXT-1791108039602-606,2026-10-04T10:00:39.602Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1791107825904-5774,2026-10-04T09:57:05.904Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1791107083756-60,2026-10-04T09:44:43.756Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790807986768-3559,2026-09-30T22:39:46.768Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790807974072-472,2026-09-30T22:39:34.072Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790807937456-874,2026-09-30T22:38:57.456Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790807927465-9718,2026-09-30T22:38:47.465Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790679434288-1454,2026-09-29T10:57:14.288Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790679368475-9420,2026-09-29T10:56:08.475Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790676487956-7703,2026-09-29T10:08:07.956Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790672461147-4085,2026-09-29T09:01:01.147Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790672302080-1071,2026-09-29T08:58:22.080Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+EXT-1790672286598-3321,2026-09-29T08:58:06.598Z,High,Malware,Test,External High alert: Malware,,,,,true,false
+TRT-2026-7451,2026-09-19T11:04:51.429Z,Critical,Dark Web Leak,Onion Forum Monitor,Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.,103.75.201.2,hidden-service.onion,,,false,false
+TRT-2026-3669,2026-09-19T11:04:51.429Z,High,Botnet,HoneyPot Network,Mirai variant performing DDoS amplification attacks. C2 infrastructure tied to known bulletproof hosting.,185.243.96.10,malicious-143.com,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,,false,false
+TRT-2026-2146,2026-09-19T11:04:51.429Z,Low,Botnet,Threat Intel Feed,Qakbot botnet resurging with new persistence mechanism exploiting scheduled tasks.,144.172.73.15,malicious-891.com,,,false,false
+TRT-2026-5708,2026-09-19T11:04:51.429Z,Medium,Phishing,Internal SOC,Quishing (QR code phishing) campaign targeting mobile users with fake DocuSign requests.,185.243.96.10,malicious-784.com,,,false,false
+TRT-2026-2494,2026-09-18T20:32:24.727Z,Medium,Zero-Day,Dark Web Monitor,Zero-day in browser rendering engine being exploited in watering hole campaign against defense contractors.,185.220.101.47,malicious-613.com,,,false,true
+TRT-2026-7505,2026-09-18T20:32:24.727Z,Medium,Phishing,Internal SOC,Quishing (QR code phishing) campaign targeting mobile users with fake DocuSign requests.,194.165.16.11,malicious-586.com,,,false,true
+TRT-2026-6108,2026-09-18T20:32:24.727Z,Low,Zero-Day,Dark Web Monitor,Zero-day in browser rendering engine being exploited in watering hole campaign against defense contractors.,144.172.73.15,malicious-541.com,,,false,true
+TRT-2026-8414,2026-09-18T20:32:24.727Z,Critical,Dark Web Leak,Onion Forum Monitor,Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.,5.188.206.14,hidden-service.onion,8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc,,false,true
+TRT-2026-2062,2026-09-18T20:32:24.727Z,Low,Phishing,Internal SOC,Large-scale credential phishing campaign impersonating Microsoft 365 login. Targeting corporate email users.,5.188.206.14,malicious-473.com,,,false,true
+TRT-2026-3590,2026-09-18T20:32:24.727Z,Critical,Dark Web Leak,Onion Forum Monitor,Corporate VPN credentials listed for sale on RAMP forum. Source appears to be infostealer log.,194.165.16.11,hidden-service.onion,,,false,true
+TRT-2026-6200,2026-09-16T10:08:38.691Z,Critical,Dark Web Leak,Onion Forum Monitor,Corporate VPN credentials listed for sale on RAMP forum. Source appears to be infostealer log.,62.210.103.244,hidden-service.onion,8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc,,false,true
+TRT-2026-5896,2026-09-16T10:08:38.691Z,High,Zero-Day,Internal SOC,Zero-day in browser rendering engine being exploited in watering hole campaign against defense contractors.,89.187.191.12,malicious-655.com,8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc,,false,true
+TRT-2026-5717,2026-09-16T10:08:38.691Z,High,Zero-Day,Dark Web Monitor,Zero-day in browser rendering engine being exploited in watering hole campaign against defense contractors.,45.142.212.100,malicious-652.com,,,false,true
+TRT-2026-6069,2026-09-16T10:08:38.691Z,Critical,Malware,Internal SOC,Lumma Stealer infostealer distributed via malvertising on search engines. Targets browser credentials and crypto wallets.,89.187.191.12,malicious-176.com,,,false,true
+TRT-2026-7639,2026-09-16T10:08:38.691Z,High,Botnet,HoneyPot Network,Mirai variant performing DDoS amplification attacks. C2 infrastructure tied to known bulletproof hosting.,77.91.100.255,malicious-471.com,8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc,,false,true
+TRT-2026-5766,2026-08-23T17:28:11.594Z,Medium,Phishing,HoneyPot Network,Active Phishing campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.242.102,malicious-78.com,,,false,true
+TRT-2026-6718,2026-08-23T17:28:11.594Z,Medium,Phishing,Internal SOC,Active Phishing campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.90.172,malicious-114.com,,,false,true
+TRT-2026-4603,2026-08-23T17:28:11.594Z,Medium,Zero-Day,Internal SOC,Active Zero-Day campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.132.150,malicious-950.com,,,false,true
+TRT-2026-3361,2026-02-12T17:26:34.852Z,High,Zero-Day,Threat Intel Feed,Active Zero-Day campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.150.207,malicious-219.com,,,false,true
+TRT-2026-6899,2026-02-12T17:26:34.852Z,Critical,Dark Web Leak,Onion Forum Monitor,Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.,192.168.214.82,hidden-service.onion,,,false,true
+TRT-2026-4804,2026-02-12T17:26:34.852Z,High,Malware,Threat Intel Feed,Active Malware campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.88.237,malicious-76.com,8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc,,false,true
+TRT-2026-9360,2026-02-12T17:26:34.852Z,Critical,Dark Web Leak,Onion Forum Monitor,Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.,192.168.62.53,hidden-service.onion,,,false,true
+TRT-2026-7962,2026-02-12T17:26:34.852Z,Low,Botnet,HoneyPot Network,Active Botnet campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.158.12,malicious-875.com,,,false,true
+TRT-2026-896,2026-02-11T22:07:10.072Z,Critical,Phishing,Dark Web Monitor,Active Phishing campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.181.172,malicious-992.com,8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc,,false,true
+TRT-2026-6836,2026-02-11T22:07:10.072Z,High,Zero-Day,Threat Intel Feed,Active Zero-Day campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.191.193,malicious-425.com,8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc,,false,true
+TRT-2026-1607,2026-02-11T22:07:10.072Z,Critical,Botnet,Internal SOC,Active Botnet campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.142.3,malicious-969.com,8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc,,false,true
+TRT-2026-4028,2026-02-11T22:07:10.072Z,Low,Zero-Day,Dark Web Monitor,Active Zero-Day campaign detected via network sensors. IOCs indicate targeting financial sector.,192.168.175.53,malicious-297.com,,,false,true
+TRT-2026-5755,2026-02-11T22:07:10.072Z,Critical,Dark Web Leak,Onion Forum Monitor,Credential dump detected on underground forum matching corporate domain patterns. Verify user accounts immediately.,192.168.127.20,hidden-service.onion,8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc,,false,true

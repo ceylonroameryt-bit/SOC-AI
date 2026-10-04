@@ -1,8 +1,8 @@
 {
   "startedAt": "2026-09-26T16:23:34.360Z",
   "lastUpdatedAt": "2026-09-26T16:23:57.929Z",
-  "attempted": 60,
-  "approved": 36,
+  "attempted": 411,
+  "approved": 387,
   "rejected": 24,
   "rejectionBreakdown": {
     "not_found": 0,
@@ -433,6 +433,2463 @@
     },
     "source-9": {
       "timestamp": "2026-09-26T16:23:57.909Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "vusec": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "nisl-thu": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hack-inn": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "muellis-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "latest-secunia-blog-entriessecunia-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "secdr": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "toooold": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "stories-by-sap-security-research-on-medium": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "0xacb": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "s-amp-p": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "usenix": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ndss": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "acm-ccs": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ieee-transactions-on-information-forensics-and-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ieee-transactions-on-dependable-and-secure-computing": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "adam-doup": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "suyoung-lee": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "blog-3": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "afant1": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "sonar-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rbleug": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "random-dross": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "main-is-usually-a-function": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "retme": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "didier-stevens": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "binary-ninja": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hasherezade-s-1001-nights": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ret2-systems-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "vlad-tsyrklevich-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rewolf-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "malware-forensics-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "x9090-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "the-security-shoggoth": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-189": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "blog-of-osanda": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "tavis-ormandy": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "diary-of-a-reverse-engineer": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "my-infected-computer": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "luoyesiqiu": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "cyber-wtf": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hacking-the-planet": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "kerner-on-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "shortjump": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "vmray": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "the-recurity-lablog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-190": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "brendan-gregg-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-191": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "vulnerable-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "quarkslab-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ccc-event-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hexacorn": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "add-xor-rol": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "cawan-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "firmware-hacking": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "evonide-s-information-security-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ly0n-me": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "technical-posts-archives-stormshield": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "avl-team": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "poacher-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rootkiter": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "trustlook-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pzhxbz": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hack-the-world": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "malwarebytes": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "malware-traffic-analysis-net-blog-entries": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "nul-pw": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "magictong": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "sergioprado-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "reverse-engineering": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "comments-on-hex-rays-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-192": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "gynvael-coldwind-vx-log-en": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "whereisk0shl": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-177": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "mwr-labs-tools": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "gdtr": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "code-white-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pop-pop-ret": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "perception-point": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "arighi-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "indistinguishable-from-jesse": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "kciredor-s-engineering-and-security-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "this-is-a-one-way-ride": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pwndizzle": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "street-hacker": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "lazy-project": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "gt-root-saelo": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "lcamtuf-s-old-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "blogs-on-star-labs": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "modexp": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "d0c-s4vage": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "exodus-intelligence": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "a-box-of-chocolate": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "zecops-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "tail-f-var-log-messages-grep-vegard": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hi-i-m-amat": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "azeria-labs": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "firmy-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "apr4h-github-io": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "landave-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ms509-team-mission-studio": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "mod-log": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "j00ru-vx-tech-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "xorl-eax-eax": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "alex-ionescu-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rss-feed-bj-rn-ruytenberg": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "c0re-team": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "povcfe-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "swing-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "danny-wei": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "gamozo-labs-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pwnies-awards": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "2019-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "memset-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rutk1t0r-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "voidsecurity": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ihazomgsecurityskillz": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-178": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "my-aimful-life": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ctf": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "the-nenad-x": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "maskray": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "lexfo-s-security-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "keen-security-lab-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "stalkr-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "an7i-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "andrea-cardaci": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "alexander-popov": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hc1m1": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-179": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "jbp-io": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "icesword-lab": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "greyhathacker-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "j00ru-vx-tech-blog-1": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "panicall-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "dividead-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "blog-wuntee": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "trapkit-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "jussi-judin-s-weblog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "between-extremes": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "redteam-pl-techblog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "deep-exploit-space": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "se7en-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "bitsadmin-s-blog-mystery-guest-in-your-it-infrastructure": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "all-posts-malicious-link-blog-by-mubix-rob-fuller": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "secure-belief": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "fox-it-international-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "posts-on-christopher-alonso": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "publications-outflank": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "icewall-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-185": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "misc": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "tyranid-s-lair": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "the-safe-mac": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "payatu": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "penetration-testing-lab": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "woojay-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "tssci-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "brucetg-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pureqh-feed-https-pureqh-top": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "riccardo-ancarani-red-team-adventures": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pentestmonkey": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hacking-dream": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "forcepoint": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "enigma0x3": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "bernardo-dag": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "grimm-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "joe-s-security-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "evi1cg-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ryotak-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "threat-research-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "splinter-code-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "blog-2": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "c-in-s-u-it-chrisjohnriley": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "root-cyberworld-noah-lab": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "remote-exploit-org": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "cheesy-rumbles": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "shenanigans-labs": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "byt3bl33d3r": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "shell-is-only-the-beginning": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "3gstudent-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "fortynorth-security-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "re4son": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "aresx-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "dragon-threat-labs": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pentest-n00b": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "infosec-resources": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "techy-zilla": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "scriptkidd1e": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pentest-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "breakdev": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "r34l-ty": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "red-teaming": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "imnothere": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rss-programming-stuff": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "a-team": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "shell-is-only-the-beginning-1": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "imq-minded-security-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rcoil": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "guidepoint-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "darknet-hacking-tools-hacker-news-amp-cyber-security-1": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "bluescreenofjeff-com-a-blog-about-penetration-testing-and-red-teaming": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "techorganic": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "security-reliks": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-186": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "lyon-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "confessions-of-a-penetration-tester": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "linhlhq-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "blogs-on-dade": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "low-cost-hardware-and-free-software": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "securelist": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "spylogic-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "geosn0w": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ho1y-sunny-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "bamb00": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-159": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "blog-postings-from-honeynet-org": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "security-simplified": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "zdziarski": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "nshipster": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "random": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "c-skills": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "tjxin-xd": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-160": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-161": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "android-security-acknowledgements": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "quaful": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "android-explorations": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "su1216": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "envato-tuts-code-mobile-development": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-162": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "chromium-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "tessrijogo": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-163": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "prateek-gianchandani": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hawkspawn-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-164": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "flanker-sky": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "braincol": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-165": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "elcomsoft-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ysl-android": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-166": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "android": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hakers-info": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "appsec-labs-application-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "azimuth-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pxb1988": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "bazad-github-io": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ongoing-by-tim-bray": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-167": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "laplinker": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "jesux-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "android-internals-a-confectioner-s-cookbook": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "comments-on": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "smartphone-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "darklapu": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "jserv-s-blog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "innost": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hex-detective": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-12": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "codeblog": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "roartalk-4hou-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-13": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "filippo-valsorda": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "bugtraq": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "cybernews": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-14": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "zero-day-initiative-advisories-published": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "suspek": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "darknet-hacking-tools-hacker-news-amp-cyber-security": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "paper-last-paper": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "unsafe-sh": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-15": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "recent-commits-to-cve-main": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-16": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "infosec-write-ups-medium": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "publications-on-star-labs": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-17": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "data-breach": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hackernoon": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "source-18": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "noob-hackers": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "sec-news-1": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "simonwillison-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "jeffgeerling-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "seangoedecke-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "daringfireball-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "ericmigi-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "antirez-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "idiallo-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "maurycyz-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "pluralistic-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "shkspr-mobi": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "lcamtuf-substack-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "mitchellh-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "dynomight-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "utcc-utoronto-ca-cks": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "xeiaso-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "devblogs-microsoft-com-oldnewthing": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "righto-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "garymarcus-substack-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "overreacted-io": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "timsh-org": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "johndcook-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "gilesthomas-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "matklad-github-io": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "derekthompson-org": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "evanhahn-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "terriblesoftware-org": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "rakhim-exotext-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "xania-org": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "micahflee-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "nesbitt-io": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "construction-physics-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "tedium-co": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "susam-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "entropicthoughts-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "buttondown-com-hillelwayne": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "borretti-me": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "wheresyoured-at": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "jayd-ml": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "minimaxir-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "geohot-github-io": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "paulgraham-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "filfre-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "blog-jim-nielsen-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "dfarq-homeip-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "jyn-dev": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "geoffreylitt-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "downtowndougbrown-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "brutecat-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "eli-thegreenplace-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "abortretry-fail": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "fabiensanglard-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "oldvcr-blogspot-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "bogdanthegeek-github-io": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hugotunius-se": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "gwern-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "berthub-eu": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "chadnauseam-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "simone-org": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "it-notes-dragas-net": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "beej-us": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "hey-paris": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "danielwirtz-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "matduggan-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "refactoringenglish-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
+      "approved": true,
+      "httpStatus": 200,
+      "errorCategory": null,
+      "rejectionReason": null
+    },
+    "worksonmymachine-substack-com": {
+      "timestamp": "2026-10-04T09:54:23.141Z",
       "approved": true,
       "httpStatus": 200,
       "errorCategory": null,

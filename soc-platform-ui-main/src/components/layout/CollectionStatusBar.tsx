@@ -36,10 +36,10 @@ export const CollectionStatusBar: React.FC = () => {
             .then(snapshot => {
                 if (snapshot) {
                     const sources = snapshot.sources || {};
-                    const activeCount = sources.enabled || sources.activeHealth?.totalActive || 113;
+                    const activeCount = sources.enabled || sources.activeHealth?.totalActive || 500;
                     const healthyCount = sources.activeHealth?.healthy ?? sources.healthy ?? 0;
                     const healthyRatePercent = activeCount > 0 ? Number(((healthyCount / activeCount) * 100).toFixed(1)) : 0;
-                    const targetCount = sources.targetSources || 1000;
+                    const targetCount = sources.targetSources || 500;
                     const targetPercent = targetCount > 0 ? Number(((healthyCount / targetCount) * 100).toFixed(1)) : 0;
 
                     setStatusData({

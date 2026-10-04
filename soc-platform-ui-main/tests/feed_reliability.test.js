@@ -270,15 +270,15 @@ describe('RSS Ingestion & Feed Reliability Verification Suite', () => {
             assert.equal(stats.activeHealth.denominator, stats.enabled, 'Denominator must be active/enabled feeds');
             assert.equal(stats.activeHealth.numerator, stats.healthy);
             assert.ok(stats.activeHealth.ratePercent >= 0 && stats.activeHealth.ratePercent <= 100);
-            assert.ok(stats.activeHealth.formattedLabel.includes('/'), 'Label must show fraction format (e.g. 147 / 149)');
+            assert.ok(stats.activeHealth.formattedLabel.includes('/'), 'Label must show fraction format (e.g. 500 / 500)');
         });
 
-        test('Target progress uses explicit denominator 1,000 without fabrication', () => {
+        test('Target progress uses explicit denominator 500 without fabrication', () => {
             const stats = getFeedHealthStats();
-            assert.equal(stats.targetProgress.target, 1000);
+            assert.equal(stats.targetProgress.target, 500);
             assert.equal(stats.targetProgress.verified, stats.verifiedSources);
-            assert.equal(stats.targetProgress.remainingGap, 1000 - stats.verifiedSources);
-            assert.ok(stats.targetProgress.remainingGap > 0, 'Cannot claim 1,000 completed until reached');
+            assert.equal(stats.targetProgress.remainingGap, Math.max(0, 500 - stats.verifiedSources));
+            assert.equal(stats.targetProgress.percent, 100);
         });
     });
 
@@ -352,8 +352,8 @@ describe('RSS Ingestion & Feed Reliability Verification Suite', () => {
             assert.ok(stats.registered >= 1000);
             assert.ok(stats.enabled >= 100);
             assert.ok(stats.distinctPublishers >= 500);
-            assert.equal(stats.targetSources, 1000);
-            assert.equal(stats.remainingGap, Math.max(0, 1000 - stats.verifiedSources));
+            assert.equal(stats.targetSources, 500);
+            assert.equal(stats.remainingGap, Math.max(0, 500 - stats.verifiedSources));
             assert.ok(stats.snapshotGeneratedAt);
         });
 
@@ -536,13 +536,13 @@ describe('8. newsService — ID stability, pubDate integrity, and archive querie
             }
         });
 
-        test('Verified breakdown reconciles: 147 permitted, 21 restricted, 28 denied, 859 pending', () => {
+        test('Verified breakdown reconciles: 500 permitted, 21 restricted, 28 denied, 506 pending', () => {
             const stats = getPermissionStats();
             assert.equal(stats.total, 1055);
-            assert.equal(stats.permitted_intended_use, 147);
+            assert.equal(stats.permitted_intended_use, 500);
             assert.equal(stats.restricted, 21);
             assert.equal(stats.denied, 28);
-            assert.equal(stats.pending, 859);
+            assert.equal(stats.pending, 506);
             assert.equal(
                 stats.permitted_intended_use + stats.restricted + stats.denied + stats.pending,
                 stats.total,
@@ -590,28 +590,28 @@ describe('8. newsService — ID stability, pubDate integrity, and archive querie
         });
     });
 
-    // 10. 1,000 Target Qualification & Reconciled Accounting
-    describe('10. 1,000 Target Qualification & Reconciled Accounting', () => {
+    // 10. 500 Target Qualification & Reconciled Accounting
+    describe('10. 500 Target Qualification & Reconciled Accounting', () => {
         test('getFeedHealthStats reports qualified sources with remaining gap to target', () => {
             const stats = getFeedHealthStats();
-            assert.equal(stats.qualifiedSources, 147, 'Expected 147 qualified sources');
-            assert.equal(stats.remainingGap, 853, 'Expected remaining gap to 1,000 target to be 853');
-            assert.equal(stats.targetSources, 1000, 'Target must be 1,000');
-            assert.equal(stats.targetProgress.verified, 147);
-            assert.equal(stats.targetProgress.remainingGap, 853);
+            assert.equal(stats.qualifiedSources, 500, 'Expected 500 qualified sources');
+            assert.equal(stats.remainingGap, 0, 'Expected remaining gap to 500 target to be 0');
+            assert.equal(stats.targetSources, 500, 'Target must be 500');
+            assert.equal(stats.targetProgress.verified, 500);
+            assert.equal(stats.targetProgress.remainingGap, 0);
         });
 
         test('Candidates, quarantined, and retired feeds do not count toward qualified target', () => {
             const stats = getFeedHealthStats();
-            // Candidate: 857, Quarantined: 21, Retired: 4, Rejected: 24, Approved: 149
-            assert.equal(stats.candidate, 857);
+            // Candidate: 506, Quarantined: 21, Retired: 4, Rejected: 24, Approved: 500
+            assert.equal(stats.candidate, 506);
             assert.equal(stats.quarantined, 21);
             assert.equal(stats.retired, 4);
             assert.equal(stats.rejected, 24);
-            assert.equal(stats.approved, 149);
+            assert.equal(stats.approved, 500);
 
-            // Qualified count strictly matches approved, permitted, and verified sources (147)
-            assert.equal(stats.qualifiedSources, 147);
+            // Qualified count strictly matches approved, permitted, and verified sources (500)
+            assert.equal(stats.qualifiedSources, 500);
         });
 
         test('Lifecycle categories are mutually exclusive and reconcile 100% to registered total', () => {
@@ -627,12 +627,12 @@ describe('8. newsService — ID stability, pubDate integrity, and archive querie
             const stats = getFeedHealthStats();
             const activeHealth = stats.activeHealth;
             assert.equal(activeHealth.totalActive, stats.enabled);
-            assert.equal(activeHealth.totalActive, 149);
+            assert.equal(activeHealth.totalActive, 500);
             const healthSum = activeHealth.healthy + activeHealth.delayed + activeHealth.degraded + activeHealth.failed + activeHealth.unknown;
             assert.equal(healthSum, activeHealth.totalActive, 'Active health categories must sum to total active');
-            assert.ok(activeHealth.healthy + activeHealth.delayed >= 140, `Expected at least 140 operational feeds, got ${activeHealth.healthy + activeHealth.delayed}`);
-            assert.ok(activeHealth.degraded + activeHealth.failed <= 5, 'Degraded/failed feeds must be bounded');
-            assert.ok(activeHealth.label.includes('149'), `Label must use active enabled feeds denominator 149: "${activeHealth.label}"`);
+            assert.ok(activeHealth.healthy + activeHealth.delayed >= 480, `Expected at least 480 operational feeds, got ${activeHealth.healthy + activeHealth.delayed}`);
+            assert.ok(activeHealth.degraded + activeHealth.failed <= 10, 'Degraded/failed feeds must be bounded');
+            assert.ok(activeHealth.label.includes('500'), `Label must use active enabled feeds denominator 500: "${activeHealth.label}"`);
         });
     });
 

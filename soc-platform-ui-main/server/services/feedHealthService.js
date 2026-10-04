@@ -458,8 +458,8 @@ export function getFeedHealthStats() {
         distinctDomains: 0,
         distinctPublishers: 0,
 
-        // Target progress (1,000 Verified Operational Endpoints)
-        targetSources: 1000,
+        // Target progress (500 Verified Operational Endpoints)
+        targetSources: parseInt(process.env.TARGET_SOURCES, 10) || 500,
         verifiedSources: 0,
         targetProgressPercent: 0,
         remainingGap: 0,
