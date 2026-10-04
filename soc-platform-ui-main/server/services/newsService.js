@@ -318,27 +318,35 @@ export const fetchAndProcessNews = async (trigger = 'scheduled') => {
 
                 feedItems.forEach(item => {
                     let normalizedTitle = '';
-                    if (typeof item?.title === 'string') {
-                        normalizedTitle = item.title.trim();
-                    } else if (item?.title?._ && typeof item.title._ === 'string') {
-                        normalizedTitle = item.title._.trim();
-                    } else if (item?.title?.name && typeof item.title.name === 'string') {
-                        normalizedTitle = item.title.name.trim();
-                    } else if (item?.title) {
-                        normalizedTitle = String(item.title).trim();
+                    try {
+                        if (typeof item?.title === 'string') {
+                            normalizedTitle = item.title.trim();
+                        } else if (item?.title?._ && typeof item.title._ === 'string') {
+                            normalizedTitle = item.title._.trim();
+                        } else if (item?.title?.name && typeof item.title.name === 'string') {
+                            normalizedTitle = item.title.name.trim();
+                        } else if (item?.title) {
+                            normalizedTitle = (typeof item.title === 'object' ? JSON.stringify(item.title) : String(item.title)).trim();
+                        }
+                    } catch {
+                        normalizedTitle = '';
                     }
 
                     let normalizedSnippet = '';
-                    if (typeof item?.contentSnippet === 'string') {
-                        normalizedSnippet = item.contentSnippet;
-                    } else if (typeof item?.summary === 'string') {
-                        normalizedSnippet = item.summary;
-                    } else if (typeof item?.snippet === 'string') {
-                        normalizedSnippet = item.snippet;
-                    } else if (typeof item?.content === 'string') {
-                        normalizedSnippet = item.content;
-                    } else if (item?.contentSnippet) {
-                        normalizedSnippet = String(item.contentSnippet);
+                    try {
+                        if (typeof item?.contentSnippet === 'string') {
+                            normalizedSnippet = item.contentSnippet;
+                        } else if (typeof item?.summary === 'string') {
+                            normalizedSnippet = item.summary;
+                        } else if (typeof item?.snippet === 'string') {
+                            normalizedSnippet = item.snippet;
+                        } else if (typeof item?.content === 'string') {
+                            normalizedSnippet = item.content;
+                        } else if (item?.contentSnippet) {
+                            normalizedSnippet = typeof item.contentSnippet === 'object' ? JSON.stringify(item.contentSnippet) : String(item.contentSnippet);
+                        }
+                    } catch {
+                        normalizedSnippet = '';
                     }
 
                     if (!item || !normalizedTitle || normalizedTitle === '[object Object]') {

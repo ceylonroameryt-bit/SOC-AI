@@ -11,8 +11,7 @@
     "lint": "eslint .",
     "test": "node --test tests/production_repairs.test.js tests/security_fixes.test.js tests/feed_reliability.test.js tests/platform_verification.test.js tests/dashboard_evidence.test.js && npm run build",
     "collector": "node server/collector.js",
-    "preview": "vite preview",
-    "postinstall": "prisma generate || true"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@prisma/client": "^7.10.0",
