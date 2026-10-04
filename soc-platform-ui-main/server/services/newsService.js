@@ -180,9 +180,9 @@ export const loadNewsData = () => {
 
     if (fs.existsSync(DATA_FILE)) {
         targetFile = DATA_FILE;
-    } else if (isDemoEnabled && fs.existsSync(SEED_FILE)) {
+    } else if (fs.existsSync(SEED_FILE)) {
         targetFile = SEED_FILE;
-        isSeed = true;
+        isSeed = isDemoEnabled;
     }
 
     if (!targetFile) {
