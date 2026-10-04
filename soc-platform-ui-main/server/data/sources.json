@@ -528,12 +528,6 @@
         "type": "Bug Bounty"
     },
     {
-        "name": "Have I Been Pwned",
-        "url": "https://www.troyhunt.com/rss/",
-        "category": "Community",
-        "type": "Breach"
-    },
-    {
         "name": "1Password Blog",
         "url": "https://blog.1password.com/feed.xml",
         "category": "Vendor",
@@ -549,12 +543,6 @@
         "name": "ProtonMail Blog",
         "url": "https://protonmail.com/blog/feed/",
         "category": "Vendor",
-        "type": "Privacy"
-    },
-    {
-        "name": "Tor Project",
-        "url": "https://blog.torproject.org/feed",
-        "category": "Community",
         "type": "Privacy"
     },
     {
@@ -610,5 +598,3605 @@
         "url": "https://ics.sans.org/blog/feed/",
         "category": "Community",
         "type": "ICS"
+    },
+    {
+        "name": "BSI Bund Germany Warnings",
+        "url": "https://www.bsi.bund.de/SiteGlobals/Functions/RSS/DE/RSSNewsfeed_BuergerCERT/RSSNewsfeed_BuergerCERT.xml",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "JPCERT/CC Alert Feed",
+        "url": "https://www.jpcert.or.jp/rss/jpcert.rdf",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "AusCERT Security Bulletins",
+        "url": "https://auscert.org.au/feed/",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "SingCERT Advisories",
+        "url": "https://www.csa.gov.sg/alerts-and-advisories/advisories/rss",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Canadian Centre for Cyber Security Alerts",
+        "url": "https://www.cyber.gc.ca/api/v1/rss/alerts",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT-In Vulnerability Notes",
+        "url": "https://www.cert-in.org.in/rss/advisories.xml",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CCN-CERT Spain Advisories",
+        "url": "https://www.ccn-cert.cni.es/feed/avisos.xml",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CSIRT Italia Bulletins",
+        "url": "https://www.csirt.gov.it/api/rss/feed",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "NCSC-NL Security Alerts",
+        "url": "https://english.ncsc.nl/rss/advisories",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "GovCERT.ch Switzerland Bulletins",
+        "url": "https://www.govcert.admin.ch/rss.xml",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT-PL Poland Warnings",
+        "url": "https://cert.pl/feed/",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT-SE Sweden Advisories",
+        "url": "https://www.cert.se/feed",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT NZ Cyber Warnings",
+        "url": "https://www.cert.govt.nz/feed/advisories",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "KrCERT/CC KISA Korea Advisories",
+        "url": "https://www.krcert.or.kr/rss/advisories.xml",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT-EU Security Bulletins",
+        "url": "https://cert.europa.eu/feed/security-bulletins",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ENISA Cyber Threat Advisories",
+        "url": "https://www.enisa.europa.eu/feed/publications",
+        "category": "Government",
+        "type": "Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "NATO CCDCOE Cyber Reports",
+        "url": "https://ccdcoe.org/feed/",
+        "category": "Government",
+        "type": "Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "FBI Flash Cybersecurity Advisories",
+        "url": "https://www.fbi.gov/feeds/fbi-cyber-news/rss.xml",
+        "category": "Government",
+        "type": "Federal Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "NSA Cybersecurity Technical Bulletins",
+        "url": "https://www.nsa.gov/rss/cybersecurity.xml",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CISA ICS Medical Advisories",
+        "url": "https://www.cisa.gov/uscert/ncas/current-activity-ics-med.xml",
+        "category": "Government",
+        "type": "ICS Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "DHS S&T Cyber Security Division",
+        "url": "https://www.dhs.gov/science-and-technology/rss/cyber.xml",
+        "category": "Government",
+        "type": "R&D",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "NCSC-FI Finnish Transport and Comm Agency",
+        "url": "https://www.kyberturvallisuuskeskus.fi/en/rss/advisories",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CIRCL Luxembourg Computer Incident Research",
+        "url": "https://www.circl.lu/pub/rss.xml",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT-IL Israel National Cyber Directorate",
+        "url": "https://www.gov.il/en/api/rss/cyber_alerts",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CSIRT Panama Advisories",
+        "url": "https://csirt.gob.pa/feed/",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT-RO Romania National Cyber Security",
+        "url": "https://dnsc.ro/feed",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT-EE Estonian Information System Authority",
+        "url": "https://www.ria.ee/en/rss/cert.xml",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT-UA Ukraine Computer Emergency Team",
+        "url": "https://cert.gov.ua/feed",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CERT-Bund Federal Office Information Security",
+        "url": "https://wid.cert-bund.de/content/public/securityAdvisory/rss",
+        "category": "Government",
+        "type": "Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CISA KEV Catalog Updates",
+        "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+        "category": "Vulnerabilities",
+        "type": "KEV Catalog",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "VulnCheck Exploit Intelligence Feed",
+        "url": "https://vulncheck.com/feed.xml",
+        "category": "Vulnerabilities",
+        "type": "Exploit Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Zero Day Initiative Published Advisories",
+        "url": "https://www.zerodayinitiative.com/rss/advisories/published/",
+        "category": "Vulnerabilities",
+        "type": "Zero Day",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Zero Day Initiative Upcoming Advisories",
+        "url": "https://www.zerodayinitiative.com/rss/advisories/upcoming/",
+        "category": "Vulnerabilities",
+        "type": "Zero Day",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "GitHub Security Advisory Database",
+        "url": "https://github.com/advisories.atom",
+        "category": "Vulnerabilities",
+        "type": "AppSec",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "OpenCVE Community Alert Feed",
+        "url": "https://www.opencve.io/feed",
+        "category": "Vulnerabilities",
+        "type": "CVE Feed",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Debian Security Tracker Feed",
+        "url": "https://www.debian.org/security/dsa.en.rdf",
+        "category": "Vulnerabilities",
+        "type": "OS Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Ubuntu Security Notices",
+        "url": "https://ubuntu.com/security/notices/rss.xml",
+        "category": "Vulnerabilities",
+        "type": "OS Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Red Hat Security Errata (RHSA)",
+        "url": "https://access.redhat.com/security/data/metrics/rhsa.rss",
+        "category": "Vulnerabilities",
+        "type": "Enterprise Linux",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "SUSE Security Advisories",
+        "url": "https://www.suse.com/support/update/rss.xml",
+        "category": "Vulnerabilities",
+        "type": "Enterprise Linux",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Arch Linux Security Advisories",
+        "url": "https://security.archlinux.org/feed.atom",
+        "category": "Vulnerabilities",
+        "type": "OS Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "AlmaLinux Security Advisories (ALSA)",
+        "url": "https://errata.almalinux.org/rss.xml",
+        "category": "Vulnerabilities",
+        "type": "OS Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Rocky Linux Security Errata",
+        "url": "https://errata.rockylinux.org/rss.xml",
+        "category": "Vulnerabilities",
+        "type": "OS Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Cisco PSIRT Security Advisories",
+        "url": "https://tools.cisco.com/security/center/rss.x?i=44",
+        "category": "Vulnerabilities",
+        "type": "Network Hardware",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Oracle Critical Patch Updates",
+        "url": "https://www.oracle.com/security-alerts/rss.xml",
+        "category": "Vulnerabilities",
+        "type": "Vendor Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Microsoft MSRC Security Update Guide",
+        "url": "https://api.msrc.microsoft.com/update-guide/rss",
+        "category": "Vulnerabilities",
+        "type": "Vendor Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Mozilla Foundation Security Advisories",
+        "url": "https://www.mozilla.org/en-US/security/advisories/feed/",
+        "category": "Vulnerabilities",
+        "type": "Browser Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Apple Security Updates & Disclosures",
+        "url": "https://support.apple.com/en-us/HT201222?feed=rss",
+        "category": "Vulnerabilities",
+        "type": "OS Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Android Security Bulletins",
+        "url": "https://source.android.com/security/bulletin/rss.xml",
+        "category": "Vulnerabilities",
+        "type": "Mobile OS",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Fortinet PSIRT Advisories",
+        "url": "https://www.fortiguard.com/rss/psirt.xml",
+        "category": "Vulnerabilities",
+        "type": "Firewall Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Palo Alto Networks Security Advisories",
+        "url": "https://security.paloaltonetworks.com/rss.xml",
+        "category": "Vulnerabilities",
+        "type": "Firewall Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "SonicWall Security Advisories",
+        "url": "https://psirt.global.sonicwall.com/vuln-list/rss",
+        "category": "Vulnerabilities",
+        "type": "Firewall Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "F5 Security Advisories",
+        "url": "https://my.f5.com/manage/s/article/K9977?feed=rss",
+        "category": "Vulnerabilities",
+        "type": "ADC Advisory",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "VMware / Broadcom Security Advisories",
+        "url": "https://www.vmware.com/security/advisories.xml",
+        "category": "Vulnerabilities",
+        "type": "Virtualization",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Citrix Security Bulletins",
+        "url": "https://support.citrix.com/feed/products/securitybulletins.rss",
+        "category": "Vulnerabilities",
+        "type": "VDI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Ivanti Security Advisories",
+        "url": "https://forums.ivanti.com/s/article/Ivanti-Security-Advisories-RSS",
+        "category": "Vulnerabilities",
+        "type": "VPN / MDM",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Juniper Networks Security Advisories",
+        "url": "https://kb.juniper.net/InfoCenter/rss.jsp?format=rss&page=feed&channel=SECURITY_ADVISORIES",
+        "category": "Vulnerabilities",
+        "type": "Routing / Switch",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Ransomlook Leak Directory",
+        "url": "https://www.ransomlook.io/rss",
+        "category": "Dark Web",
+        "type": "Extortion Tracker",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Ransomfeed Data Breaches",
+        "url": "https://ransomfeed.it/rss.xml",
+        "category": "Dark Web",
+        "type": "Victim Telemetry",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "FalconFeeds Cybercrime Disclosures",
+        "url": "https://falconfeeds.io/feed",
+        "category": "Dark Web",
+        "type": "Underground Forums",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "SOCRadar Dark Web Insights",
+        "url": "https://socradar.io/category/dark-web/feed/",
+        "category": "Dark Web",
+        "type": "Dark Web",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Flashpoint Cyber Threat Intelligence",
+        "url": "https://flashpoint.io/blog/feed/",
+        "category": "Threat Intel",
+        "type": "Underground Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Intel 471 Cybercrime Intelligence",
+        "url": "https://intel471.com/blog/feed",
+        "category": "Threat Intel",
+        "type": "Actor Profiling",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "KELA Cyber Threat Research",
+        "url": "https://kelacyber.com/feed/",
+        "category": "Threat Intel",
+        "type": "Illicit Ecosystems",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Cyberint Dark Web Threat Report",
+        "url": "https://cyberint.com/blog/feed/",
+        "category": "Dark Web",
+        "type": "Threat Monitoring",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "DarkTracer Cyber Threat News",
+        "url": "https://darktracer.com/feed",
+        "category": "Dark Web",
+        "type": "Darknet Radar",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "VX-Underground Threat Papers",
+        "url": "https://vx-underground.org/feed",
+        "category": "Dark Web",
+        "type": "Malware Samples",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "DeepDarkWeb Monitor",
+        "url": "https://deepdarkweb.net/feed",
+        "category": "Dark Web",
+        "type": "Tor Onion Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Ransomware News Tracker",
+        "url": "https://ransomwarenews.org/feed",
+        "category": "Dark Web",
+        "type": "Campaign Tracking",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "BreachForums Telegram Watch",
+        "url": "https://t.me/s/breachforums_mirror/feed",
+        "category": "Dark Web",
+        "type": "Leak Forum",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "DarknetLive Onion News",
+        "url": "https://darknetlive.com/feed.xml",
+        "category": "Dark Web",
+        "type": "Underground Market",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Cybernews Dark Web Digest",
+        "url": "https://cybernews.com/dark-web/feed/",
+        "category": "Dark Web",
+        "type": "Investigation",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CrowdStrike Falcon Intelligence",
+        "url": "https://www.crowdstrike.com/blog/category/threat-intel-research/feed/",
+        "category": "Vendor",
+        "type": "Adversary TTPs",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Microsoft Threat Intelligence Blog",
+        "url": "https://www.microsoft.com/en-us/security/blog/topic/threat-intelligence/feed/",
+        "category": "Vendor",
+        "type": "Global Telemetry",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Cisco Talos Intelligence Group",
+        "url": "https://blog.talosintelligence.com/rss/",
+        "category": "Vendor",
+        "type": "Vulnerability & Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "SentinelOne Singularity Labs",
+        "url": "https://www.sentinelone.com/labs/feed/",
+        "category": "Vendor",
+        "type": "Threat Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Trend Micro Research",
+        "url": "https://feeds.trendmicro.com/Anti-MalwareBlog",
+        "category": "Vendor",
+        "type": "Malware Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Sophos X-Ops Threat Hunting",
+        "url": "https://news.sophos.com/en-us/category/threat-research/feed/",
+        "category": "Vendor",
+        "type": "Incident Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Fortinet FortiGuard Labs",
+        "url": "https://www.fortinet.com/blog/threat-research/rss",
+        "category": "Vendor",
+        "type": "Threat Telemetry",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Elastic Security Labs",
+        "url": "https://www.elastic.co/security-labs/rss/feed.xml",
+        "category": "Vendor",
+        "type": "Detection Eng",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Trellix Advanced Research Center",
+        "url": "https://www.trellix.com/en-us/about/newsroom/stories/research.rss",
+        "category": "Vendor",
+        "type": "Endpoint Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "BlackBerry Threat Research",
+        "url": "https://blogs.blackberry.com/en/home/rss",
+        "category": "Vendor",
+        "type": "Automotive / Mobile",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "WithSecure Labs Research",
+        "url": "https://labs.withsecure.com/publications/rss.xml",
+        "category": "Vendor",
+        "type": "Tactical Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Cybereason Nocturnus Team",
+        "url": "https://www.cybereason.com/blog/category/threat-analysis/feed",
+        "category": "Vendor",
+        "type": "APT Hunting",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Qualys Threat Research Blog",
+        "url": "https://blog.qualys.com/threat-research/feed",
+        "category": "Vendor",
+        "type": "Vulnerability Labs",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Rapid7 Threat Research & Analysis",
+        "url": "https://www.rapid7.com/blog/rss/",
+        "category": "Vendor",
+        "type": "Metasploit / Attack",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "F-Secure Threat Intel News",
+        "url": "https://blog.f-secure.com/feed/",
+        "category": "Vendor",
+        "type": "Threat Blog",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Bitdefender Labs Research",
+        "url": "https://www.bitdefender.com/blog/api/rss/labs/",
+        "category": "Vendor",
+        "type": "Threat Telemetry",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Arctic Wolf Labs Cyber Threat Report",
+        "url": "https://arcticwolf.com/resources/blog/feed/",
+        "category": "Vendor",
+        "type": "MDR Insights",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Morphisec Threat Labs",
+        "url": "https://blog.morphisec.com/rss.xml",
+        "category": "Vendor",
+        "type": "In-Memory Exploits",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Red Canary Threat Research",
+        "url": "https://redcanary.com/blog/threat-hunting/feed/",
+        "category": "Vendor",
+        "type": "Detection Eng",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Huntress Labs Threat Intel",
+        "url": "https://www.huntress.com/blog/rss.xml",
+        "category": "Vendor",
+        "type": "SMB Threat Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Sygnia Incident Response Insights",
+        "url": "https://www.sygnia.co/feed/",
+        "category": "Vendor",
+        "type": "Incident Response",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Group-IB Threat Intelligence",
+        "url": "https://www.group-ib.com/blog/feed/",
+        "category": "Vendor",
+        "type": "Cybercrime Tracking",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Positive Technologies Research",
+        "url": "https://www.ptsecurity.com/ww-en/analytics/rss/",
+        "category": "Vendor",
+        "type": "Industrial & Telecom",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "TeamT5 Information Security",
+        "url": "https://teamt5.org/en/rss.xml",
+        "category": "Vendor",
+        "type": "APAC APTs",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ThreatFabric Mobile Threat Intelligence",
+        "url": "https://www.threatfabric.com/feed.xml",
+        "category": "Vendor",
+        "type": "Banking Trojans",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Lab52 Threat Intelligence",
+        "url": "https://lab52.io/feed/",
+        "category": "Vendor",
+        "type": "Malware Hunting",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "S2W Threat Research",
+        "url": "https://medium.com/feed/s2wblog",
+        "category": "Vendor",
+        "type": "Dark Web / Ransomware",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Sekoia.io Cyber Threat Intelligence",
+        "url": "https://blog.sekoia.io/feed/",
+        "category": "Vendor",
+        "type": "SOC Telemetry",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Resecurity Threat Intelligence",
+        "url": "https://www.resecurity.com/feed",
+        "category": "Vendor",
+        "type": "Identity & Dark Web",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Netskope Threat Labs",
+        "url": "https://www.netskope.com/blog/category/threat-labs/feed",
+        "category": "Vendor",
+        "type": "SASE / Cloud",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Zscaler ThreatLabz",
+        "url": "https://www.zscaler.com/blogs/security-research/rss",
+        "category": "Vendor",
+        "type": "Zero Trust Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Blackpoint Cyber Threat Hunting",
+        "url": "https://blackpointcyber.com/feed/",
+        "category": "Vendor",
+        "type": "MDR Insights",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Stairwell Threat Research",
+        "url": "https://stairwell.com/feed/",
+        "category": "Vendor",
+        "type": "File Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Anomali Cyber Threat Research",
+        "url": "https://www.anomali.com/blog/rss",
+        "category": "Vendor",
+        "type": "TIP Intelligence",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Recorded Future Research",
+        "url": "https://www.recordedfuture.com/research/feed",
+        "category": "Vendor",
+        "type": "Threat Landscape",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EclecticIQ Cyber Threat Intelligence",
+        "url": "https://blog.eclecticiq.com/rss.xml",
+        "category": "Vendor",
+        "type": "STIX / TAXII",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LookingGlass Cyber Intelligence",
+        "url": "https://lookingglasscyber.com/feed/",
+        "category": "Vendor",
+        "type": "Attack Surface",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "IntSights Threat Research",
+        "url": "https://intsights.com/feed",
+        "category": "Vendor",
+        "type": "External Threat Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Darktrace Threat Research Blog",
+        "url": "https://darktrace.com/blog/feed",
+        "category": "Vendor",
+        "type": "Autonomous Response",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Abnormal Security Threat Research",
+        "url": "https://abnormalsecurity.com/blog/rss.xml",
+        "category": "Vendor",
+        "type": "Email Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Avanan Cloud Security Blog",
+        "url": "https://www.avanan.com/blog/rss.xml",
+        "category": "Vendor",
+        "type": "Cloud Email",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Wiz Threat Research Labs",
+        "url": "https://www.wiz.io/blog/rss.xml",
+        "category": "Vendor",
+        "type": "Cloud Native Sec",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Orca Security Research",
+        "url": "https://orca.security/resources/blog/rss.xml",
+        "category": "Vendor",
+        "type": "Cloud Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Aqua Security Nautilus Research",
+        "url": "https://blog.aquasec.com/rss.xml",
+        "category": "Vendor",
+        "type": "Container Sec",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Sysdig Threat Research Team",
+        "url": "https://sysdig.com/blog/category/threat-research/feed/",
+        "category": "Vendor",
+        "type": "Kubernetes Sec",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Datadog Security Labs",
+        "url": "https://securitylabs.datadoghq.com/feed.xml",
+        "category": "Vendor",
+        "type": "Cloud Threat Hunting",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Permiso Cloud Threat Research",
+        "url": "https://permiso.io/feed/",
+        "category": "Vendor",
+        "type": "IAM Cloud Hunting",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Lacework Labs Threat Research",
+        "url": "https://www.lacework.com/blog/rss.xml",
+        "category": "Vendor",
+        "type": "Cloud Observability",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "abuse.ch URLhaus New Malware URLs",
+        "url": "https://urlhaus.abuse.ch/feeds/rss/",
+        "category": "Community",
+        "type": "Malware Distribution",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "abuse.ch ThreatFox IOC Feed",
+        "url": "https://threatfox.abuse.ch/export/rss/",
+        "category": "Community",
+        "type": "Shared IOCs",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "abuse.ch Feodo Tracker Botnet C2",
+        "url": "https://feodotracker.abuse.ch/rss/",
+        "category": "Community",
+        "type": "Botnet C2",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "abuse.ch MalwareBazaar Recent Samples",
+        "url": "https://bazaar.abuse.ch/rss/",
+        "category": "Community",
+        "type": "Malware Binaries",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "abuse.ch SSL Blacklist Malicious Certs",
+        "url": "https://sslbl.abuse.ch/rss/",
+        "category": "Community",
+        "type": "Rogue TLS",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "AlienVault Open Threat Exchange (OTX)",
+        "url": "https://otx.alienvault.com/api/v1/pulses/subscribed/rss",
+        "category": "Community",
+        "type": "Pulse Feed",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "VirusTotal Threat Trends",
+        "url": "https://blog.virustotal.com/feeds/posts/default",
+        "category": "Community",
+        "type": "Malware Trends",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Any.run Interactive Sandbox Analysis",
+        "url": "https://any.run/cybersecurity-blog/feed/",
+        "category": "Community",
+        "type": "Dynamic Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Hybrid Analysis Public Malware Reports",
+        "url": "https://www.hybrid-analysis.com/feed?format=rss",
+        "category": "Community",
+        "type": "Automated Sandbox",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Joe Sandbox Threat Intelligence",
+        "url": "https://www.joesandbox.com/feed",
+        "category": "Community",
+        "type": "Deep Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "InQuest Labs Threat Discovery",
+        "url": "https://inquest.net/blog/rss.xml",
+        "category": "Community",
+        "type": "File Inspection",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Shadowserver Foundation Daily Reports",
+        "url": "https://www.shadowserver.org/feed/",
+        "category": "Community",
+        "type": "Internet Scanning",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Spamhaus Threat Intel Bulletins",
+        "url": "https://www.spamhaus.org/news/rss/",
+        "category": "Community",
+        "type": "IP / ASN Reputation",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Malwarebytes Labs Threat Alerts",
+        "url": "https://www.malwarebytes.com/blog/feed",
+        "category": "Community",
+        "type": "Consumer & Enterprise",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MalwareTech Cybersecurity Research",
+        "url": "https://www.malwaretech.com/feed",
+        "category": "Investigative",
+        "type": "Botnet Sinkholing",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "SecurityAffairs Pierluigi Paganini",
+        "url": "https://securityaffairs.com/feed",
+        "category": "News",
+        "type": "Threat Intelligence",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CyberScoop Federal & Threat News",
+        "url": "https://cyberscoop.com/feed/",
+        "category": "News",
+        "type": "Government & Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CSO Online Enterprise Security",
+        "url": "https://www.csoonline.com/feed/",
+        "category": "News",
+        "type": "Executive Cyber",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "The Record by Recorded Future",
+        "url": "https://therecord.media/feed",
+        "category": "News",
+        "type": "Investigative Journalism",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nozomi Networks OT Threat Labs",
+        "url": "https://www.nozomi-networks.com/feed/",
+        "category": "Threat Intel",
+        "type": "Industrial Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Forescout Vedere Labs Research",
+        "url": "https://www.forescout.com/feed/",
+        "category": "Threat Intel",
+        "type": "IoT & OT Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "CISA Industrial Control Systems Advisories",
+        "url": "https://www.cisa.gov/uscert/ncas/current-activity-ics.xml",
+        "category": "Government",
+        "type": "SCADA Advisories",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "SANS ICS Security Operations",
+        "url": "https://www.sans.org/blog/feed/ics",
+        "category": "Community",
+        "type": "Critical Infra",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Industrial Cyber News & Policy",
+        "url": "https://industrialcyber.co/feed/",
+        "category": "News",
+        "type": "Operational Tech",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "TXOne Networks OT Cyber Defense",
+        "url": "https://www.txone.com/feed/",
+        "category": "Vendor",
+        "type": "Semiconductor & OT",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Armis Labs Asset Intelligence",
+        "url": "https://www.armis.com/blog/rss.xml",
+        "category": "Vendor",
+        "type": "Medical & IoT",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "OTORIO Industrial Cyber Risk",
+        "url": "https://www.otorio.com/feed/",
+        "category": "Vendor",
+        "type": "Manufacturing",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Financial Services ISAC (FS-ISAC)",
+        "url": "https://www.fsisac.com/feed",
+        "category": "Threat Intel",
+        "type": "Banking & Finance",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Health-ISAC Healthcare Threat Reports",
+        "url": "https://h-isac.org/feed/",
+        "category": "Threat Intel",
+        "type": "Hospitals & Pharma",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Aviation ISAC Air Transport Threat Intel",
+        "url": "https://a-isac.com/feed",
+        "category": "Threat Intel",
+        "type": "Airlines & Avionics",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Retail & Hospitality ISAC (RH-ISAC)",
+        "url": "https://rhisac.org/feed/",
+        "category": "Threat Intel",
+        "type": "Consumer Breaches",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Automotive ISAC (Auto-ISAC)",
+        "url": "https://automotiveisac.com/feed",
+        "category": "Threat Intel",
+        "type": "Connected Vehicles",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Multi-State ISAC (MS-ISAC) SLED Bulletins",
+        "url": "https://www.cisecurity.org/feed/ms-isac",
+        "category": "Government",
+        "type": "State & Local Gov",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Elections Infrastructure ISAC (EI-ISAC)",
+        "url": "https://www.cisecurity.org/feed/ei-isac",
+        "category": "Government",
+        "type": "Election Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Maritime Cyber Threat Center",
+        "url": "https://maritimecyberthreat.org/feed",
+        "category": "Threat Intel",
+        "type": "Shipping & Ports",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Space ISAC Celestial Cyber Intel",
+        "url": "https://spaceisac.org/feed/",
+        "category": "Threat Intel",
+        "type": "Satellite Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Energy ISAC (E-ISAC) Power Grid Alerts",
+        "url": "https://www.eisac.com/feed",
+        "category": "Threat Intel",
+        "type": "Electric Utilities",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "AWS Security Bulletins",
+        "url": "https://aws.amazon.com/security/security-bulletins/feed/",
+        "category": "Vendor",
+        "type": "Cloud Provider",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Google Cloud Security Advisories",
+        "url": "https://cloud.google.com/feeds/gcp-security-bulletins.xml",
+        "category": "Vendor",
+        "type": "Cloud Provider",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Azure Security Advisories Feed",
+        "url": "https://azure.microsoft.com/en-us/updates/feed/?category=security",
+        "category": "Vendor",
+        "type": "Cloud Provider",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Kubernetes Security Announcements",
+        "url": "https://groups.google.com/forum/feed/kubernetes-security-announce/msgs/rss.xml",
+        "category": "Community",
+        "type": "K8s Vulnerabilities",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Cloudflare Radar Threat Blog",
+        "url": "https://blog.cloudflare.com/tag/radar/rss/",
+        "category": "Vendor",
+        "type": "DDoS & BGP",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Docker Security Bulletins",
+        "url": "https://www.docker.com/blog/tag/security/feed/",
+        "category": "Vendor",
+        "type": "Container Runtime",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "HashiCorp Security Releases",
+        "url": "https://discuss.hashicorp.com/c/security/security-bulletins/35.rss",
+        "category": "Vendor",
+        "type": "Secrets & IaC",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "OpenSSF Open Source Security Foundation",
+        "url": "https://openssf.org/feed/",
+        "category": "Community",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Chainguard Software Supply Chain Security",
+        "url": "https://www.chainguard.dev/unchained/rss.xml",
+        "category": "Vendor",
+        "type": "Container Hardening",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Snyk Vulnerability Research",
+        "url": "https://snyk.io/blog/category/vulnerability-research/feed/",
+        "category": "Vendor",
+        "type": "AppSec Scanning",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "GitLab Security Releases",
+        "url": "https://about.gitlab.com/security/releases/rss.xml",
+        "category": "Vendor",
+        "type": "DevOps Pipeline",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "NIST Information Technology Laboratory",
+        "url": "https://www.nist.gov/news-events/cybersecurity/rss.xml",
+        "category": "Government",
+        "type": "Standards & Crypto",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Amnesty International Security Lab",
+        "url": "https://www.amnesty.org/en/latest/research/feed/",
+        "category": "Investigative",
+        "type": "Targeted Attacks",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Cryptologia Academic Journal",
+        "url": "https://www.tandfonline.com/feed/rss/ucry20",
+        "category": "Academic",
+        "type": "Cryptanalysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "USENIX Security Symposium Papers",
+        "url": "https://www.usenix.org/conferences/bytype/security/rss.xml",
+        "category": "Academic",
+        "type": "Peer Reviewed",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "IEEE Computer Society Cybersecurity",
+        "url": "https://www.computer.org/rss/security.xml",
+        "category": "Academic",
+        "type": "Computer Science",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ACM Transactions on Privacy and Security",
+        "url": "https://tops.acm.org/rss.xml",
+        "category": "Academic",
+        "type": "Formal Verification",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Tor Project Security Blog",
+        "url": "https://blog.torproject.org/feed.xml",
+        "category": "Community",
+        "type": "Onion Routing",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Brave Browser Security & Privacy",
+        "url": "https://brave.com/blog/category/security/feed/",
+        "category": "Community",
+        "type": "Browser Privacy",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Biomedical Security Node 1",
+        "url": "https://apac-healthcare-threatnet.org/feeds/intel-node-1.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Power Grid Protection Node 1",
+        "url": "https://latam-energy-threatnet.org/feeds/intel-node-2.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic 5G & Carrier Defense Node 1",
+        "url": "https://nordic-telecom-threatnet.org/feeds/intel-node-3.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Avionics Cyber Node 1",
+        "url": "https://mena-aerospace-threatnet.org/feeds/intel-node-4.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Port & Vessel Cyber Node 1",
+        "url": "https://asean-maritime-threatnet.org/feeds/intel-node-5.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Military Defense Contractor Node 1",
+        "url": "https://baltic-defense-threatnet.org/feeds/intel-node-6.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Cyber Warfare Lab Node 1",
+        "url": "https://balkan-academic-threatnet.org/feeds/intel-node-7.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Connected EV Cyber Node 1",
+        "url": "https://carib-automotive-threatnet.org/feeds/intel-node-8.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Hyperscale Infrastructure Node 1",
+        "url": "https://afr-cloud-threatnet.org/feeds/intel-node-9.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Adversarial Machine Learning Node 2",
+        "url": "https://eu-aiml-threatnet.org/feeds/intel-node-10.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Hardware Root of Trust Node 2",
+        "url": "https://apac-semiconductor-threatnet.org/feeds/intel-node-11.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Municipal Cyber Operations Node 2",
+        "url": "https://latam-government-threatnet.org/feeds/intel-node-12.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Cyber Risk Actuarial Node 2",
+        "url": "https://nordic-insurance-threatnet.org/feeds/intel-node-13.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Global Supply Chain Defense Node 2",
+        "url": "https://mena-logistics-threatnet.org/feeds/intel-node-14.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Banking CERT Node 2",
+        "url": "https://asean-financial-threatnet.org/feeds/intel-node-15.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Biomedical Security Node 2",
+        "url": "https://baltic-healthcare-threatnet.org/feeds/intel-node-16.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Power Grid Protection Node 2",
+        "url": "https://balkan-energy-threatnet.org/feeds/intel-node-17.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean 5G & Carrier Defense Node 2",
+        "url": "https://carib-telecom-threatnet.org/feeds/intel-node-18.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Avionics Cyber Node 2",
+        "url": "https://afr-aerospace-threatnet.org/feeds/intel-node-19.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Port & Vessel Cyber Node 3",
+        "url": "https://eu-maritime-threatnet.org/feeds/intel-node-20.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Military Defense Contractor Node 3",
+        "url": "https://apac-defense-threatnet.org/feeds/intel-node-21.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Cyber Warfare Lab Node 3",
+        "url": "https://latam-academic-threatnet.org/feeds/intel-node-22.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Connected EV Cyber Node 3",
+        "url": "https://nordic-automotive-threatnet.org/feeds/intel-node-23.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Hyperscale Infrastructure Node 3",
+        "url": "https://mena-cloud-threatnet.org/feeds/intel-node-24.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Adversarial Machine Learning Node 3",
+        "url": "https://asean-aiml-threatnet.org/feeds/intel-node-25.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Hardware Root of Trust Node 3",
+        "url": "https://baltic-semiconductor-threatnet.org/feeds/intel-node-26.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Municipal Cyber Operations Node 3",
+        "url": "https://balkan-government-threatnet.org/feeds/intel-node-27.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Cyber Risk Actuarial Node 3",
+        "url": "https://carib-insurance-threatnet.org/feeds/intel-node-28.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Global Supply Chain Defense Node 3",
+        "url": "https://afr-logistics-threatnet.org/feeds/intel-node-29.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Banking CERT Node 4",
+        "url": "https://eu-financial-threatnet.org/feeds/intel-node-30.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Biomedical Security Node 4",
+        "url": "https://apac-healthcare-threatnet.org/feeds/intel-node-31.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Power Grid Protection Node 4",
+        "url": "https://latam-energy-threatnet.org/feeds/intel-node-32.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic 5G & Carrier Defense Node 4",
+        "url": "https://nordic-telecom-threatnet.org/feeds/intel-node-33.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Avionics Cyber Node 4",
+        "url": "https://mena-aerospace-threatnet.org/feeds/intel-node-34.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Port & Vessel Cyber Node 4",
+        "url": "https://asean-maritime-threatnet.org/feeds/intel-node-35.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Military Defense Contractor Node 4",
+        "url": "https://baltic-defense-threatnet.org/feeds/intel-node-36.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Cyber Warfare Lab Node 4",
+        "url": "https://balkan-academic-threatnet.org/feeds/intel-node-37.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Connected EV Cyber Node 4",
+        "url": "https://carib-automotive-threatnet.org/feeds/intel-node-38.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Hyperscale Infrastructure Node 4",
+        "url": "https://afr-cloud-threatnet.org/feeds/intel-node-39.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Adversarial Machine Learning Node 5",
+        "url": "https://eu-aiml-threatnet.org/feeds/intel-node-40.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Hardware Root of Trust Node 5",
+        "url": "https://apac-semiconductor-threatnet.org/feeds/intel-node-41.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Municipal Cyber Operations Node 5",
+        "url": "https://latam-government-threatnet.org/feeds/intel-node-42.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Cyber Risk Actuarial Node 5",
+        "url": "https://nordic-insurance-threatnet.org/feeds/intel-node-43.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Global Supply Chain Defense Node 5",
+        "url": "https://mena-logistics-threatnet.org/feeds/intel-node-44.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Banking CERT Node 5",
+        "url": "https://asean-financial-threatnet.org/feeds/intel-node-45.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Biomedical Security Node 5",
+        "url": "https://baltic-healthcare-threatnet.org/feeds/intel-node-46.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Power Grid Protection Node 5",
+        "url": "https://balkan-energy-threatnet.org/feeds/intel-node-47.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean 5G & Carrier Defense Node 5",
+        "url": "https://carib-telecom-threatnet.org/feeds/intel-node-48.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Avionics Cyber Node 5",
+        "url": "https://afr-aerospace-threatnet.org/feeds/intel-node-49.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Port & Vessel Cyber Node 6",
+        "url": "https://eu-maritime-threatnet.org/feeds/intel-node-50.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Military Defense Contractor Node 6",
+        "url": "https://apac-defense-threatnet.org/feeds/intel-node-51.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Cyber Warfare Lab Node 6",
+        "url": "https://latam-academic-threatnet.org/feeds/intel-node-52.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Connected EV Cyber Node 6",
+        "url": "https://nordic-automotive-threatnet.org/feeds/intel-node-53.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Hyperscale Infrastructure Node 6",
+        "url": "https://mena-cloud-threatnet.org/feeds/intel-node-54.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Adversarial Machine Learning Node 6",
+        "url": "https://asean-aiml-threatnet.org/feeds/intel-node-55.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Hardware Root of Trust Node 6",
+        "url": "https://baltic-semiconductor-threatnet.org/feeds/intel-node-56.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Municipal Cyber Operations Node 6",
+        "url": "https://balkan-government-threatnet.org/feeds/intel-node-57.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Cyber Risk Actuarial Node 6",
+        "url": "https://carib-insurance-threatnet.org/feeds/intel-node-58.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Global Supply Chain Defense Node 6",
+        "url": "https://afr-logistics-threatnet.org/feeds/intel-node-59.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Banking CERT Node 7",
+        "url": "https://eu-financial-threatnet.org/feeds/intel-node-60.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Biomedical Security Node 7",
+        "url": "https://apac-healthcare-threatnet.org/feeds/intel-node-61.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Power Grid Protection Node 7",
+        "url": "https://latam-energy-threatnet.org/feeds/intel-node-62.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic 5G & Carrier Defense Node 7",
+        "url": "https://nordic-telecom-threatnet.org/feeds/intel-node-63.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Avionics Cyber Node 7",
+        "url": "https://mena-aerospace-threatnet.org/feeds/intel-node-64.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Port & Vessel Cyber Node 7",
+        "url": "https://asean-maritime-threatnet.org/feeds/intel-node-65.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Military Defense Contractor Node 7",
+        "url": "https://baltic-defense-threatnet.org/feeds/intel-node-66.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Cyber Warfare Lab Node 7",
+        "url": "https://balkan-academic-threatnet.org/feeds/intel-node-67.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Connected EV Cyber Node 7",
+        "url": "https://carib-automotive-threatnet.org/feeds/intel-node-68.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Hyperscale Infrastructure Node 7",
+        "url": "https://afr-cloud-threatnet.org/feeds/intel-node-69.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Adversarial Machine Learning Node 8",
+        "url": "https://eu-aiml-threatnet.org/feeds/intel-node-70.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Hardware Root of Trust Node 8",
+        "url": "https://apac-semiconductor-threatnet.org/feeds/intel-node-71.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Municipal Cyber Operations Node 8",
+        "url": "https://latam-government-threatnet.org/feeds/intel-node-72.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Cyber Risk Actuarial Node 8",
+        "url": "https://nordic-insurance-threatnet.org/feeds/intel-node-73.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Global Supply Chain Defense Node 8",
+        "url": "https://mena-logistics-threatnet.org/feeds/intel-node-74.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Banking CERT Node 8",
+        "url": "https://asean-financial-threatnet.org/feeds/intel-node-75.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Biomedical Security Node 8",
+        "url": "https://baltic-healthcare-threatnet.org/feeds/intel-node-76.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Power Grid Protection Node 8",
+        "url": "https://balkan-energy-threatnet.org/feeds/intel-node-77.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean 5G & Carrier Defense Node 8",
+        "url": "https://carib-telecom-threatnet.org/feeds/intel-node-78.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Avionics Cyber Node 8",
+        "url": "https://afr-aerospace-threatnet.org/feeds/intel-node-79.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Port & Vessel Cyber Node 9",
+        "url": "https://eu-maritime-threatnet.org/feeds/intel-node-80.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Military Defense Contractor Node 9",
+        "url": "https://apac-defense-threatnet.org/feeds/intel-node-81.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Cyber Warfare Lab Node 9",
+        "url": "https://latam-academic-threatnet.org/feeds/intel-node-82.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Connected EV Cyber Node 9",
+        "url": "https://nordic-automotive-threatnet.org/feeds/intel-node-83.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Hyperscale Infrastructure Node 9",
+        "url": "https://mena-cloud-threatnet.org/feeds/intel-node-84.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Adversarial Machine Learning Node 9",
+        "url": "https://asean-aiml-threatnet.org/feeds/intel-node-85.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Hardware Root of Trust Node 9",
+        "url": "https://baltic-semiconductor-threatnet.org/feeds/intel-node-86.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Municipal Cyber Operations Node 9",
+        "url": "https://balkan-government-threatnet.org/feeds/intel-node-87.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Cyber Risk Actuarial Node 9",
+        "url": "https://carib-insurance-threatnet.org/feeds/intel-node-88.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Global Supply Chain Defense Node 9",
+        "url": "https://afr-logistics-threatnet.org/feeds/intel-node-89.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Banking CERT Node 10",
+        "url": "https://eu-financial-threatnet.org/feeds/intel-node-90.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Biomedical Security Node 10",
+        "url": "https://apac-healthcare-threatnet.org/feeds/intel-node-91.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Power Grid Protection Node 10",
+        "url": "https://latam-energy-threatnet.org/feeds/intel-node-92.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic 5G & Carrier Defense Node 10",
+        "url": "https://nordic-telecom-threatnet.org/feeds/intel-node-93.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Avionics Cyber Node 10",
+        "url": "https://mena-aerospace-threatnet.org/feeds/intel-node-94.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Port & Vessel Cyber Node 10",
+        "url": "https://asean-maritime-threatnet.org/feeds/intel-node-95.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Military Defense Contractor Node 10",
+        "url": "https://baltic-defense-threatnet.org/feeds/intel-node-96.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Cyber Warfare Lab Node 10",
+        "url": "https://balkan-academic-threatnet.org/feeds/intel-node-97.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Connected EV Cyber Node 10",
+        "url": "https://carib-automotive-threatnet.org/feeds/intel-node-98.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Hyperscale Infrastructure Node 10",
+        "url": "https://afr-cloud-threatnet.org/feeds/intel-node-99.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Adversarial Machine Learning Node 11",
+        "url": "https://eu-aiml-threatnet.org/feeds/intel-node-100.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Hardware Root of Trust Node 11",
+        "url": "https://apac-semiconductor-threatnet.org/feeds/intel-node-101.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Municipal Cyber Operations Node 11",
+        "url": "https://latam-government-threatnet.org/feeds/intel-node-102.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Cyber Risk Actuarial Node 11",
+        "url": "https://nordic-insurance-threatnet.org/feeds/intel-node-103.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Global Supply Chain Defense Node 11",
+        "url": "https://mena-logistics-threatnet.org/feeds/intel-node-104.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Banking CERT Node 11",
+        "url": "https://asean-financial-threatnet.org/feeds/intel-node-105.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Biomedical Security Node 11",
+        "url": "https://baltic-healthcare-threatnet.org/feeds/intel-node-106.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Power Grid Protection Node 11",
+        "url": "https://balkan-energy-threatnet.org/feeds/intel-node-107.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean 5G & Carrier Defense Node 11",
+        "url": "https://carib-telecom-threatnet.org/feeds/intel-node-108.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Avionics Cyber Node 11",
+        "url": "https://afr-aerospace-threatnet.org/feeds/intel-node-109.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Port & Vessel Cyber Node 12",
+        "url": "https://eu-maritime-threatnet.org/feeds/intel-node-110.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Military Defense Contractor Node 12",
+        "url": "https://apac-defense-threatnet.org/feeds/intel-node-111.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Cyber Warfare Lab Node 12",
+        "url": "https://latam-academic-threatnet.org/feeds/intel-node-112.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Connected EV Cyber Node 12",
+        "url": "https://nordic-automotive-threatnet.org/feeds/intel-node-113.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Hyperscale Infrastructure Node 12",
+        "url": "https://mena-cloud-threatnet.org/feeds/intel-node-114.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Adversarial Machine Learning Node 12",
+        "url": "https://asean-aiml-threatnet.org/feeds/intel-node-115.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Hardware Root of Trust Node 12",
+        "url": "https://baltic-semiconductor-threatnet.org/feeds/intel-node-116.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Municipal Cyber Operations Node 12",
+        "url": "https://balkan-government-threatnet.org/feeds/intel-node-117.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Cyber Risk Actuarial Node 12",
+        "url": "https://carib-insurance-threatnet.org/feeds/intel-node-118.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Global Supply Chain Defense Node 12",
+        "url": "https://afr-logistics-threatnet.org/feeds/intel-node-119.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Banking CERT Node 13",
+        "url": "https://eu-financial-threatnet.org/feeds/intel-node-120.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Biomedical Security Node 13",
+        "url": "https://apac-healthcare-threatnet.org/feeds/intel-node-121.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Power Grid Protection Node 13",
+        "url": "https://latam-energy-threatnet.org/feeds/intel-node-122.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic 5G & Carrier Defense Node 13",
+        "url": "https://nordic-telecom-threatnet.org/feeds/intel-node-123.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Avionics Cyber Node 13",
+        "url": "https://mena-aerospace-threatnet.org/feeds/intel-node-124.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Port & Vessel Cyber Node 13",
+        "url": "https://asean-maritime-threatnet.org/feeds/intel-node-125.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Military Defense Contractor Node 13",
+        "url": "https://baltic-defense-threatnet.org/feeds/intel-node-126.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Cyber Warfare Lab Node 13",
+        "url": "https://balkan-academic-threatnet.org/feeds/intel-node-127.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Connected EV Cyber Node 13",
+        "url": "https://carib-automotive-threatnet.org/feeds/intel-node-128.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Hyperscale Infrastructure Node 13",
+        "url": "https://afr-cloud-threatnet.org/feeds/intel-node-129.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Adversarial Machine Learning Node 14",
+        "url": "https://eu-aiml-threatnet.org/feeds/intel-node-130.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Hardware Root of Trust Node 14",
+        "url": "https://apac-semiconductor-threatnet.org/feeds/intel-node-131.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Municipal Cyber Operations Node 14",
+        "url": "https://latam-government-threatnet.org/feeds/intel-node-132.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Cyber Risk Actuarial Node 14",
+        "url": "https://nordic-insurance-threatnet.org/feeds/intel-node-133.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Global Supply Chain Defense Node 14",
+        "url": "https://mena-logistics-threatnet.org/feeds/intel-node-134.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Banking CERT Node 14",
+        "url": "https://asean-financial-threatnet.org/feeds/intel-node-135.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Biomedical Security Node 14",
+        "url": "https://baltic-healthcare-threatnet.org/feeds/intel-node-136.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Power Grid Protection Node 14",
+        "url": "https://balkan-energy-threatnet.org/feeds/intel-node-137.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean 5G & Carrier Defense Node 14",
+        "url": "https://carib-telecom-threatnet.org/feeds/intel-node-138.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Avionics Cyber Node 14",
+        "url": "https://afr-aerospace-threatnet.org/feeds/intel-node-139.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Port & Vessel Cyber Node 15",
+        "url": "https://eu-maritime-threatnet.org/feeds/intel-node-140.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Military Defense Contractor Node 15",
+        "url": "https://apac-defense-threatnet.org/feeds/intel-node-141.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Cyber Warfare Lab Node 15",
+        "url": "https://latam-academic-threatnet.org/feeds/intel-node-142.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Connected EV Cyber Node 15",
+        "url": "https://nordic-automotive-threatnet.org/feeds/intel-node-143.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Hyperscale Infrastructure Node 15",
+        "url": "https://mena-cloud-threatnet.org/feeds/intel-node-144.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Adversarial Machine Learning Node 15",
+        "url": "https://asean-aiml-threatnet.org/feeds/intel-node-145.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Hardware Root of Trust Node 15",
+        "url": "https://baltic-semiconductor-threatnet.org/feeds/intel-node-146.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Municipal Cyber Operations Node 15",
+        "url": "https://balkan-government-threatnet.org/feeds/intel-node-147.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Cyber Risk Actuarial Node 15",
+        "url": "https://carib-insurance-threatnet.org/feeds/intel-node-148.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Global Supply Chain Defense Node 15",
+        "url": "https://afr-logistics-threatnet.org/feeds/intel-node-149.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Banking CERT Node 16",
+        "url": "https://eu-financial-threatnet.org/feeds/intel-node-150.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Biomedical Security Node 16",
+        "url": "https://apac-healthcare-threatnet.org/feeds/intel-node-151.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Power Grid Protection Node 16",
+        "url": "https://latam-energy-threatnet.org/feeds/intel-node-152.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic 5G & Carrier Defense Node 16",
+        "url": "https://nordic-telecom-threatnet.org/feeds/intel-node-153.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Avionics Cyber Node 16",
+        "url": "https://mena-aerospace-threatnet.org/feeds/intel-node-154.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Port & Vessel Cyber Node 16",
+        "url": "https://asean-maritime-threatnet.org/feeds/intel-node-155.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Military Defense Contractor Node 16",
+        "url": "https://baltic-defense-threatnet.org/feeds/intel-node-156.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Cyber Warfare Lab Node 16",
+        "url": "https://balkan-academic-threatnet.org/feeds/intel-node-157.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Connected EV Cyber Node 16",
+        "url": "https://carib-automotive-threatnet.org/feeds/intel-node-158.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Hyperscale Infrastructure Node 16",
+        "url": "https://afr-cloud-threatnet.org/feeds/intel-node-159.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Adversarial Machine Learning Node 17",
+        "url": "https://eu-aiml-threatnet.org/feeds/intel-node-160.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Hardware Root of Trust Node 17",
+        "url": "https://apac-semiconductor-threatnet.org/feeds/intel-node-161.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Municipal Cyber Operations Node 17",
+        "url": "https://latam-government-threatnet.org/feeds/intel-node-162.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Cyber Risk Actuarial Node 17",
+        "url": "https://nordic-insurance-threatnet.org/feeds/intel-node-163.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Global Supply Chain Defense Node 17",
+        "url": "https://mena-logistics-threatnet.org/feeds/intel-node-164.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Banking CERT Node 17",
+        "url": "https://asean-financial-threatnet.org/feeds/intel-node-165.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Biomedical Security Node 17",
+        "url": "https://baltic-healthcare-threatnet.org/feeds/intel-node-166.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Power Grid Protection Node 17",
+        "url": "https://balkan-energy-threatnet.org/feeds/intel-node-167.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean 5G & Carrier Defense Node 17",
+        "url": "https://carib-telecom-threatnet.org/feeds/intel-node-168.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Avionics Cyber Node 17",
+        "url": "https://afr-aerospace-threatnet.org/feeds/intel-node-169.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Port & Vessel Cyber Node 18",
+        "url": "https://eu-maritime-threatnet.org/feeds/intel-node-170.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Military Defense Contractor Node 18",
+        "url": "https://apac-defense-threatnet.org/feeds/intel-node-171.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Cyber Warfare Lab Node 18",
+        "url": "https://latam-academic-threatnet.org/feeds/intel-node-172.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Connected EV Cyber Node 18",
+        "url": "https://nordic-automotive-threatnet.org/feeds/intel-node-173.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Hyperscale Infrastructure Node 18",
+        "url": "https://mena-cloud-threatnet.org/feeds/intel-node-174.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Adversarial Machine Learning Node 18",
+        "url": "https://asean-aiml-threatnet.org/feeds/intel-node-175.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Hardware Root of Trust Node 18",
+        "url": "https://baltic-semiconductor-threatnet.org/feeds/intel-node-176.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Municipal Cyber Operations Node 18",
+        "url": "https://balkan-government-threatnet.org/feeds/intel-node-177.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Cyber Risk Actuarial Node 18",
+        "url": "https://carib-insurance-threatnet.org/feeds/intel-node-178.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Global Supply Chain Defense Node 18",
+        "url": "https://afr-logistics-threatnet.org/feeds/intel-node-179.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Banking CERT Node 19",
+        "url": "https://eu-financial-threatnet.org/feeds/intel-node-180.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Biomedical Security Node 19",
+        "url": "https://apac-healthcare-threatnet.org/feeds/intel-node-181.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Power Grid Protection Node 19",
+        "url": "https://latam-energy-threatnet.org/feeds/intel-node-182.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic 5G & Carrier Defense Node 19",
+        "url": "https://nordic-telecom-threatnet.org/feeds/intel-node-183.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Avionics Cyber Node 19",
+        "url": "https://mena-aerospace-threatnet.org/feeds/intel-node-184.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Port & Vessel Cyber Node 19",
+        "url": "https://asean-maritime-threatnet.org/feeds/intel-node-185.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Military Defense Contractor Node 19",
+        "url": "https://baltic-defense-threatnet.org/feeds/intel-node-186.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Cyber Warfare Lab Node 19",
+        "url": "https://balkan-academic-threatnet.org/feeds/intel-node-187.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Connected EV Cyber Node 19",
+        "url": "https://carib-automotive-threatnet.org/feeds/intel-node-188.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Hyperscale Infrastructure Node 19",
+        "url": "https://afr-cloud-threatnet.org/feeds/intel-node-189.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Adversarial Machine Learning Node 20",
+        "url": "https://eu-aiml-threatnet.org/feeds/intel-node-190.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Hardware Root of Trust Node 20",
+        "url": "https://apac-semiconductor-threatnet.org/feeds/intel-node-191.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Municipal Cyber Operations Node 20",
+        "url": "https://latam-government-threatnet.org/feeds/intel-node-192.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Cyber Risk Actuarial Node 20",
+        "url": "https://nordic-insurance-threatnet.org/feeds/intel-node-193.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Global Supply Chain Defense Node 20",
+        "url": "https://mena-logistics-threatnet.org/feeds/intel-node-194.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Banking CERT Node 20",
+        "url": "https://asean-financial-threatnet.org/feeds/intel-node-195.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Biomedical Security Node 20",
+        "url": "https://baltic-healthcare-threatnet.org/feeds/intel-node-196.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Power Grid Protection Node 20",
+        "url": "https://balkan-energy-threatnet.org/feeds/intel-node-197.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean 5G & Carrier Defense Node 20",
+        "url": "https://carib-telecom-threatnet.org/feeds/intel-node-198.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Avionics Cyber Node 20",
+        "url": "https://afr-aerospace-threatnet.org/feeds/intel-node-199.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Port & Vessel Cyber Node 21",
+        "url": "https://eu-maritime-threatnet.org/feeds/intel-node-200.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Military Defense Contractor Node 21",
+        "url": "https://apac-defense-threatnet.org/feeds/intel-node-201.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Cyber Warfare Lab Node 21",
+        "url": "https://latam-academic-threatnet.org/feeds/intel-node-202.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Connected EV Cyber Node 21",
+        "url": "https://nordic-automotive-threatnet.org/feeds/intel-node-203.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Hyperscale Infrastructure Node 21",
+        "url": "https://mena-cloud-threatnet.org/feeds/intel-node-204.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Adversarial Machine Learning Node 21",
+        "url": "https://asean-aiml-threatnet.org/feeds/intel-node-205.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Hardware Root of Trust Node 21",
+        "url": "https://baltic-semiconductor-threatnet.org/feeds/intel-node-206.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Municipal Cyber Operations Node 21",
+        "url": "https://balkan-government-threatnet.org/feeds/intel-node-207.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Cyber Risk Actuarial Node 21",
+        "url": "https://carib-insurance-threatnet.org/feeds/intel-node-208.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Global Supply Chain Defense Node 21",
+        "url": "https://afr-logistics-threatnet.org/feeds/intel-node-209.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Banking CERT Node 22",
+        "url": "https://eu-financial-threatnet.org/feeds/intel-node-210.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Biomedical Security Node 22",
+        "url": "https://apac-healthcare-threatnet.org/feeds/intel-node-211.xml",
+        "category": "Threat Intel",
+        "type": "Health Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Power Grid Protection Node 22",
+        "url": "https://latam-energy-threatnet.org/feeds/intel-node-212.xml",
+        "category": "Threat Intel",
+        "type": "SCADA Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic 5G & Carrier Defense Node 22",
+        "url": "https://nordic-telecom-threatnet.org/feeds/intel-node-213.xml",
+        "category": "Threat Intel",
+        "type": "Telco Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Avionics Cyber Node 22",
+        "url": "https://mena-aerospace-threatnet.org/feeds/intel-node-214.xml",
+        "category": "Threat Intel",
+        "type": "Aero Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Port & Vessel Cyber Node 22",
+        "url": "https://asean-maritime-threatnet.org/feeds/intel-node-215.xml",
+        "category": "Threat Intel",
+        "type": "Vessel Intel",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Baltic Military Defense Contractor Node 22",
+        "url": "https://baltic-defense-threatnet.org/feeds/intel-node-216.xml",
+        "category": "Threat Intel",
+        "type": "Defense Industrial",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Balkan Cyber Warfare Lab Node 22",
+        "url": "https://balkan-academic-threatnet.org/feeds/intel-node-217.xml",
+        "category": "Academic",
+        "type": "University Research",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Caribbean Connected EV Cyber Node 22",
+        "url": "https://carib-automotive-threatnet.org/feeds/intel-node-218.xml",
+        "category": "Threat Intel",
+        "type": "Vehicle Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Africa Hyperscale Infrastructure Node 22",
+        "url": "https://afr-cloud-threatnet.org/feeds/intel-node-219.xml",
+        "category": "Threat Intel",
+        "type": "Cloud Defense",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "EU Adversarial Machine Learning Node 23",
+        "url": "https://eu-aiml-threatnet.org/feeds/intel-node-220.xml",
+        "category": "Threat Intel",
+        "type": "AI Security",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "APAC Hardware Root of Trust Node 23",
+        "url": "https://apac-semiconductor-threatnet.org/feeds/intel-node-221.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "LATAM Municipal Cyber Operations Node 23",
+        "url": "https://latam-government-threatnet.org/feeds/intel-node-222.xml",
+        "category": "Government",
+        "type": "Local Gov Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "Nordic Cyber Risk Actuarial Node 23",
+        "url": "https://nordic-insurance-threatnet.org/feeds/intel-node-223.xml",
+        "category": "Threat Intel",
+        "type": "Risk Analysis",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "MENA Global Supply Chain Defense Node 23",
+        "url": "https://mena-logistics-threatnet.org/feeds/intel-node-224.xml",
+        "category": "Threat Intel",
+        "type": "Supply Chain",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
+    },
+    {
+        "name": "ASEAN Banking CERT Node 23",
+        "url": "https://asean-financial-threatnet.org/feeds/intel-node-225.xml",
+        "category": "Threat Intel",
+        "type": "Sector Threat",
+        "isEnabled": true,
+        "expectedIntervalMinutes": 60,
+        "permissionOutcome": "pending"
     }
 ]
