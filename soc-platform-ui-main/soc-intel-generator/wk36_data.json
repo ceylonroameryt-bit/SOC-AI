@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "week_num": 36,
+    "date_range": "September 8-10, 2026",
+    "published_date": "September 10, 2026",
+    "author": "Sujampathi Rathnayaka",
+    "title": "The week the threat landscape got louder"
+  },
+
+  "stats": {
+    "articles_ingested": 819,
+    "mitre_categorized": 403,
+    "tactic_coverage": "14 / 14",
+    "active_zero_days": 2
+  },
+
+  "headlines": [
+    {
+      "title": "Patch Tuesday, record edition — 974 vulnerabilities, two under active exploitation",
+      "severity": "critical",
+      "body": "Microsoft's September 2026 Patch Tuesday is the largest in company history, with 113 rated Critical. Two elevation-of-privilege flaws are already being weaponised in the wild, both now sitting in CISA's Known Exploited Vulnerabilities catalog. Android took 180 patches this cycle, including a no-interaction RCE in the System component.",
+      "cves": [
+        { "id": "CVE-2026-85880", "desc": "Windows ALPC EoP — escapes AppContainer sandbox to SYSTEM" },
+        { "id": "CVE-2026-81963", "desc": "Windows Update Stack link-following EoP to SYSTEM" }
+      ],
+      "action": "Federal remediation deadline: September 22, 2026. Patch Windows endpoints this week, no exceptions."
+    },
+    {
+      "title": "AI is compressing the ransomware kill chain to under 30 minutes",
+      "severity": "critical",
+      "body": "Check Point research and our own heatmap data agree: some intrusions now go from initial access to full domain compromise in as little as 30 minutes, with 10 hours as the new upper bound. Two groups drove this week's volume — \"The Gentlemen\" against Air Canada and pharma targets, and \"Fiasco Group\" running double-extortion across sectors. Ransom payment rate sits at a multi-year low of 23%, but overall attack volume is still up 24.9% year-over-year. Fewer payouts is not the same as fewer incidents.",
+      "cves": [],
+      "action": ""
+    },
+    {
+      "title": "GTA VI \"leaks\" are a malware delivery vector, not a gaming story",
+      "severity": "user_risk",
+      "body": "A large campaign is distributing ransomware, infostealers, and RATs disguised as early-access or leaked builds of Grand Theft Auto VI. Wherever personal downloads on corporate devices go unmanaged, this is a live insider-risk vector worth a five-minute reminder to staff.",
+      "cves": [],
+      "action": ""
+    }
+  ],
+
+  "tactic_volume": [
+    { "rank": "#1", "count": 340, "tactic": "Initial Access" },
+    { "rank": "#2", "count": 95,  "tactic": "Impact" },
+    { "rank": "#3", "count": 50,  "tactic": "Command & Control" }
+  ],
+
+  "tactic_volume_note": "Adversaries are spending the most energy on public-facing exploitation to get in, and on impairing defences to stay in unnoticed. Get in quietly. Stay a while.",
+
+  "techniques": [
+    { "tactic": "Reconnaissance",       "technique": "Active Scanning",                      "attck_id": "T1595", "hits": 16, "hit_bar_pct": 84 },
+    { "tactic": "Resource Development", "technique": "Acquire Infrastructure",               "attck_id": "T1583", "hits": 19, "hit_bar_pct": 100 },
+    { "tactic": "Initial Access",       "technique": "Exploit Public-Facing Application",    "attck_id": "T1190", "hits": 17, "hit_bar_pct": 89 },
+    { "tactic": "Execution",            "technique": "Command & Scripting Interpreter",      "attck_id": "T1059", "hits": 19, "hit_bar_pct": 100 },
+    { "tactic": "Persistence",          "technique": "Scheduled Task / Job",                 "attck_id": "T1053", "hits": 14, "hit_bar_pct": 73 },
+    { "tactic": "Privilege Escalation", "technique": "Exploitation for Privilege Escalation","attck_id": "T1068", "hits": 9,  "hit_bar_pct": 47 },
+    { "tactic": "Defense Evasion",      "technique": "Impair Defenses",                      "attck_id": "T1562", "hits": 17, "hit_bar_pct": 89 }
+  ],
+
+  "soc_pillars_intro": "The dominant 2026 attacker profile is not smash-and-grab, it is burrow-and-persist. Process Injection has held the #1 technique spot for a third straight year. Four shifts separate the teams keeping pace.",
+
+  "soc_pillars": [
+    {
+      "num": "01", "label": "Coverage to Relevance",
+      "title": "Deep detection over broad coverage",
+      "body": "100% ATT&CK matrix coverage is a vanity metric. What matters is deep, validated detection on the 15-20 techniques your actual adversaries use."
+    },
+    {
+      "num": "02", "label": "Identity-First Detection",
+      "title": "Monitor before attackers touch your systems",
+      "body": "Infostealer logs, stolen session cookies, and dark-web credential monitoring are becoming primary detection vectors before attackers ever touch the environment."
+    },
+    {
+      "num": "03", "label": "Continuous Validation",
+      "title": "Weekly automated checks, not quarterly audits",
+      "body": "Purple teaming and breach-and-attack simulation are moving from quarterly exercises to weekly automated checks."
+    },
+    {
+      "num": "04", "label": "Finished Intelligence",
+      "title": "TTPs over raw IOC feeds",
+      "body": "Raw IOC feeds generate noise. TTP-mapped, finished intelligence drives focused, actionable investigations that cut through alert fatigue."
+    }
+  ],
+
+  "breaches": [
+    { "org": "AdaptHealth",       "impact": "4.1 million individuals affected",         "type": "Data breach, disclosed Sept (occurred June 2026)" },
+    { "org": "Veradigm",          "impact": "Patient personal data stolen",             "type": "Third-party breach via API exploitation" },
+    { "org": "Boston Scientific", "impact": "Global shipping & operations disrupted",   "type": "Cybersecurity incident" }
+  ],
+
+  "breach_note": "Healthcare ties run through all three of this week's major incidents. HIPAA notification obligations are being triggered at scale.",
+
+  "actions": [
+    { "title": "Patch now.", "detail": "CVE-2026-85880 and CVE-2026-81963 are being exploited in the wild — no strategic reason to delay." },
+    { "title": "Hunt supply chain & valid-account abuse.", "detail": "Supply Chain Compromise (T1195, 14 hits) and Valid Accounts (T1078, 9 hits) are under-attended soft spots." },
+    { "title": "Brief your users on GTA VI.", "detail": "Social engineering through gaming feels unrelated to work, which is exactly why it lands." },
+    { "title": "Validate privilege-escalation detection.", "detail": "Given two active Windows zero-days, confirm EDR and SIEM are firing reliably on T1068 activity." },
+    { "title": "Measure detection-to-response speed, not alerts closed.", "detail": "The modern breach cycle runs sub-30-minutes; your detection needs to match it." }
+  ]
+}

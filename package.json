@@ -1,0 +1,13 @@
+{
+  "name": "soc-ai-platform",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev --prefix soc-platform-ui-main",
+    "build": "npm run build --prefix soc-platform-ui-main",
+    "start": "npm run start --prefix soc-platform-ui-main",
+    "server": "npm run server --prefix soc-platform-ui-main",
+    "install:all": "npm install --prefix soc-platform-ui-main"
+  }
+}

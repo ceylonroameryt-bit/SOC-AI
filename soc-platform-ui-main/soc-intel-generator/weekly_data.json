@@ -1,0 +1,111 @@
+{
+  "_instructions": {
+    "how_to_use": "Fill in this file every week, then run: python generate.py",
+    "week_num": "ISO week number (e.g. 37). Run: python -c \"import datetime; print(datetime.date.today().isocalendar()[1])\" to get it.",
+    "bar_width_tip": "hit_bar_pct = round((hits / max_hits_this_week) * 100). Max hits = highest technique hit count this week."
+  },
+
+  "meta": {
+    "week_num": 37,
+    "date_range": "September 15-21, 2026",
+    "published_date": "September 21, 2026",
+    "author": "Sujampathi Rathnayaka",
+    "title": "The week persistence became the priority"
+  },
+
+  "stats": {
+    "articles_ingested": 0,
+    "mitre_categorized": 0,
+    "tactic_coverage": "14 / 14",
+    "active_zero_days": 0
+  },
+
+  "headlines": [
+    {
+      "title": "Enter headline 1 title here",
+      "severity": "critical",
+      "body": "Enter the main body of this headline. Describe what happened, who is affected, which threat groups are involved.",
+      "cves": [
+        { "id": "CVE-YYYY-NNNNN", "desc": "Short description of vulnerability and impact" }
+      ],
+      "action": "Recommended action for security teams — e.g. Patch by DATE. No exceptions."
+    },
+    {
+      "title": "Enter headline 2 title here",
+      "severity": "high",
+      "body": "Enter headline 2 body. Key stats, threat actors, affected industries. Supporting details.",
+      "cves": [],
+      "action": ""
+    },
+    {
+      "title": "Enter headline 3 — user-facing or social engineering threat",
+      "severity": "user_risk",
+      "body": "Describe the user-facing risk. Keep it accessible. What is the vector and who is targeted.",
+      "cves": [],
+      "action": ""
+    }
+  ],
+
+  "tactic_volume": [
+    { "rank": "#1", "count": 0, "tactic": "Initial Access" },
+    { "rank": "#2", "count": 0, "tactic": "Impact" },
+    { "rank": "#3", "count": 0, "tactic": "Command & Control" }
+  ],
+
+  "tactic_volume_note": "One-sentence insight about what this volume pattern means for this week.",
+
+  "techniques": [
+    { "tactic": "Reconnaissance",       "technique": "Active Scanning",                      "attck_id": "T1595", "hits": 0, "hit_bar_pct": 0 },
+    { "tactic": "Resource Development", "technique": "Acquire Infrastructure",               "attck_id": "T1583", "hits": 0, "hit_bar_pct": 0 },
+    { "tactic": "Initial Access",       "technique": "Exploit Public-Facing Application",    "attck_id": "T1190", "hits": 0, "hit_bar_pct": 0 },
+    { "tactic": "Execution",            "technique": "Command & Scripting Interpreter",      "attck_id": "T1059", "hits": 0, "hit_bar_pct": 0 },
+    { "tactic": "Persistence",          "technique": "Scheduled Task / Job",                 "attck_id": "T1053", "hits": 0, "hit_bar_pct": 0 },
+    { "tactic": "Privilege Escalation", "technique": "Exploitation for Privilege Escalation","attck_id": "T1068", "hits": 0, "hit_bar_pct": 0 },
+    { "tactic": "Defense Evasion",      "technique": "Impair Defenses",                      "attck_id": "T1562", "hits": 0, "hit_bar_pct": 0 }
+  ],
+
+  "soc_pillars_intro": "One–two sentence framing of the week's dominant attacker pattern or theme.",
+
+  "soc_pillars": [
+    {
+      "num": "01",
+      "label": "Coverage to Relevance",
+      "title": "Deep detection over broad coverage",
+      "body": "100% ATT&CK matrix coverage is a vanity metric. What matters is deep, validated detection on the 15-20 techniques your actual adversaries use."
+    },
+    {
+      "num": "02",
+      "label": "Identity-First Detection",
+      "title": "Monitor before attackers touch your systems",
+      "body": "Infostealer logs, stolen session cookies, and dark-web credential monitoring are becoming primary detection vectors before attackers ever touch the environment."
+    },
+    {
+      "num": "03",
+      "label": "Continuous Validation",
+      "title": "Weekly automated checks, not quarterly audits",
+      "body": "Purple teaming and breach-and-attack simulation are moving from quarterly exercises to weekly automated checks."
+    },
+    {
+      "num": "04",
+      "label": "Finished Intelligence",
+      "title": "TTPs over raw IOC feeds",
+      "body": "Raw IOC feeds generate noise. TTP-mapped, finished intelligence drives focused, actionable investigations that cut through alert fatigue."
+    }
+  ],
+
+  "breaches": [
+    { "org": "Organisation Name", "impact": "X million individuals affected", "type": "Ransomware / Data exfiltration" },
+    { "org": "Organisation Name", "impact": "Operational disruption",         "type": "Cybersecurity incident" },
+    { "org": "Organisation Name", "impact": "Customer data stolen",           "type": "Third-party API breach" }
+  ],
+
+  "breach_note": "One-sentence observation about this week's breach pattern — sector trend, common vector, regulatory angle.",
+
+  "actions": [
+    { "title": "Patch now.",                            "detail": "List what to patch and why it is urgent this week." },
+    { "title": "Hunt [specific technique].",            "detail": "Explain what to hunt and where to look based on this week's heatmap." },
+    { "title": "Brief your users on [threat].",         "detail": "Describe the user-facing campaign and what awareness to share." },
+    { "title": "Validate [specific detection].",        "detail": "Which detection rule or tactic coverage to validate this week." },
+    { "title": "Measure detection-to-response speed.",  "detail": "The modern breach cycle runs sub-30-minutes; your detection needs to match it." }
+  ]
+}

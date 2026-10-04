@@ -1,0 +1,57 @@
+name: Scheduled Threat Intelligence Collector
+
+on:
+  schedule:
+    # Run every 2 hours at minute 15 (e.g., 00:15, 02:15, 04:15 ...)
+    - cron: '15 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force collection ignoring lockfile'
+        required: false
+        type: boolean
+        default: false
+      dry_run:
+        description: 'Run collector in dry-run mode (no writes)'
+        required: false
+        type: boolean
+        default: false
+
+# Overlap prevention: Never run concurrent collector jobs in parallel
+concurrency:
+  group: threat-intel-collector
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: Execute Standalone Intelligence Collector
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: soc-platform-ui-main/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: soc-platform-ui-main
+        run: npm ci --prefer-offline
+
+      - name: Run Collector CLI
+        working-directory: soc-platform-ui-main
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          NODE_ENV: production
+        run: |
+          ARGS=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          node server/collector.js $ARGS

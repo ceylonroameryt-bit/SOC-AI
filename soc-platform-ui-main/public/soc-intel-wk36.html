@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOC-INTEL / WK36 — Weekly Cyber Threat Intelligence Briefing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #0f1117;
+      --ink-light:  #2d3142;
+      --ink-mid:    #4a5068;
+      --ink-soft:   #6b7280;
+      --rule:       #e2e5ec;
+      --rule-light: #f0f2f7;
+      --accent:     #1a1f36;
+      --red:        #c0392b;
+      --red-bg:     #fdf2f1;
+      --amber:      #b45309;
+      --amber-bg:   #fffbeb;
+      --blue:       #1d4ed8;
+      --blue-bg:    #eff6ff;
+      --page-w:     860px;
+    }
+
+    html { font-size: 14px; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #f5f6fa;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ── Page Shell ── */
+    .page {
+      width: var(--page-w);
+      margin: 40px auto;
+      background: #fff;
+      border: 1px solid var(--rule);
+      box-shadow: 0 4px 32px rgba(0,0,0,.08);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      border-bottom: 3px solid var(--ink);
+      padding: 36px 48px 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 16px;
+    }
+    .header-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: -.5px;
+    }
+    .header-sub {
+      margin-top: 8px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      max-width: 520px;
+    }
+    .header-meta {
+      text-align: right;
+    }
+    .no-entry-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--ink);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+    .logo-name {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: var(--ink);
+    }
+    .author-block {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      text-align: right;
+    }
+    .author-block strong { color: var(--ink); font-weight: 600; display: block; }
+
+    /* ── STAT STRIP ── */
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--rule);
+    }
+    .stat-cell {
+      padding: 20px 28px;
+      border-right: 1px solid var(--rule);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .stat-value.red { color: var(--red); }
+    .stat-value.blue { color: var(--blue); }
+
+    /* ── BODY ── */
+    .body { padding: 0 48px 48px; }
+
+    /* ── SECTION ── */
+    .section { margin-top: 36px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--rule);
+    }
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      letter-spacing: .08em;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    /* ── ALERT CARDS ── */
+    .alert-card {
+      border: 1px solid var(--rule);
+      border-left: 4px solid var(--ink-mid);
+      border-radius: 4px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .alert-card.critical { border-left-color: var(--red); }
+    .alert-card.user-risk { border-left-color: var(--amber); }
+
+    .alert-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 10px;
+      background: var(--rule-light);
+      border-bottom: 1px solid var(--rule);
+      gap: 12px;
+    }
+    .alert-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.3;
+      flex: 1;
+    }
+    .badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .badge.critical { background: var(--red-bg); color: var(--red); }
+    .badge.user-risk { background: var(--amber-bg); color: var(--amber); }
+
+    .alert-body { padding: 14px 16px; }
+    .alert-body p {
+      font-size: 12px;
+      color: var(--ink-light);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .alert-body p:last-child { margin-bottom: 0; }
+
+    .cve-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 8px 0;
+    }
+    .cve-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      background: var(--ink);
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .cve-desc {
+      font-size: 11.5px;
+      color: var(--ink-light);
+      line-height: 1.5;
+    }
+
+    .alert-action {
+      margin-top: 10px;
+      padding: 9px 12px;
+      background: var(--rule-light);
+      border-radius: 3px;
+      font-size: 11px;
+      color: var(--ink-mid);
+      line-height: 1.5;
+    }
+    .alert-action::before {
+      content: "→ ";
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* ── TABLES ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .data-table thead tr {
+      background: var(--ink);
+      color: #fff;
+    }
+    .data-table thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .data-table thead th:first-child { border-radius: 0; }
+    .data-table tbody tr {
+      border-bottom: 1px solid var(--rule);
+    }
+    .data-table tbody tr:nth-child(even) { background: var(--rule-light); }
+    .data-table tbody tr:last-child { border-bottom: none; }
+    .data-table td {
+      padding: 10px 14px;
+      color: var(--ink-light);
+      line-height: 1.5;
+      vertical-align: top;
+    }
+    .data-table td:first-child {
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--blue);
+    }
+    .hit-bar-cell { display: flex; align-items: center; gap: 8px; }
+    .hit-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      min-width: 22px;
+    }
+    .hit-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--ink);
+      opacity: .15;
+    }
+    .hit-bar.fill {
+      position: absolute;
+      top: 0; left: 0;
+      background: var(--ink);
+      opacity: 1;
+    }
+    .bar-wrap { position: relative; flex: 1; height: 6px; border-radius: 3px; background: #e5e7eb; max-width: 100px; }
+    .bar-fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 3px; background: var(--ink); }
+
+    /* ── TACTIC VOLUME ── */
+    .tactic-volume {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .vol-card {
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .vol-rank {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--rule);
+    }
+    .vol-info {}
+    .vol-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .vol-label {
+      font-size: 10.5px;
+      color: var(--ink-soft);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* ── SOC PILLARS ── */
+    .pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pillar-card {
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 14px 16px;
+    }
+    .pillar-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      letter-spacing: .06em;
+      margin-bottom: 6px;
+    }
+    .pillar-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .pillar-body {
+      font-size: 11px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+
+    /* ── WEEKEND ACTIONS ── */
+    .action-list { list-style: none; }
+    .action-list li {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule-light);
+      font-size: 12px;
+      color: var(--ink-light);
+      line-height: 1.6;
+      align-items: flex-start;
+    }
+    .action-list li:last-child { border-bottom: none; }
+    .action-list li .bullet {
+      width: 18px;
+      height: 18px;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 9px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .action-list li strong { color: var(--ink); font-weight: 600; }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: 2px solid var(--ink);
+      padding: 18px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+    .footer-links {
+      font-size: 10px;
+      color: var(--ink-soft);
+      line-height: 1.8;
+    }
+    .footer-links a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+    .footer-data {
+      text-align: right;
+      font-size: 10px;
+      color: var(--ink-soft);
+      line-height: 1.8;
+    }
+    .footer-data strong { color: var(--ink); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--rule);
+      margin: 28px 0;
+    }
+
+    /* ── NOTE STRIP ── */
+    .note-strip {
+      background: var(--rule-light);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      margin-top: 14px;
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: #fff; }
+      .page {
+        width: 100%;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+      }
+      .section { page-break-inside: avoid; }
+    }
+
+    @page {
+      size: A4;
+      margin: 15mm 12mm;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div>
+      <p class="header-badge">SOC-INTEL &nbsp;/&nbsp; WK36 &nbsp;·&nbsp; September 8–10, 2026</p>
+      <h1>The week the threat<br>landscape got louder</h1>
+      <p class="header-sub">
+        Weekly cyber threat intelligence briefing — September 8–10, 2026. 819 ingested
+        reports, 403 MITRE-categorized events, full ATT&CK tactic coverage.
+      </p>
+    </div>
+    <div class="header-meta">
+      <div class="no-entry-logo">
+        <div class="logo-icon">
+          <!-- Shield icon -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"/>
+          </svg>
+        </div>
+        <span class="logo-name">NO ENTRY</span>
+      </div>
+      <div class="author-block">
+        <strong>Sujampathi Rathnayaka</strong>
+        Security Analyst<br>
+        Published: September 10, 2026<br>
+        Series: Weekly Cyber Intel
+      </div>
+    </div>
+  </header>
+
+  <!-- STAT STRIP -->
+  <div class="stat-strip">
+    <div class="stat-cell">
+      <p class="stat-label">Threat articles ingested</p>
+      <p class="stat-value">819</p>
+    </div>
+    <div class="stat-cell">
+      <p class="stat-label">MITRE-categorized events</p>
+      <p class="stat-value blue">403</p>
+    </div>
+    <div class="stat-cell">
+      <p class="stat-label">ATT&amp;CK tactic coverage</p>
+      <p class="stat-value">14 / 14</p>
+    </div>
+    <div class="stat-cell">
+      <p class="stat-label">Active zero-days (KEV)</p>
+      <p class="stat-value red">2</p>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- SECTION 01 — CRITICAL HEADLINES -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="section-title">Critical Headlines</span>
+      </div>
+
+      <!-- Card 1 -->
+      <div class="alert-card critical">
+        <div class="alert-head">
+          <p class="alert-title">Patch Tuesday, record edition — 974 vulnerabilities, two under active exploitation</p>
+          <span class="badge critical">Critical</span>
+        </div>
+        <div class="alert-body">
+          <p>
+            Microsoft's September 2026 Patch Tuesday is the largest in company history, with 113 rated Critical.
+            Two elevation-of-privilege flaws are already being weaponised in the wild, both now sitting in CISA's
+            Known Exploited Vulnerabilities catalog.
+          </p>
+          <div class="cve-row">
+            <span class="cve-tag">CVE-2026-85880</span>
+            <span class="cve-desc">Windows ALPC EoP — escapes AppContainer sandbox to SYSTEM</span>
+          </div>
+          <div class="cve-row">
+            <span class="cve-tag">CVE-2026-81963</span>
+            <span class="cve-desc">Windows Update Stack link-following EoP to SYSTEM</span>
+          </div>
+          <p style="margin-top:10px;">
+            Android took 180 patches this cycle, including a no-interaction RCE in the System component.
+          </p>
+          <div class="alert-action">Federal remediation deadline: Sept 22, 2026. Patch Windows endpoints this week, no exceptions.</div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="alert-card critical">
+        <div class="alert-head">
+          <p class="alert-title">AI is compressing the ransomware kill chain to under 30 minutes</p>
+          <span class="badge critical">Critical</span>
+        </div>
+        <div class="alert-body">
+          <p>
+            Check Point research and our own heatmap data agree: some intrusions now go from initial access to full
+            domain compromise in as little as 30 minutes, with 10 hours as the new upper bound. Two groups drove this
+            week's volume — <strong>"The Gentlemen"</strong> against Air Canada and pharma targets, and
+            <strong>"Fiasco Group"</strong> running double-extortion across sectors.
+          </p>
+          <p>
+            Ransom payment rate sits at a multi-year low of <strong>23%</strong>, but overall attack volume is still
+            up <strong>24.9% year-over-year</strong>. Fewer payouts is not the same as fewer incidents.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="alert-card user-risk">
+        <div class="alert-head">
+          <p class="alert-title">GTA VI "leaks" are a malware delivery vector, not a gaming story</p>
+          <span class="badge user-risk">User Risk</span>
+        </div>
+        <div class="alert-body">
+          <p>
+            A large campaign is distributing ransomware, infostealers, and RATs disguised as early-access or leaked
+            builds of Grand Theft Auto VI. Wherever personal downloads on corporate devices go unmanaged, this is a
+            live insider-risk vector worth a five-minute reminder to staff.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 02 — TACTIC VOLUME -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="section-title">Where the Volume Is</span>
+      </div>
+
+      <p style="font-size:12px;color:var(--ink-soft);line-height:1.7;margin-bottom:16px;">
+        Across 403 categorized events, three tactics account for the overwhelming majority of observed
+        activity — the front door, the endgame, and the foothold.
+      </p>
+
+      <div class="tactic-volume">
+        <div class="vol-card">
+          <span class="vol-rank">#1</span>
+          <div class="vol-info">
+            <p class="vol-count">340</p>
+            <p class="vol-label">Initial Access</p>
+          </div>
+        </div>
+        <div class="vol-card">
+          <span class="vol-rank">#2</span>
+          <div class="vol-info">
+            <p class="vol-count">95</p>
+            <p class="vol-label">Impact</p>
+          </div>
+        </div>
+        <div class="vol-card">
+          <span class="vol-rank">#3</span>
+          <div class="vol-info">
+            <p class="vol-count">50</p>
+            <p class="vol-label">Command &amp; Control</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="note-strip">
+        Reading the shape of it: adversaries are spending the most energy on public-facing exploitation to get in,
+        and on impairing defences to stay in unnoticed. <strong>Get in quietly. Stay a while.</strong>
+      </div>
+    </div>
+
+    <!-- SECTION 03 — HOTTEST TECHNIQUES -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="section-title">Hottest Technique per Tactic</span>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tactic</th>
+            <th>Technique</th>
+            <th>ATT&CK ID</th>
+            <th>Hits this week</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reconnaissance</td>
+            <td>Active Scanning</td>
+            <td><span class="mono">T1595</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">16</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:84%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Resource Development</td>
+            <td>Acquire Infrastructure</td>
+            <td><span class="mono">T1583</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">19</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Initial Access</td>
+            <td>Exploit Public-Facing Application</td>
+            <td><span class="mono">T1190</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">17</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:89%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>Command &amp; Scripting Interpreter</td>
+            <td><span class="mono">T1059</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">19</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Persistence</td>
+            <td>Scheduled Task / Job</td>
+            <td><span class="mono">T1053</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">14</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:73%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Privilege Escalation</td>
+            <td>Exploitation for Privilege Escalation</td>
+            <td><span class="mono">T1068</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">9</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:47%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>Impair Defenses</td>
+            <td><span class="mono">T1562</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">17</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:89%"></div></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 04 — SOC PRIORITIES -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <span class="section-title">What High-Performing SOCs Are Doing Differently</span>
+      </div>
+
+      <p style="font-size:12px;color:var(--ink-soft);line-height:1.7;margin-bottom:16px;">
+        The dominant 2026 attacker profile isn't smash-and-grab, it's burrow-and-persist — Process Injection
+        has held the #1 technique spot for a third straight year. Four shifts separate the teams keeping pace:
+      </p>
+
+      <div class="pillar-grid">
+        <div class="pillar-card">
+          <p class="pillar-num">01 &nbsp;·&nbsp; Coverage to Relevance</p>
+          <p class="pillar-title">Deep detection over broad coverage</p>
+          <p class="pillar-body">100% ATT&CK matrix coverage is a vanity metric. What matters is deep, validated detection on the 15–20 techniques your actual adversaries use.</p>
+        </div>
+        <div class="pillar-card">
+          <p class="pillar-num">02 &nbsp;·&nbsp; Identity-First Detection</p>
+          <p class="pillar-title">Monitor before attackers touch your systems</p>
+          <p class="pillar-body">Infostealer logs, stolen session cookies, and dark-web credential monitoring are becoming primary detection vectors — before attackers ever touch the environment.</p>
+        </div>
+        <div class="pillar-card">
+          <p class="pillar-num">03 &nbsp;·&nbsp; Continuous Validation</p>
+          <p class="pillar-title">Weekly automated checks, not quarterly audits</p>
+          <p class="pillar-body">Purple teaming and breach-and-attack simulation are moving from quarterly exercises to weekly automated checks.</p>
+        </div>
+        <div class="pillar-card">
+          <p class="pillar-num">04 &nbsp;·&nbsp; Finished Intelligence</p>
+          <p class="pillar-title">TTPs over raw IOC feeds</p>
+          <p class="pillar-body">Raw IOC feeds generate noise. TTP-mapped, finished intelligence drives focused, actionable investigations that cut through alert fatigue.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 05 — BREACH TRACKER -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <span class="section-title">Major Breach Tracker</span>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Organisation</th>
+            <th>Impact</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AdaptHealth</td>
+            <td>4.1 million individuals affected</td>
+            <td>Data breach, disclosed Sept (occurred June 2026)</td>
+          </tr>
+          <tr>
+            <td>Veradigm</td>
+            <td>Patient personal data stolen</td>
+            <td>Third-party breach via API exploitation</td>
+          </tr>
+          <tr>
+            <td>Boston Scientific</td>
+            <td>Global shipping &amp; operations disrupted</td>
+            <td>Cybersecurity incident</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note-strip" style="margin-top:12px;">
+        Healthcare ties run through all three of this week's major incidents.
+        HIPAA notification obligations are being triggered at scale.
+      </div>
+    </div>
+
+    <!-- SECTION 06 — THIS WEEKEND -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <span class="section-title">This Weekend</span>
+      </div>
+
+      <ul class="action-list">
+        <li>
+          <span class="bullet">1</span>
+          <div>
+            <strong>Patch now.</strong> CVE-2026-85880 and CVE-2026-81963 are being exploited in the wild —
+            no strategic reason to delay.
+          </div>
+        </li>
+        <li>
+          <span class="bullet">2</span>
+          <div>
+            <strong>Hunt supply chain &amp; valid-account abuse.</strong> Supply Chain Compromise (T1195, 14 hits)
+            and Valid Accounts (T1078, 9 hits) are under-attended soft spots.
+          </div>
+        </li>
+        <li>
+          <span class="bullet">3</span>
+          <div>
+            <strong>Brief your users on GTA VI.</strong> Social engineering through gaming feels unrelated to work,
+            which is exactly why it lands.
+          </div>
+        </li>
+        <li>
+          <span class="bullet">4</span>
+          <div>
+            <strong>Validate privilege-escalation detection.</strong> Given two active Windows zero-days,
+            confirm EDR and SIEM are firing reliably on T1068 activity.
+          </div>
+        </li>
+        <li>
+          <span class="bullet">5</span>
+          <div>
+            <strong>Measure detection-to-response speed, not alerts closed.</strong> The modern breach cycle
+            runs sub-30-minutes; your detection needs to match it.
+          </div>
+        </li>
+      </ul>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-links">
+      <strong style="color:var(--ink);font-size:10px;display:block;margin-bottom:4px;">Resources</strong>
+      CISA KEV Catalog &nbsp;·&nbsp; MITRE ATT&CK Framework<br>
+      Microsoft Security Response Center &nbsp;·&nbsp; NO ENTRY SOC Platform
+    </div>
+    <div class="footer-data">
+      <strong>NO ENTRY SOC Platform</strong><br>
+      Week of Sept 8–10, 2026<br>
+      Mapped to MITRE ATT&CK Enterprise v15<br>
+      <span style="color:#9ca3af;font-size:9px;margin-top:2px;display:block;">SOC-INTEL / WK36 · Sujampathi Rathnayaka</span>
+    </div>
+  </footer>
+
+</div><!-- /page -->
+
+</body>
+</html>

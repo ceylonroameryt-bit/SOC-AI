@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+soc-platform-ui-main/node_modules/
+.venv/
+env/
+venv/
+__pycache__/
+*.pyc
+
+# Production Builds
+dist/
+soc-platform-ui-main/dist/
+build/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+soc-platform-ui-main/.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database & IDE
+*.sqlite
+*.db
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOC-INTEL / WK37 — Weekly Cyber Threat Intelligence Briefing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #0f1117;
+      --ink-light:  #2d3142;
+      --ink-mid:    #4a5068;
+      --ink-soft:   #6b7280;
+      --rule:       #e2e5ec;
+      --rule-light: #f0f2f7;
+      --red:        #c0392b;
+      --red-bg:     #fdf2f1;
+      --amber:      #b45309;
+      --amber-bg:   #fffbeb;
+      --blue:       #1d4ed8;
+      --page-w:     860px;
+    }
+
+    html { font-size: 14px; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #f5f6fa;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .page {
+      width: var(--page-w);
+      margin: 40px auto;
+      background: #fff;
+      border: 1px solid var(--rule);
+      box-shadow: 0 4px 32px rgba(0,0,0,.08);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      border-bottom: 3px solid var(--ink);
+      padding: 36px 48px 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 16px;
+    }
+    .header-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--ink);
+      letter-spacing: -.5px;
+    }
+    .header-sub {
+      margin-top: 8px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      max-width: 520px;
+    }
+    .header-meta { text-align: right; }
+    .no-entry-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+    .logo-icon {
+      width: 30px; height: 30px;
+      background: var(--ink);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+    .logo-name { font-size: 13px; font-weight: 700; letter-spacing: .04em; color: var(--ink); }
+    .author-block {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      text-align: right;
+    }
+    .author-block strong { color: var(--ink); font-weight: 600; display: block; }
+
+    /* ── STAT STRIP ── */
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--rule);
+    }
+    .stat-cell {
+      padding: 20px 28px;
+      border-right: 1px solid var(--rule);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--ink-soft); margin-bottom: 6px;
+    }
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 26px; font-weight: 700;
+      color: var(--ink); line-height: 1;
+    }
+    .stat-value.red { color: var(--red); }
+    .stat-value.blue { color: var(--blue); }
+
+    /* ── BODY ── */
+    .body { padding: 0 48px 48px; }
+
+    /* ── SECTION ── */
+    .section { margin-top: 36px; }
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 18px; padding-bottom: 10px;
+      border-bottom: 1.5px solid var(--rule);
+    }
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; font-weight: 600;
+      color: var(--ink-soft); letter-spacing: .08em; flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 13px; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase; color: var(--ink);
+    }
+
+    /* ── ALERT CARDS ── */
+    .alert-card {
+      border: 1px solid var(--rule);
+      border-left: 4px solid var(--ink-mid);
+      border-radius: 4px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .alert-card.critical  { border-left-color: var(--red); }
+    .alert-card.high      { border-left-color: var(--amber); }
+    .alert-card.user-risk { border-left-color: var(--amber); }
+    .alert-card.medium    { border-left-color: var(--blue); }
+
+    .alert-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px 10px;
+      background: var(--rule-light);
+      border-bottom: 1px solid var(--rule);
+      gap: 12px;
+    }
+    .alert-title {
+      font-size: 12.5px; font-weight: 700;
+      color: var(--ink); line-height: 1.3; flex: 1;
+    }
+    .badge {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 3px; flex-shrink: 0;
+    }
+    .badge.critical  { background: var(--red-bg); color: var(--red); }
+    .badge.high      { background: var(--amber-bg); color: var(--amber); }
+    .badge.user-risk { background: var(--amber-bg); color: var(--amber); }
+    .badge.medium    { background: #eff6ff; color: var(--blue); }
+
+    .alert-body { padding: 14px 16px; }
+    .alert-body p {
+      font-size: 12px; color: var(--ink-light);
+      line-height: 1.7; margin-bottom: 10px;
+    }
+    .alert-body p:last-child { margin-bottom: 0; }
+
+    .cve-row { display: flex; align-items: flex-start; gap: 10px; margin: 8px 0; }
+    .cve-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; font-weight: 600;
+      background: var(--ink); color: #fff;
+      padding: 2px 7px; border-radius: 3px;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .cve-desc { font-size: 11.5px; color: var(--ink-light); line-height: 1.5; }
+
+    .alert-action {
+      margin-top: 10px; padding: 9px 12px;
+      background: var(--rule-light); border-radius: 3px;
+      font-size: 11px; color: var(--ink-mid); line-height: 1.5;
+    }
+    .alert-action::before { content: "→ "; font-weight: 700; color: var(--ink); }
+
+    /* ── TABLES ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .data-table thead tr { background: var(--ink); color: #fff; }
+    .data-table thead th {
+      padding: 10px 14px; text-align: left;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .data-table tbody tr { border-bottom: 1px solid var(--rule); }
+    .data-table tbody tr:nth-child(even) { background: var(--rule-light); }
+    .data-table tbody tr:last-child { border-bottom: none; }
+    .data-table td {
+      padding: 10px 14px; color: var(--ink-light);
+      line-height: 1.5; vertical-align: top;
+    }
+    .data-table td:first-child { font-weight: 600; color: var(--ink); }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; font-weight: 600; color: var(--blue);
+    }
+    .hit-bar-cell { display: flex; align-items: center; gap: 8px; }
+    .hit-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; font-weight: 700; color: var(--ink); min-width: 22px;
+    }
+    .bar-wrap {
+      position: relative; flex: 1; height: 6px;
+      border-radius: 3px; background: #e5e7eb; max-width: 100px;
+    }
+    .bar-fill {
+      position: absolute; top: 0; left: 0;
+      height: 100%; border-radius: 3px; background: var(--ink);
+    }
+
+    /* ── TACTIC VOLUME ── */
+    .tactic-volume { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+    .vol-card {
+      border: 1px solid var(--rule); border-radius: 4px;
+      padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .vol-rank { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 800; color: var(--rule); }
+    .vol-count { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 800; color: var(--ink); line-height: 1; }
+    .vol-label { font-size: 10.5px; color: var(--ink-soft); font-weight: 500; margin-top: 2px; }
+
+    /* ── PILLAR GRID ── */
+    .pillar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pillar-card { border: 1px solid var(--rule); border-radius: 4px; padding: 14px 16px; }
+    .pillar-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: var(--ink-soft); letter-spacing: .06em; margin-bottom: 6px; }
+    .pillar-title { font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+    .pillar-body { font-size: 11px; color: var(--ink-soft); line-height: 1.6; }
+
+    /* ── ACTION LIST ── */
+    .action-list { list-style: none; }
+    .action-list li {
+      display: flex; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid var(--rule-light);
+      font-size: 12px; color: var(--ink-light);
+      line-height: 1.6; align-items: flex-start;
+    }
+    .action-list li:last-child { border-bottom: none; }
+    .action-list li .bullet {
+      width: 18px; height: 18px; background: var(--ink); color: #fff;
+      border-radius: 50%; font-size: 9px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .action-list li strong { color: var(--ink); font-weight: 600; }
+
+    /* ── NOTE STRIP ── */
+    .note-strip {
+      background: var(--rule-light); border: 1px solid var(--rule);
+      border-radius: 4px; padding: 10px 14px;
+      font-size: 11px; color: var(--ink-soft); line-height: 1.6; margin-top: 14px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: 2px solid var(--ink); padding: 18px 48px;
+      display: flex; justify-content: space-between;
+      align-items: flex-end; gap: 16px;
+    }
+    .footer-links { font-size: 10px; color: var(--ink-soft); line-height: 1.8; }
+    .footer-data { text-align: right; font-size: 10px; color: var(--ink-soft); line-height: 1.8; }
+    .footer-data strong { color: var(--ink); }
+
+    @media print {
+      body { background: #fff; }
+      .page { width: 100%; margin: 0; border: none; box-shadow: none; }
+      .section { page-break-inside: avoid; }
+    }
+    @page { size: A4; margin: 15mm 12mm; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══════════════════════════════════════════
+       HEADER
+       EDIT: WEEK_NUM, DATE_RANGE, HEADLINE_TITLE,
+             HEADLINE_SUBTITLE, PUBLISHED_DATE
+  ════════════════════════════════════════════ -->
+  <header class="header">
+    <div>
+      <p class="header-badge">SOC-INTEL &nbsp;/&nbsp; WK37 &nbsp;·&nbsp; September 12-18, 2026</p>
+      <h1>[HEADLINE_TITLE<br>e.g. "The week persistence<br>became the priority"]</h1>
+      <p class="header-sub">
+        Weekly cyber threat intelligence briefing — September 12-18, 2026. 1,726 ingested
+        reports, 788 MITRE-categorized events, full ATT&amp;CK tactic coverage.
+      </p>
+    </div>
+    <div class="header-meta">
+      <div class="no-entry-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"/>
+          </svg>
+        </div>
+        <span class="logo-name">NO ENTRY</span>
+      </div>
+      <div class="author-block">
+        <strong>Sujampathi Rathnayaka</strong>
+        Security Analyst<br>
+        Published: September 18, 2026<br>
+        Series: Weekly Cyber Intel
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       STAT STRIP
+       EDIT: All 4 stat values
+  ════════════════════════════════════════════ -->
+  <div class="stat-strip">
+    <div class="stat-cell">
+      <p class="stat-label">Threat articles ingested</p>
+      <p class="stat-value">1,726</p>
+    </div>
+    <div class="stat-cell">
+      <p class="stat-label">MITRE-categorized events</p>
+      <p class="stat-value blue">788</p>
+    </div>
+    <div class="stat-cell">
+      <p class="stat-label">ATT&amp;CK tactic coverage</p>
+      <p class="stat-value">14 / 14</p>
+    </div>
+    <div class="stat-cell">
+      <p class="stat-label">Active zero-days (KEV)</p>
+      <p class="stat-value red">3</p>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 01 — CRITICAL HEADLINES
+         ADD / REMOVE alert-card blocks as needed.
+         Severity classes: critical | high | medium | user-risk
+    ════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="section-title">Critical Headlines</span>
+      </div>
+
+      
+      <div class="alert-card critical">
+        <div class="alert-head">
+          <p class="alert-title">Cisco Zero-Day & Public Kernel Exploits Expose Critical Edge Perimeter</p>
+          <span class="badge critical">CRITICAL</span>
+        </div>
+        <div class="alert-body">
+          <p>Active threat campaigns this week surged across public-facing services. Cisco zero-day advisories exposed severe API endpoint authentication flaws enabling unauthorized access. Concurrently, weaponized public exploits were published for four Linux kernel vulnerabilities granting immediate local root privilege escalation. Perimeter assets and container hosts require immediate audit.</p>
+          <div class="cve-row">
+            <span class="cve-tag">CVE-2026-20412</span>
+            <span class="cve-desc">Cisco Secure Endpoint & API Authentication Bypass</span>
+          </div>
+          <div class="cve-row">
+            <span class="cve-tag">CVE-2026-38411</span>
+            <span class="cve-desc">Linux Kernel Netfilter / eBPF Local Privilege Escalation to ROOT</span>
+          </div>
+          <div class="alert-action">
+            <span class="action-tag">ACTION</span>
+            <p class="action-text">Immediate audit of API gateways and perimeter firewalls. Deploy patched Linux kernel distributions across cloud cluster nodes within 48 hours.</p>
+          </div>
+        </div>
+      </div>
+      <div class="alert-card critical">
+        <div class="alert-head">
+          <p class="alert-title">Data Encryption & Double Extortion Surge Across Enterprise Supply Chains</p>
+          <span class="badge critical">CRITICAL</span>
+        </div>
+        <div class="alert-body">
+          <p>Impact (TA0040) remains the second highest observed tactic with 158 distinct incidents, led by Data Encrypted for Impact (T1486) recording 130 hits. Threat actors N0n and Auditteam published multiple new enterprise victims this week, including third-party payment and customer support operations (Transcom / PayPal support) and regional commercial providers. Adversaries are heavily pairing exfiltration with cloud storage staging before encrypting hypervisors.</p>
+          <div class="alert-action">
+            <span class="action-tag">ACTION</span>
+            <p class="action-text">Verify immutable backups on virtualized infrastructure and rotate third-party service provider API tokens and shared credentials.</p>
+          </div>
+        </div>
+      </div>
+      <div class="alert-card high">
+        <div class="alert-head">
+          <p class="alert-title">WordPress Click2Shell & Global Law Enforcement Takedown of NightmareStresser</p>
+          <span class="badge high">HIGH</span>
+        </div>
+        <div class="alert-body">
+          <p>Researchers disclosed Click2Shell, a critical WordPress flaw allowing attackers to chain rogue theme installations directly into remote code execution. Simultaneously, an international FBI-led coalition seized the domain infrastructure of NightmareStresser, dismantling a massive DDoS-for-hire ecosystem responsible for thousands of disruptive attacks globally.</p>
+          <div class="cve-row">
+            <span class="cve-tag">CVE-2026-28190</span>
+            <span class="cve-desc">WordPress Click2Shell Arbitrary Theme Install to RCE</span>
+          </div>
+          <div class="alert-action">
+            <span class="action-tag">ACTION</span>
+            <p class="action-text">Disable unauthorized plugin/theme installation permissions across CMS environments and verify volumetric DDoS mitigation rules.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 02 — TACTIC VOLUME
+         EDIT: Top 3 tactic names + event counts
+    ════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="section-title">Where the Volume Is</span>
+      </div>
+
+      <p style="font-size:12px;color:var(--ink-soft);line-height:1.7;margin-bottom:16px;">
+        Across 788 categorized events, three tactics account for the overwhelming majority of observed activity.
+      </p>
+
+      <div class="tactic-volume">
+        <div class="vol-card">
+          <span class="vol-rank">#1</span>
+          <div>
+            <p class="vol-count">[000]</p>
+            <p class="vol-label">[Tactic Name — e.g. Initial Access]</p>
+          </div>
+        </div>
+        <div class="vol-card">
+          <span class="vol-rank">#2</span>
+          <div>
+            <p class="vol-count">[000]</p>
+            <p class="vol-label">[Tactic Name — e.g. Impact]</p>
+          </div>
+        </div>
+        <div class="vol-card">
+          <span class="vol-rank">#3</span>
+          <div>
+            <p class="vol-count">[000]</p>
+            <p class="vol-label">[Tactic Name — e.g. Command & Control]</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="note-strip">
+        [1-sentence insight about what this volume pattern means. e.g. "Adversaries are spending the most energy on getting in quietly and staying unnoticed."]
+      </div>
+    </div><!-- /section 02 -->
+
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 03 — HOTTEST TECHNIQUES
+         EDIT: Each row — tactic, technique name, ATT&CK ID, hit count.
+         Bar width = (hits / max_hits) * 100 as a percentage.
+    ════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="section-title">Hottest Technique per Tactic</span>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tactic</th>
+            <th>Technique</th>
+            <th>ATT&amp;CK ID</th>
+            <th>Hits this week</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ROW TEMPLATE — duplicate for each tactic, update all 4 values + bar width % -->
+          <tr>
+            <td>[Tactic — e.g. Reconnaissance]</td>
+            <td>[Technique — e.g. Active Scanning]</td>
+            <td><span class="mono">[T1000]</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">[00]</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:[00]%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>[Tactic]</td>
+            <td>[Technique]</td>
+            <td><span class="mono">[T1000]</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">[00]</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:[00]%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>[Tactic]</td>
+            <td>[Technique]</td>
+            <td><span class="mono">[T1000]</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">[00]</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:[00]%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>[Tactic]</td>
+            <td>[Technique]</td>
+            <td><span class="mono">[T1000]</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">[00]</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:[00]%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>[Tactic]</td>
+            <td>[Technique]</td>
+            <td><span class="mono">[T1000]</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">[00]</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:[00]%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>[Tactic]</td>
+            <td>[Technique]</td>
+            <td><span class="mono">[T1000]</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">[00]</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:[00]%"></div></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>[Tactic]</td>
+            <td>[Technique]</td>
+            <td><span class="mono">[T1000]</span></td>
+            <td>
+              <div class="hit-bar-cell">
+                <span class="hit-num">[00]</span>
+                <div class="bar-wrap"><div class="bar-fill" style="width:[00]%"></div></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div><!-- /section 03 -->
+
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 04 — SOC INTELLIGENCE / ANALYSIS
+         EDIT: 4 insight cards — update titles + body text each week
+         based on what the week's data suggests.
+    ════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <span class="section-title">What High-Performing SOCs Are Doing Differently</span>
+      </div>
+
+      <p style="font-size:12px;color:var(--ink-soft);line-height:1.7;margin-bottom:16px;">
+        [1–2 sentence framing of the week's dominant attacker pattern or theme. e.g. "The dominant 2026 attacker profile isn't smash-and-grab, it's burrow-and-persist..."]
+      </p>
+
+      <div class="pillar-grid">
+        <div class="pillar-card">
+          <p class="pillar-num">01 &nbsp;·&nbsp; [Pillar Label]</p>
+          <p class="pillar-title">[Pillar Title]</p>
+          <p class="pillar-body">[2–3 sentence insight. Can stay the same week to week or be updated to reflect what this week's data highlights.]</p>
+        </div>
+        <div class="pillar-card">
+          <p class="pillar-num">02 &nbsp;·&nbsp; [Pillar Label]</p>
+          <p class="pillar-title">[Pillar Title]</p>
+          <p class="pillar-body">[2–3 sentence insight.]</p>
+        </div>
+        <div class="pillar-card">
+          <p class="pillar-num">03 &nbsp;·&nbsp; [Pillar Label]</p>
+          <p class="pillar-title">[Pillar Title]</p>
+          <p class="pillar-body">[2–3 sentence insight.]</p>
+        </div>
+        <div class="pillar-card">
+          <p class="pillar-num">04 &nbsp;·&nbsp; [Pillar Label]</p>
+          <p class="pillar-title">[Pillar Title]</p>
+          <p class="pillar-body">[2–3 sentence insight.]</p>
+        </div>
+      </div>
+    </div><!-- /section 04 -->
+
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 05 — BREACH TRACKER
+         EDIT: Rows — organisation, impact, breach type.
+         Add/remove rows each week.
+    ════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <span class="section-title">Major Breach Tracker</span>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Organisation</th>
+            <th>Impact</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>[Organisation Name]</td>
+            <td>[Impact — e.g. X million individuals affected]</td>
+            <td>[Breach type — e.g. Ransomware / Data exfiltration / API exploit]</td>
+          </tr>
+          <tr>
+            <td>[Organisation Name]</td>
+            <td>[Impact]</td>
+            <td>[Breach type]</td>
+          </tr>
+          <tr>
+            <td>[Organisation Name]</td>
+            <td>[Impact]</td>
+            <td>[Breach type]</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note-strip" style="margin-top:12px;">
+        [1-sentence observation about the week's breach pattern — sector trend, common attack vector, regulatory trigger, etc.]
+      </div>
+    </div><!-- /section 05 -->
+
+
+    <!-- ═══════════════════════════════════════════
+         SECTION 06 — THIS WEEKEND / ACTION ITEMS
+         EDIT: 5 action items specific to this week's threats.
+         Keep numbered, keep bolded action label + plain explanation.
+    ════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <span class="section-title">This Weekend</span>
+      </div>
+
+      <ul class="action-list">
+        <li>
+          <span class="bullet">1</span>
+          <div><strong>[Action title — e.g. Patch now.]</strong> [1–2 sentence explanation of what to patch and why it's urgent.]</div>
+        </li>
+        <li>
+          <span class="bullet">2</span>
+          <div><strong>[Action title]</strong> [Explanation.]</div>
+        </li>
+        <li>
+          <span class="bullet">3</span>
+          <div><strong>[Action title]</strong> [Explanation.]</div>
+        </li>
+        <li>
+          <span class="bullet">4</span>
+          <div><strong>[Action title]</strong> [Explanation.]</div>
+        </li>
+        <li>
+          <span class="bullet">5</span>
+          <div><strong>[Action title]</strong> [Explanation.]</div>
+        </li>
+      </ul>
+    </div><!-- /section 06 -->
+
+  </div><!-- /body -->
+
+
+  <!-- ═══════════════════════════════════════════
+       FOOTER
+       EDIT: DATE_RANGE, WEEK_NUM
+  ════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-links">
+      <strong style="color:var(--ink);font-size:10px;display:block;margin-bottom:4px;">Resources</strong>
+      CISA KEV Catalog &nbsp;·&nbsp; MITRE ATT&amp;CK Framework<br>
+      Microsoft Security Response Center &nbsp;·&nbsp; NO ENTRY SOC Platform
+    </div>
+    <div class="footer-data">
+      <strong>NO ENTRY SOC Platform</strong><br>
+      Week of September 12-18, 2026<br>
+      Mapped to MITRE ATT&amp;CK Enterprise v15<br>
+      <span style="color:#9ca3af;font-size:9px;margin-top:2px;display:block;">SOC-INTEL / WK37 · Sujampathi Rathnayaka</span>
+    </div>
+  </footer>
+
+</div><!-- /page -->
+</body>
+</html>

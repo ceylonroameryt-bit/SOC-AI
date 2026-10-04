@@ -1,0 +1,40 @@
+services:
+  # ── 1. Backend Server (Express Node.js) ────────────────────────────────────────
+  - type: web
+    name: no-entry-soc-backend
+    runtime: node
+    plan: free
+    buildCommand: cd soc-platform-ui-main && npm install && npm run build
+    startCommand: cd soc-platform-ui-main && node server/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        sync: false # Set in Render Dashboard with Supabase / Neon connection string
+      - key: INGEST_API_KEY
+        generateValue: true
+      - key: VIRUSTOTAL_API_KEY
+        sync: false
+      - key: ABUSEIPDB_API_KEY
+        sync: false
+      - key: SLACK_WEBHOOK_URL
+        sync: false
+      - key: TEAMS_WEBHOOK_URL
+        sync: false
+      - key: DISCORD_WEBHOOK_URL
+        sync: false
+
+  # ── 2. AI Microservice (Python FastAPI) ───────────────────────────────────────
+  - type: web
+    name: no-entry-ai-microservice
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: OPENAI_API_KEY
+        sync: false

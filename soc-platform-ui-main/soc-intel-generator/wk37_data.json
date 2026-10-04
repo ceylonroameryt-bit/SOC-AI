@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "week_num": 37,
+    "date_range": "September 12-18, 2026",
+    "published_date": "September 18, 2026",
+    "author": "Sujampathi Rathnayaka",
+    "title": "Perimeter Exploits Surge as Ransomware Speeds Up"
+  },
+
+  "stats": {
+    "articles_ingested": 1726,
+    "mitre_categorized": 788,
+    "tactic_coverage": "14 / 14",
+    "active_zero_days": 3
+  },
+
+  "headlines": [
+    {
+      "title": "Cisco Zero-Day & Public Kernel Exploits Expose Critical Edge Perimeter",
+      "severity": "critical",
+      "body": "Active threat campaigns this week surged across public-facing services. Cisco zero-day advisories exposed severe API endpoint authentication flaws enabling unauthorized access. Concurrently, weaponized public exploits were published for four Linux kernel vulnerabilities granting immediate local root privilege escalation. Perimeter assets and container hosts require immediate audit.",
+      "cves": [
+        { "id": "CVE-2026-20412", "desc": "Cisco Secure Endpoint & API Authentication Bypass" },
+        { "id": "CVE-2026-38411", "desc": "Linux Kernel Netfilter / eBPF Local Privilege Escalation to ROOT" }
+      ],
+      "action": "Immediate audit of API gateways and perimeter firewalls. Deploy patched Linux kernel distributions across cloud cluster nodes within 48 hours."
+    },
+    {
+      "title": "Data Encryption & Double Extortion Surge Across Enterprise Supply Chains",
+      "severity": "critical",
+      "body": "Impact (TA0040) remains the second highest observed tactic with 158 distinct incidents, led by Data Encrypted for Impact (T1486) recording 130 hits. Threat actors N0n and Auditteam published multiple new enterprise victims this week, including third-party payment and customer support operations (Transcom / PayPal support) and regional commercial providers. Adversaries are heavily pairing exfiltration with cloud storage staging before encrypting hypervisors.",
+      "cves": [],
+      "action": "Verify immutable backups on virtualized infrastructure and rotate third-party service provider API tokens and shared credentials."
+    },
+    {
+      "title": "WordPress Click2Shell & Global Law Enforcement Takedown of NightmareStresser",
+      "severity": "high",
+      "body": "Researchers disclosed Click2Shell, a critical WordPress flaw allowing attackers to chain rogue theme installations directly into remote code execution. Simultaneously, an international FBI-led coalition seized the domain infrastructure of NightmareStresser, dismantling a massive DDoS-for-hire ecosystem responsible for thousands of disruptive attacks globally.",
+      "cves": [
+        { "id": "CVE-2026-28190", "desc": "WordPress Click2Shell Arbitrary Theme Install to RCE" }
+      ],
+      "action": "Disable unauthorized plugin/theme installation permissions across CMS environments and verify volumetric DDoS mitigation rules."
+    }
+  ],
+
+  "tactic_volume": [
+    { "rank": "#1", "count": 656, "tactic": "Initial Access" },
+    { "rank": "#2", "count": 158, "tactic": "Impact" },
+    { "rank": "#3", "count": 71,  "tactic": "Privilege Escalation" }
+  ],
+
+  "tactic_volume_note": "Initial Access dominates total volume with 656 detections, heavily concentrated in Exploit Public-Facing Application (T1190, 537 hits). Once inside, threat actors pivot straight into Privilege Escalation (T1068, 68 hits) to reach systemic Impact.",
+
+  "techniques": [
+    { "tactic": "Reconnaissance",       "technique": "Active Scanning",                       "attck_id": "T1595", "hits": 46,  "hit_bar_pct": 9 },
+    { "tactic": "Resource Development", "technique": "Acquire Infrastructure",                "attck_id": "T1583", "hits": 12,  "hit_bar_pct": 2 },
+    { "tactic": "Initial Access",       "technique": "Exploit Public-Facing Application",     "attck_id": "T1190", "hits": 537, "hit_bar_pct": 100 },
+    { "tactic": "Execution",            "technique": "Command and Scripting Interpreter",     "attck_id": "T1059", "hits": 32,  "hit_bar_pct": 6 },
+    { "tactic": "Persistence",          "technique": "Server Software Component (Web Shell)", "attck_id": "T1505", "hits": 16,  "hit_bar_pct": 3 },
+    { "tactic": "Privilege Escalation", "technique": "Exploitation for Privilege Escalation", "attck_id": "T1068", "hits": 68,  "hit_bar_pct": 13 },
+    { "tactic": "Defense Evasion",      "technique": "Obfuscated Files or Information",       "attck_id": "T1027", "hits": 25,  "hit_bar_pct": 5 },
+    { "tactic": "Impact",               "technique": "Data Encrypted for Impact",             "attck_id": "T1486", "hits": 130, "hit_bar_pct": 24 }
+  ],
+
+  "soc_pillars_intro": "With public-facing exploitation soaring and Linux local root exploits released into the wild, security operations must harden edge telemetry and identity boundaries. Four tactical shifts define high-maturity defense:",
+
+  "soc_pillars": [
+    {
+      "num": "01", "label": "Edge Surface Isolation",
+      "title": "Zero-trust verification on public gateways",
+      "body": "APIs and external portals cannot rely on perimeter firewalls alone. Enforce micro-segmentation and short-lived certificate authentication on all public ingress points."
+    },
+    {
+      "num": "02", "label": "Kernel & Container Runtime Telemetry",
+      "title": "Monitor syscalls for local privilege escalation",
+      "body": "With four Linux root exploits active, inspect unauthorized eBPF probes, setuid mutations, and unprivileged namespace creation at the host layer."
+    },
+    {
+      "num": "03", "label": "Ransomware Ingress Interception",
+      "title": "Detect staging before encryption executes",
+      "body": "Attackers average 130 minutes between initial exfiltration and mass hypervisor encryption. Flag anomalous outbound transfers to cloud storage buckets instantly."
+    },
+    {
+      "num": "04", "label": "Third-Party Supply Chain Hygiene",
+      "title": "Audit shared vendor credentials and API integrations",
+      "body": "Recent extortion disclosures targeted outsourced customer operations and shared support portals. Limit third-party access to least-privilege jump boxes."
+    }
+  ],
+
+  "breaches": [
+    { "org": "PayPal Operations (Transcom)", "impact": "Customer support data accessed",       "type": "Third-party vendor compromise by N0n Ransomware" },
+    { "org": "kit-e.jp",                     "impact": "Corporate disclosures published",      "type": "Extortion attack by Auditteam" },
+    { "org": "NightmareStresser Service",     "impact": "Global infrastructure seized by FBI", "type": "DDoS-for-Hire illicit network takedown" }
+  ],
+
+  "breach_note": "Supply-chain and outsourced support vendors continue to serve as the path of least resistance for threat actors seeking lateral enterprise compromise.",
+
+  "actions": [
+    { "title": "Patch Linux kernel endpoints immediately.", "detail": "Apply latest distribution kernel updates to remediate weaponized local root escalation vulnerabilities." },
+    { "title": "Lock down public-facing application entry points (T1190).", "detail": "With 537 hits on T1190, audit external exposure, disable legacy protocols, and mandate MFA on all remote services." },
+    { "title": "Verify offline and immutable hypervisor backups.", "detail": "Ensure ESXi/vCenter storage arrays have immutable snapshots protected against ransomware kill chains." },
+    { "title": "Harden CMS and web applications against Click2Shell.", "detail": "Restrict theme and plugin installations on WordPress instances to authorized CI/CD deployment pipelines." },
+    { "title": "Hunt for command-line obfuscation (T1027).", "detail": "Query SIEM and EDR for encoded PowerShell, base64 bash executions, and anomalous curl/wget ingress activity." }
+  ]
+}
