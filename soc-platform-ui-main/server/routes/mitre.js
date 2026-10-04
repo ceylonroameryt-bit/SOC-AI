@@ -10,10 +10,10 @@ import {
 const router = express.Router();
 
 // GET /api/mitre/news — Get all news categorized by MITRE Framework Tactics & Techniques
-router.get('/news', (req, res) => {
+router.get('/news', async (req, res) => {
     try {
         const { tactic, technique, severity, q, page, limit } = req.query;
-        const result = getCategorizedNews({
+        const result = await getCategorizedNews({
             tacticId: tactic,
             techniqueId: technique,
             severity,

@@ -53,156 +53,20 @@ const deriveEvidenceStatus = (title, snippet, classification) => {
     return 'unassessed';
 };
 
+import { executeIngestionCycle } from './ingestion/ingestionEngine.js';
+
 /**
- * Fetch and process external threat intelligence feeds.
+ * Fetch and process external threat intelligence feeds via Central Ingestion Engine.
  * Persists all accepted intelligence to the authoritative database.
  */
-export const fetchAndProcessNews = async () => {
-    let newItemsCount = 0;
+export const fetchAndProcessNews = async (options = {}) => {
     const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
 
     try {
-        const feeds = getFeeds();
-        console.log(`[INGESTION] Fetching from ${feeds.length} configured threat intel sources...`);
-
-        // Bounded concurrency chunks
-        const CHUNK_SIZE = 10;
-        for (let i = 0; i < feeds.length; i += CHUNK_SIZE) {
-            const chunk = feeds.slice(i, i + CHUNK_SIZE);
-            const chunkPromises = chunk.map(async (sourceObj) => {
-                const start = Date.now();
-                const sourceId = sourceObj.id;
-                try {
-                    const parsed = await parser.parseURL(sourceObj.url);
-                    const latencyMs = Date.now() - start;
-                    const items = parsed?.items || [];
-                    const latestPub = items[0]?.pubDate || items[0]?.isoDate || null;
-                    return {
-                        feed: parsed,
-                        sourceObj,
-                        sourceId,
-                        latencyMs,
-                        itemsCount: items.length,
-                        latestPub
-                    };
-                } catch (err) {
-                    const latencyMs = Date.now() - start;
-                    recordCollectionResult(sourceId, {
-                        success: false,
-                        httpStatus: 500,
-                        latencyMs,
-                        itemsCount: 0,
-                        itemsAccepted: 0,
-                        itemsRejected: 0,
-                        error: err.message,
-                        errorCategory: 'FETCH_ERROR'
-                    });
-                    return null;
-                }
-            });
-
-            const chunkResults = await Promise.all(chunkPromises);
-            const validChunk = chunkResults.filter(Boolean);
-
-            for (const { feed, sourceObj, sourceId, latencyMs, itemsCount, latestPub } of validChunk) {
-                let acceptedForFeed = 0;
-                let rejectedForFeed = 0;
-
-                for (const item of (feed.items || [])) {
-                    if (!item || !item.link || !item.title) {
-                        rejectedForFeed++;
-                        continue;
-                    }
-
-                    const severity = determineSeverity(item.title, item.contentSnippet || '', sourceObj.name || feed.title || '');
-                    const classification = classifyRecord({
-                        title: item.title,
-                        contentSnippet: item.contentSnippet || '',
-                        source: sourceObj.name || feed.title || '',
-                        category: sourceObj.category
-                    });
-
-                    // Validate publication date (Phase 17 & 18)
-                    let pubDate = null;
-                    let dateAnomaly = false;
-                    if (item.pubDate || item.isoDate) {
-                        const parsedDate = new Date(item.pubDate || item.isoDate);
-                        if (!isNaN(parsedDate.getTime())) {
-                            if (parsedDate.getTime() > Date.now() + 24 * 60 * 60 * 1000) {
-                                dateAnomaly = true;
-                                pubDate = new Date().toISOString();
-                            } else {
-                                pubDate = parsedDate.toISOString();
-                            }
-                        }
-                    }
-
-                    const newItem = {
-                        title: item.title.trim(),
-                        link: item.link.trim(),
-                        pubDate: pubDate, // Null if publisher missing
-                        contentSnippet: item.contentSnippet || '',
-                        content: item.content || item.contentSnippet || '',
-                        source: sourceObj.name || feed.title || 'Threat Intel Feed',
-                        sourceId,
-                        severity,
-                        sourceCategory: sourceObj.category || 'General',
-                        category: sourceObj.category || 'General',
-                        intelCategory: classification.intelCategory,
-                        intelCategoryDisplay: classification.displayName,
-                        secondaryTopics: classification.secondaryTopics,
-                        contentType: classification.contentType,
-                        classificationMethod: classification.method,
-                        classificationConfidence: classification.confidence,
-                        classificationReason: classification.reason,
-                        taxonomyVersion: classification.taxonomyVersion,
-                        evidenceStatus: deriveEvidenceStatus(item.title, item.contentSnippet || '', classification),
-                        dateAnomaly,
-                        isSimulated: false,
-                        environment: 'production'
-                    };
-
-                    try {
-                        const articleId = await insertArticle(newItem);
-                        if (articleId) {
-                            acceptedForFeed++;
-                            newItemsCount++;
-
-                            // Extract IOCs and link
-                            const text = `${newItem.title} ${newItem.contentSnippet}`;
-                            const extracted = extractIOCs(text);
-                            if (isDbConnected()) {
-                                for (const ip of extracted.ips) {
-                                    await query(`INSERT INTO iocs (article_id, type, value) VALUES ($1, 'IPv4', $2) ON CONFLICT DO NOTHING`, [articleId, ip]).catch(() => {});
-                                }
-                                for (const cve of extracted.cves) {
-                                    await query(`INSERT INTO iocs (article_id, type, value) VALUES ($1, 'CVE', $2) ON CONFLICT DO NOTHING`, [articleId, cve]).catch(() => {});
-                                }
-                                for (const h of extracted.hashes) {
-                                    await query(`INSERT INTO iocs (article_id, type, value) VALUES ($1, 'SHA256', $2) ON CONFLICT DO NOTHING`, [articleId, h]).catch(() => {});
-                                }
-                            }
-                        } else {
-                            rejectedForFeed++;
-                        }
-                    } catch {
-                        rejectedForFeed++;
-                    }
-                }
-
-                recordCollectionResult(sourceId, {
-                    success: true,
-                    httpStatus: 200,
-                    latencyMs,
-                    itemsCount,
-                    itemsAccepted: acceptedForFeed,
-                    itemsRejected: rejectedForFeed,
-                    latestPubDate: latestPub
-                });
-            }
-        }
-
-        console.log(`[INGESTION] Completed ingestion run. Processed ${newItemsCount} new intelligence articles.`);
+        await executeIngestionCycle({
+            trigger: options.trigger || 'api',
+            force: options.force || false
+        });
         return await getArticles({ limit: 100, isDemoEnabled });
     } catch (error) {
         console.error('[INGESTION] Fatal error in fetchAndProcessNews:', error);

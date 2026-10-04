@@ -404,7 +404,7 @@ export async function insertArticle(article) {
                 intel_category = EXCLUDED.intel_category,
                 evidence_status = EXCLUDED.evidence_status,
                 updated_at = NOW()
-            RETURNING id;
+            RETURNING id, (xmax = 0) AS is_inserted;
         `;
         const res = await query(text, [
             article.title,
@@ -432,7 +432,9 @@ export async function insertArticle(article) {
             environment
         ]);
 
-        const articleId = res?.rows?.[0]?.id;
+        const row = res?.rows?.[0];
+        const articleId = row?.id;
+        const isInserted = Boolean(row?.is_inserted);
 
         // Also sync backward-compatible threats table
         try {
@@ -452,13 +454,20 @@ export async function insertArticle(article) {
             ]);
         } catch {}
 
-        return articleId;
+        return {
+            id: articleId,
+            isInserted,
+            isDuplicate: !isInserted,
+            isNew: isInserted,
+            toString() { return articleId || ''; }
+        };
     }
 
     // In-memory fallback
     const existingIdx = memStore.articles.findIndex(a => a.canonical_url === canonicalUrl);
+    const isNew = existingIdx < 0;
     const item = {
-        id: existingIdx >= 0 ? memStore.articles[existingIdx].id : `art-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        id: !isNew ? memStore.articles[existingIdx].id : `art-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         title: article.title,
         summary: article.contentSnippet || article.summary || '',
         content: article.content || article.contentSnippet || '',
@@ -489,12 +498,58 @@ export async function insertArticle(article) {
         updated_at: now.toISOString()
     };
 
-    if (existingIdx >= 0) {
+    if (!isNew) {
         memStore.articles[existingIdx] = { ...memStore.articles[existingIdx], ...item };
     } else {
         memStore.articles.unshift(item);
     }
-    return item.id;
+
+    return {
+        id: item.id,
+        isInserted: isNew,
+        isDuplicate: !isNew,
+        isNew,
+        toString() { return item.id; }
+    };
+}
+
+/**
+ * Batch insert extracted IOCs into the database to eliminate N+1 round-trips.
+ */
+export async function insertIocsBatch(articleId, extracted) {
+    if (!articleId || !extracted) return;
+    const rawId = typeof articleId === 'object' ? articleId.id : articleId;
+    if (!rawId) return;
+
+    const items = [];
+    for (const ip of (extracted.ips || [])) items.push({ type: 'IPv4', value: ip });
+    for (const cve of (extracted.cves || [])) items.push({ type: 'CVE', value: cve });
+    for (const h of (extracted.hashes || [])) items.push({ type: 'SHA256', value: h });
+
+    if (items.length === 0) return;
+
+    if (isConnected && pool) {
+        try {
+            const valuePlaceholders = [];
+            const params = [rawId];
+            let pIdx = 2;
+
+            for (const item of items) {
+                valuePlaceholders.push(`($1, $${pIdx}, $${pIdx + 1})`);
+                params.push(item.type, item.value);
+                pIdx += 2;
+            }
+
+            const text = `
+                INSERT INTO iocs (article_id, type, value)
+                VALUES ${valuePlaceholders.join(', ')}
+                ON CONFLICT DO NOTHING;
+            `;
+            await query(text, params);
+        } catch (e) {
+            console.debug('Failed to batch insert IOCs:', e.message);
+        }
+    }
 }
 
 export async function getArticles({

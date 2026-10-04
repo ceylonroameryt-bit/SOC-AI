@@ -294,7 +294,7 @@ export const processNewsForMitre = (newsItems) => {
  * Get all news articles categorized by MITRE Framework (Tactics & Techniques).
  * Filters supported: tacticId, techniqueId, severity, search, page, limit
  */
-export const getCategorizedNews = (options = {}) => {
+export const getCategorizedNews = async (options = {}) => {
     const {
         tacticId,
         techniqueId,
@@ -304,7 +304,7 @@ export const getCategorizedNews = (options = {}) => {
         limit = 50,
     } = options;
 
-    const allNews = getNews();
+    const allNews = await getNews({ limit: 500, timeRange: 'all' });
     if (!allNews || allNews.length === 0) {
         return {
             articles: [],
