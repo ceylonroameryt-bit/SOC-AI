@@ -12,6 +12,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      azure_ready: ${{ steps.check_azure.outputs.azure_ready }}
     permissions:
       contents: read
 
@@ -53,8 +55,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    # P2 item 24: gate on build job artifact upload (which is gated by check_azure output)
-    if: needs.build.result == 'success'
+    # Gate on build success AND Azure credentials availability
+    if: needs.build.result == 'success' && needs.build.outputs.azure_ready == 'true'
     permissions:
       id-token: write
       contents: read
