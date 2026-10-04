@@ -68,7 +68,7 @@ const Sources = () => {
         }
     };
 
-    const getPermissionBadge = (outcome?: string, rules?: any) => {
+    const getPermissionBadge = (outcome?: string, rules?: { fetchingPermitted?: boolean; displayingPermitted?: boolean }) => {
         const o = (outcome || 'pending').toLowerCase();
         // If technical rules explicitly forbid fetching or displaying, cannot be Permitted
         if (rules && (rules.fetchingPermitted === false || rules.displayingPermitted === false)) {

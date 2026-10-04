@@ -1,12 +1,6 @@
 name: Build and deploy Node.js app to Azure Web App - my-soc-platform-v2
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'soc-platform-ui-main/**'
-      - '.github/workflows/azure-app-service.yml'
   workflow_dispatch:
 
 jobs:

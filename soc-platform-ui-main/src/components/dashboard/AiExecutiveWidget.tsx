@@ -31,10 +31,15 @@ const AiExecutiveWidget = ({ timeRange = '24h' }: AiExecutiveWidgetProps) => {
     const timeWindowLabel = timeRange === '24h' ? 'Last 24 Hours' : timeRange === '7d' ? 'Last 7 Days' : timeRange === '30d' ? 'Last 30 Days' : 'All Time';
 
     useEffect(() => {
-        setLoading(true);
+        let isMounted = true;
+        Promise.resolve().then(() => {
+            if (isMounted) setLoading(true);
+        });
+
         fetch(`${API_BASE}/api/ai/brief?time=${encodeURIComponent(timeRange)}`)
             .then(res => (res.ok ? res.json() : null))
             .then((data: BriefData | null) => {
+                if (!isMounted) return;
                 setBrief(data);
                 if (data && data.sourcesCount && data.sourcesCount > 0) {
                     if (data.keyThreats && data.keyThreats.length > 0) {
@@ -54,10 +59,18 @@ const AiExecutiveWidget = ({ timeRange = '24h' }: AiExecutiveWidgetProps) => {
                 }
             })
             .catch(() => {
-                setBrief(null);
-                setPoints([]);
+                if (isMounted) {
+                    setBrief(null);
+                    setPoints([]);
+                }
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                if (isMounted) setLoading(false);
+            });
+
+        return () => {
+            isMounted = false;
+        };
     }, [timeRange]);
 
     const hasData = brief && (brief.sourcesCount ?? 0) > 0 && points.length > 0;

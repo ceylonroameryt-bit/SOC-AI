@@ -148,9 +148,12 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
 
             try {
                 localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify({ status: newStatus, notes: analystNote, updatedAt: new Date().toISOString() }));
-            } catch {}
-        } catch (err: any) {
-            setMutationError(err.message || 'Network error updating analyst status');
+            } catch (storageErr) {
+                console.debug('Failed to cache analyst state locally:', storageErr);
+            }
+        } catch (err: unknown) {
+            const errorMsg = err instanceof Error ? err.message : 'Network error updating analyst status';
+            setMutationError(errorMsg);
             setWorkflowStatus(previousStatus);
         }
     };
@@ -178,11 +181,14 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
 
             try {
                 localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify({ status: workflowStatus, notes: analystNote, updatedAt: new Date().toISOString() }));
-            } catch {}
+            } catch (storageErr) {
+                console.debug('Failed to cache analyst state locally:', storageErr);
+            }
             setNoteSavedNotice(true);
             setTimeout(() => setNoteSavedNotice(false), 2500);
-        } catch (err: any) {
-            setMutationError(err.message || 'Network error saving note');
+        } catch (err: unknown) {
+            const errorMsg = err instanceof Error ? err.message : 'Network error saving note';
+            setMutationError(errorMsg);
         }
     };
 
@@ -214,9 +220,12 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
 
             try {
                 localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify({ status: 'closed', notes: analystNote, dismissedReason: dismissReason, updatedAt: new Date().toISOString() }));
-            } catch {}
-        } catch (err: any) {
-            setMutationError(err.message || 'Network error dismissing record');
+            } catch (storageErr) {
+                console.debug('Failed to cache analyst state locally:', storageErr);
+            }
+        } catch (err: unknown) {
+            const errorMsg = err instanceof Error ? err.message : 'Network error dismissing record';
+            setMutationError(errorMsg);
             setWorkflowStatus(previousStatus);
         }
     };
