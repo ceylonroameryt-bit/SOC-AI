@@ -28,7 +28,7 @@ import { fetchAndProcessNews, getNews, backfillClassification } from './services
 import { sendPeriodicSummary }          from './services/emailService.js';
 import { broadcastAlert }               from './services/webhookService.js';
 import { processNewsForMitre }          from './services/mitreService.js';
-import { insertThreat, isDbConnected }  from './db/db.js';
+import { insertThreatAlert, isDbConnected }  from './db/db.js';
 
 
 // ES module __dirname
@@ -149,6 +149,7 @@ app.use((req, res, next) => {
 // API ROUTES (Must come before static/SPA catch-all)
 // ==========================================
 app.use('/api/news',      newsRouter);
+app.use('/api/explore',   newsRouter);
 app.use('/api/threats',   threatsRouter);
 app.use('/api/reports',   reportsRouter);
 app.use('/api/sources',   sourcesRouter);
@@ -160,6 +161,15 @@ app.use('/api/rules',     rulesRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/analyst',    analystRouter);
+
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'online',
+        isDbConnected: isDbConnected(),
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date().toISOString(),
+    });
+});
 
 // ==========================================
 // STATIC FILES (production)
@@ -229,29 +239,10 @@ app.post('/api/v1/alerts', async (req, res) => {
         externalIngestion: true,
     };
 
-    // Persist to threats.json
+    // Persist to authoritative database
     try {
-        const threatsPath = path.join(__dirname, 'data/threats.json');
-        const existing = fs.existsSync(threatsPath)
-            ? JSON.parse(fs.readFileSync(threatsPath, 'utf8'))
-            : [];
-        existing.unshift(newAlert);
-        fs.writeFileSync(threatsPath, JSON.stringify(existing.slice(0, 200), null, 2));
+        await insertThreatAlert(newAlert);
         console.log(`[INGEST] New external alert ingested: ${newAlert.id} (${severity} ${type})`);
-
-        // Also persist to PostgreSQL if connected
-        if (isDbConnected()) {
-            insertThreat({
-                title: newAlert.description || `${severity} ${type} Alert`,
-                contentSnippet: newAlert.description || '',
-                source: newAlert.source,
-                source_url: `alert://${newAlert.id}`,
-                link: `alert://${newAlert.id}`,
-                category: type,
-                severity: newAlert.severity,
-                pubDate: newAlert.timestamp,
-            }).catch(err => console.error('[INGEST] DB persist failed:', err.message));
-        }
 
         // Broadcast to ChatOps if Critical or High
         if (severity === 'Critical' || severity === 'High') {

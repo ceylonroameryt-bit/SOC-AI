@@ -119,9 +119,25 @@ export default function Settings() {
         setTestResult(null);
         try {
             const resp = await fetch(`${API_BASE}/api/webhooks/test`, { method: 'POST' });
-            setTestResult(await resp.json());
+            const data = await resp.json().catch(() => ({}));
+            if (resp.status === 403 || data.code === 'AUTH_REQUIRED') {
+                setTestResult({
+                    success: false,
+                    message: data.message || 'Authentication required: Guest users cannot trigger webhook dispatch.'
+                });
+            } else if (resp.status === 429 || data.code === 'RATE_LIMITED') {
+                setTestResult({
+                    success: false,
+                    message: data.message || 'Rate limit exceeded: Please wait before retrying webhook test.'
+                });
+            } else {
+                setTestResult({
+                    success: Boolean(data.success),
+                    message: data.message || (data.success ? 'Test successful: Webhook notification delivered.' : 'Delivery failed or no webhook configured.')
+                });
+            }
         } catch {
-            setTestResult({ success: false, message: 'Request failed. Is the server running?' });
+            setTestResult({ success: false, message: 'Delivery failed: Could not connect to API server.' });
         } finally {
             setTesting(false);
         }

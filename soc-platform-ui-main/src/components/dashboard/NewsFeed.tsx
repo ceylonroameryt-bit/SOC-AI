@@ -16,9 +16,10 @@ interface NewsFeedProps {
     mode?: 'all' | 'critical' | 'timeline';
     severityFilter?: string | null;
     isEmbedded?: boolean;
+    timeRange?: string;
 }
 
-const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeedProps) => {
+const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false, timeRange = '24h' }: NewsFeedProps) => {
     const [news, setNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -26,7 +27,8 @@ const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeed
 
     useEffect(() => {
         const fetchNews = () => {
-            fetch(`${API_BASE}/api/news`)
+            const queryParam = timeRange ? `?time=${encodeURIComponent(timeRange)}` : '';
+            fetch(`${API_BASE}/api/news${queryParam}`)
                 .then(res => {
                     if (!res.ok) throw new Error(`Server returned ${res.status}`);
                     return res.json();
@@ -53,7 +55,7 @@ const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeed
         const interval = setInterval(fetchNews, 30 * 60 * 1000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [timeRange]);
 
     const getSeverityColor = (severity?: string) => {
         switch (severity) {
@@ -151,14 +153,14 @@ const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeed
                 </div>
             )}
 
-            {/* Stats Strip matching sujampathirathnayaka.com */}
+            {/* Stats Strip */}
             {!isEmbedded && (
                 <div className="stats-strip my-1">
                     <div className="stats-strip-inner">
                         <div className="strip-stat">
-                            <span className="strip-num">{totalCount > 0 ? totalCount : '1.2K'}<span className="strip-sup">+</span></span>
+                            <span className="strip-num">{totalCount}</span>
                             <span className="strip-label">Ingested Disclosures</span>
-                            <span className="strip-sub">Real-time Stream</span>
+                            <span className="strip-sub">{timeRange === '24h' ? 'Last 24 Hours' : timeRange === '7d' ? 'Last 7 Days' : timeRange === '30d' ? 'Last 30 Days' : 'All Time'}</span>
                         </div>
                         <div className="strip-divider hidden md:block"></div>
                         <div className="strip-stat">
@@ -174,9 +176,9 @@ const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeed
                         </div>
                         <div className="strip-divider hidden md:block"></div>
                         <div className="strip-stat">
-                            <span className="strip-num">{uniqueSources || 18}<span className="strip-sup"> Feeds</span></span>
+                            <span className="strip-num">{uniqueSources}<span className="strip-sup"> Feeds</span></span>
                             <span className="strip-label">Active Sources</span>
-                            <span className="strip-sub">CISA, Bleeping, THN</span>
+                            <span className="strip-sub">Monitored Feeds</span>
                         </div>
                     </div>
                 </div>
@@ -268,6 +270,11 @@ const NewsFeed = ({ mode = 'all', severityFilter, isEmbedded = false }: NewsFeed
                                 <p className="text-3xl">⚠️</p>
                                 <p className="text-red-600 font-semibold text-sm">Failed to load news feed</p>
                                 <p className="text-slate-500 text-xs font-mono">{error}</p>
+                            </div>
+                        ) : Object.keys(groupedListItems).length === 0 ? (
+                            <div className="text-center py-12 px-4 space-y-2 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                                <p className="text-slate-700 font-semibold text-sm">No intelligence has been collected for this period ({timeRange === '24h' ? 'Last 24 Hours' : timeRange}).</p>
+                                <p className="text-slate-500 text-xs">Monitored feeds have not published updates within this reporting window. Check collection status in Sources.</p>
                             </div>
                         ) : (
                             Object.entries(groupedListItems).map(([dateLabel, items]) => (

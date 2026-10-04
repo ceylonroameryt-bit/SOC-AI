@@ -1,8 +1,46 @@
 import express from 'express';
-import { enrichIP, enrichHash, enrichCVE, checkAbuseIPDB, enrichAllIOCs, extractIOCs } from '../services/enrichmentService.js';
+import { enrichIP, enrichHash, enrichCVE, checkAbuseIPDB, enrichDomain, enrichAllIOCs, extractIOCs } from '../services/enrichmentService.js';
 import { generateQueryBundle, detectIOCType } from '../services/siemQueryService.js';
 
 const router = express.Router();
+
+// ── Domain Enrichment ─────────────────────────────────────────────────────────
+// GET /api/enrich/domain/:domain
+router.get('/domain/:domain', async (req, res) => {
+    const { domain } = req.params;
+    const cleanDomain = (domain || '').trim().toLowerCase();
+
+    // Basic domain validation
+    if (!/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/.test(cleanDomain)) {
+        return res.status(400).json({
+            success: false,
+            code: 'INVALID_DOMAIN_FORMAT',
+            error: 'Invalid domain format. Provide a valid domain name (e.g. example.com).'
+        });
+    }
+
+    try {
+        const [virustotal, queries] = await Promise.all([
+            enrichDomain(cleanDomain),
+            Promise.resolve(generateQueryBundle(cleanDomain, 'domain')),
+        ]);
+
+        res.json({
+            success: true,
+            domain: cleanDomain,
+            virustotal,
+            queries: queries.queries || queries
+        });
+    } catch (err) {
+        console.error('[ENRICH DOMAIN]', err.message);
+        res.status(500).json({
+            success: false,
+            code: 'ENRICHMENT_ERROR',
+            error: 'Domain enrichment failed.',
+            details: err.message
+        });
+    }
+});
 
 // ── IP Enrichment ──────────────────────────────────────────────────────────────
 // GET /api/enrich/ip/:ip
@@ -11,7 +49,11 @@ router.get('/ip/:ip', async (req, res) => {
 
     // Basic IPv4 validation
     if (!/^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$/.test(ip)) {
-        return res.status(400).json({ error: 'Invalid IPv4 address format.' });
+        return res.status(400).json({
+            success: false,
+            code: 'INVALID_IP_FORMAT',
+            error: 'Invalid IPv4 address format.'
+        });
     }
 
     try {
@@ -21,10 +63,15 @@ router.get('/ip/:ip', async (req, res) => {
             Promise.resolve(generateQueryBundle(ip, 'ip')),
         ]);
 
-        res.json({ ip, virustotal, abuseipdb, queries });
+        res.json({ success: true, ip, virustotal, abuseipdb, queries });
     } catch (err) {
         console.error('[ENRICH IP]', err.message);
-        res.status(500).json({ error: 'Enrichment failed.', details: err.message });
+        res.status(500).json({
+            success: false,
+            code: 'ENRICHMENT_ERROR',
+            error: 'Enrichment failed.',
+            details: err.message
+        });
     }
 });
 

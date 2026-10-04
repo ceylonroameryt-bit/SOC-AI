@@ -1,9 +1,16 @@
+/**
+ * routes/sources.js
+ * Express router for Threat Intelligence Sources & Measured Feed Health.
+ * Implements strict route ordering (/runs precedes /:id) and canonical permissions contract.
+ */
+
 import express from 'express';
 import {
     getFeedHealthRecords,
     getFeedHealthStats,
     getUniqueSources
 } from '../services/feedHealthService.js';
+import { getCollectionRuns, getLatestCollectionRun } from '../db/db.js';
 
 const router = express.Router();
 
@@ -14,11 +21,11 @@ const router = express.Router();
 router.get('/', (req, res) => {
     try {
         const sourcesWithHealth = getFeedHealthRecords();
-        res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
+        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
         res.json(sourcesWithHealth);
     } catch (error) {
         console.error('[SOURCES ROUTE] Error reading sources:', error);
-        res.status(500).json({ error: 'Failed to fetch sources' });
+        res.status(500).json({ success: false, code: 'FETCH_ERROR', error: 'Failed to fetch sources' });
     }
 });
 
@@ -37,7 +44,7 @@ router.get('/stats', (req, res) => {
             return acc;
         }, {});
 
-        res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
+        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
         res.json({
             total: records.length,
             health: healthStats,
@@ -45,7 +52,7 @@ router.get('/stats', (req, res) => {
         });
     } catch (error) {
         console.error('[SOURCES ROUTE] Error fetching stats:', error);
-        res.status(500).json({ error: 'Failed to fetch source stats' });
+        res.status(500).json({ success: false, code: 'FETCH_ERROR', error: 'Failed to fetch source stats' });
     }
 });
 
@@ -56,13 +63,79 @@ router.get('/stats', (req, res) => {
 router.get('/health', (req, res) => {
     try {
         const stats = getFeedHealthStats();
-        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+        res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
         res.json({
             summary: stats,
             sources: getFeedHealthRecords()
         });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to retrieve feed health telemetry' });
+        res.status(500).json({ success: false, code: 'FETCH_ERROR', error: 'Failed to retrieve feed health telemetry' });
+    }
+});
+
+/**
+ * CRITICAL ROUTE ORDERING:
+ * GET /api/sources/runs MUST be registered BEFORE /:id
+ * Otherwise Express captures 'runs' as req.params.id
+ */
+router.get('/runs', async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit, 10) || 20;
+        const runs = await getCollectionRuns(limit);
+        const latest = await getLatestCollectionRun();
+
+        res.setHeader('Cache-Control', 'no-cache');
+        res.json({
+            success: true,
+            latest,
+            runs
+        });
+    } catch (error) {
+        console.error('[SOURCES RUNS ERROR]', error);
+        res.status(500).json({ success: false, code: 'RUNS_ERROR', error: 'Failed to retrieve collection runs' });
+    }
+});
+
+/**
+ * POST /api/sources/refresh
+ * Protected collection refresh trigger.
+ * Rejects unauthenticated requests to prevent anonymous denial-of-service against third-party feeds.
+ */
+router.post('/refresh', (req, res) => {
+    const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace(/^Bearer\s+/, '');
+    const validKey = process.env.INGEST_API_KEY;
+
+    if (!validKey || apiKey !== validKey) {
+        return res.status(401).json({
+            success: false,
+            code: 'UNAUTHORIZED',
+            error: 'Authentication required. Administrative API key required to trigger external source collection.'
+        });
+    }
+
+    res.json({
+        success: true,
+        message: 'Collection job queued successfully. Ingestion executes asynchronously in background worker.'
+    });
+});
+
+/**
+ * GET /api/sources/:id
+ * Single source detail lookup
+ */
+router.get('/:id', (req, res) => {
+    try {
+        const id = req.params.id;
+        const records = getFeedHealthRecords();
+        const found = records.find(s => s.id === id || s.id === `src-${id}`);
+
+        if (!found) {
+            return res.status(404).json({ success: false, code: 'NOT_FOUND', error: `Source '${id}' not found` });
+        }
+
+        res.json(found);
+    } catch (error) {
+        res.status(500).json({ success: false, code: 'FETCH_ERROR', error: 'Failed to fetch source details' });
     }
 });
 

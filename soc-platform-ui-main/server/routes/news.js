@@ -1,82 +1,88 @@
+/**
+ * routes/news.js
+ * Express router for Threat Intelligence Articles & Taxonomy Filtering.
+ * Backed by PostgreSQL authoritative store and respects the global time range filter.
+ */
+
 import express from 'express';
-import { fetchAndProcessNews, getNews, getSeverityStats } from '../services/newsService.js';
-import { classifyRecord, INTEL_CATEGORIES } from '../services/classificationEngine.js';
+import { getNews, fetchAndProcessNews, getSeverityStats } from '../services/newsService.js';
 
 const router = express.Router();
 
-// Serve news from in-memory cache (instant response)
-router.get('/', (req, res) => {
+/**
+ * GET /api/news
+ * Returns paginated intelligence articles filtered by severity, category, intelCategory, timeRange, and keyword search.
+ */
+router.get('/', async (req, res) => {
     try {
-        const rawNews = getNews();
-        const limit = parseInt(req.query.limit) || 100;
-        const { severity, category, intelCategory, q } = req.query;
+        const limit = parseInt(req.query.limit, 10) || 50;
+        const offset = parseInt(req.query.offset, 10) || 0;
+        const severity = req.query.severity || null;
+        const category = req.query.category || null;
+        const intelCategory = req.query.intelCategory || null;
+        const timeRange = (req.query.time || req.query.range || '24h').toLowerCase();
+        const q = req.query.q || null;
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
 
-        // Ensure runtime data contract: all records must have classification fields
-        const news = rawNews.map(item => {
-            if (item.intelCategory && item.classificationMethod) return item;
-            const res = classifyRecord(item);
-            return {
-                ...item,
-                sourceCategory: item.sourceCategory || item.category || undefined,
-                intelCategory: res.intelCategory,
-                intelCategoryDisplay: res.displayName,
-                secondaryTopics: item.secondaryTopics || res.secondaryTopics,
-                contentType: item.contentType || res.contentType,
-                evidenceStatus: item.evidenceStatus || res.evidenceStatus,
-                classificationMethod: res.method,
-                classificationConfidence: res.confidence,
-                classificationReason: res.reason,
-                taxonomyVersion: res.taxonomyVersion,
-            };
+        const news = await getNews({
+            limit,
+            offset,
+            severity,
+            category,
+            intelCategory,
+            timeRange,
+            q,
+            isDemoEnabled
         });
 
-        let filtered = news;
-        if (severity && severity !== 'all') {
-            filtered = filtered.filter(item => item.severity?.toLowerCase() === severity.toLowerCase());
-        }
-        if (category && category !== 'all') {
-            filtered = filtered.filter(item => item.category?.toLowerCase() === category.toLowerCase());
-        }
-        // New taxonomy category filter — filters on intelCategory stable ID
-        if (intelCategory && intelCategory !== 'all') {
-            filtered = filtered.filter(item =>
-                (item.intelCategory || 'needs-classification') === intelCategory
-            );
-        }
-        if (q && q.trim()) {
-            const query = q.toLowerCase();
-            filtered = filtered.filter(item =>
-                item.title?.toLowerCase().includes(query) ||
-                item.contentSnippet?.toLowerCase().includes(query) ||
-                item.source?.toLowerCase().includes(query)
-            );
-        }
-
-        res.json(filtered.slice(0, limit));
+        res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
+        res.json(news);
     } catch (err) {
-        console.error('[NEWS ROUTE] Error retrieving news:', err);
-        res.status(500).json({ error: 'Failed to retrieve news feed.' });
+        console.error('[NEWS ROUTE] Error retrieving news feed:', err);
+        res.status(500).json({ success: false, code: 'FETCH_ERROR', error: 'Failed to retrieve news feed.' });
     }
 });
 
-
-// Force refresh news feeds
+/**
+ * POST /api/news/refresh
+ * Protected feed collection trigger.
+ * Rejects unauthenticated requests to prevent anonymous denial-of-service on external feeds.
+ */
 router.post('/refresh', async (req, res) => {
+    const authHeader = req.headers['authorization'];
+    const apiKey = req.headers['x-api-key'] || (authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null);
+    const validKey = process.env.INGEST_API_KEY;
+
+    if (!validKey || apiKey !== validKey) {
+        return res.status(401).json({
+            success: false,
+            code: 'UNAUTHORIZED',
+            error: 'Authentication required. Administrative API key required to trigger external source collection.'
+        });
+    }
+
     try {
         const news = await fetchAndProcessNews();
-        res.json({ success: true, count: news.length });
+        res.json({ success: true, count: news.length, message: 'Feeds successfully collected and indexed.' });
     } catch (err) {
-        res.status(500).json({ error: 'Failed to refresh feeds.', details: err.message });
+        console.error('[NEWS REFRESH ERROR]', err);
+        res.status(500).json({ success: false, code: 'REFRESH_ERROR', error: 'Failed to refresh feeds.', details: err.message });
     }
 });
 
-// Get stats for chart
-router.get('/stats', (req, res) => {
+/**
+ * GET /api/news/stats
+ * Returns severity aggregation counts for the selected time window.
+ */
+router.get('/stats', async (req, res) => {
     try {
-        const stats = getSeverityStats();
+        const timeRange = (req.query.time || req.query.range || '24h').toLowerCase();
+        const stats = await getSeverityStats(timeRange);
+        res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
         res.json(stats);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to retrieve stats.' });
+        console.error('[NEWS STATS ERROR]', err);
+        res.status(500).json({ success: false, code: 'STATS_ERROR', error: 'Failed to retrieve severity statistics.' });
     }
 });
 

@@ -1,44 +1,38 @@
+/**
+ * routes/reports.js
+ * Express router for Executive & Tactical Intelligence Reports (PDF, DOCX, CSV, JSON, STIX).
+ * Queries the authoritative PostgreSQL / In-Memory database matching dashboard filters.
+ */
+
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import {
     generatePdfReport,
     generateDocxReport,
     exportThreatsToStix,
     escapeCsvField
 } from '../services/reportGenerator.js';
+import { getArticles, getArticleStats, getThreatAlerts } from '../db/db.js';
 
 const router = express.Router();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const NEWS_FILE = path.join(__dirname, '../data/news.json');
-const THREATS_FILE = path.join(__dirname, '../data/threats.json');
-
-const loadData = (filePath) => {
-    if (!fs.existsSync(filePath)) return [];
-    try {
-        const raw = fs.readFileSync(filePath, 'utf8');
-        if (!raw || !raw.trim()) return [];
-        return JSON.parse(raw);
-    } catch {
-        return [];
-    }
-};
 
 /**
  * GET /api/reports/daily
- * Default: Returns PDF
- * ?format=docx: Returns DOCX
+ * Generates an executive SITREP report in PDF or DOCX format.
+ * Matches current reporting window and authoritative database intelligence.
  */
-router.get('/daily', (req, res) => {
+router.get('/daily', async (req, res) => {
     try {
-        const news = loadData(NEWS_FILE);
-        const threats = loadData(THREATS_FILE);
-        const dateStr = new Date().toISOString().split('T')[0];
+        const timeRange = (req.query.time || req.query.range || '24h').toLowerCase();
         const format = (req.query.format || 'pdf').toLowerCase();
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
 
+        const [news, threats, stats] = await Promise.all([
+            getArticles({ limit: 100, timeRange, isDemoEnabled }),
+            getThreatAlerts(isDemoEnabled),
+            getArticleStats(timeRange, isDemoEnabled)
+        ]);
+
+        const dateStr = new Date().toISOString().split('T')[0];
         res.setHeader('Cache-Control', 'private, no-store');
 
         if (format === 'docx') {
@@ -47,6 +41,10 @@ router.get('/daily', (req, res) => {
                 date: dateStr,
                 news,
                 threats,
+                timeRange,
+                totalCount: stats.total,
+                criticalCount: stats.critical,
+                highCount: stats.high
             });
             res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
             res.setHeader('Content-Disposition', `attachment; filename="no-entry-daily-report-${dateStr}.docx"`);
@@ -59,117 +57,175 @@ router.get('/daily', (req, res) => {
             date: dateStr,
             news,
             threats,
+            timeRange,
+            totalCount: stats.total,
+            criticalCount: stats.critical,
+            highCount: stats.high
         });
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="no-entry-daily-report-${dateStr}.pdf"`);
-        return res.send(pdfBuffer);
+        res.send(pdfBuffer);
 
-    } catch (error) {
-        console.error('[REPORTS ROUTE] Generation error:', error);
-        res.status(500).json({ error: 'Failed to generate report', message: error.message });
-    }
-});
-
-/**
- * GET /api/reports/export/threats
- * Default: CSV
- * ?format=json: JSON
- * ?format=stix2: STIX 2.1 bundle
- */
-router.get('/export/threats', (req, res) => {
-    try {
-        const threats = loadData(THREATS_FILE);
-        const dateStr = new Date().toISOString().split('T')[0];
-        const format = (req.query.format || 'csv').toLowerCase();
-
-        res.setHeader('Cache-Control', 'private, no-store');
-
-        if (format === 'stix2' || format === 'stix') {
-            const stixBundle = exportThreatsToStix(threats);
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="no-entry-threats-stix2-${dateStr}.json"`);
-            return res.json(stixBundle);
-        }
-
-        if (format === 'json') {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="no-entry-threats-${dateStr}.json"`);
-            return res.json(threats);
-        }
-
-        // Default: CSV
-        let csv = 'ID,Timestamp,Severity,Type,Source,Description,Malicious_IPs,C2_Domains,SHA256,CVEs,Is_Simulated\n';
-        threats.forEach(t => {
-            const ips = t.ioc?.ip_addresses ? t.ioc.ip_addresses.join('; ') : '';
-            const domains = t.ioc?.domains ? t.ioc.domains.join('; ') : '';
-            const sha256 = t.ioc?.sha256 || '';
-            const cves = t.ioc?.cves ? t.ioc.cves.join('; ') : '';
-            const isSimulated = t.isSimulated ? 'true' : 'false';
-
-            csv += [
-                escapeCsvField(t.id),
-                escapeCsvField(t.timestamp),
-                escapeCsvField(t.severity),
-                escapeCsvField(t.type),
-                escapeCsvField(t.source),
-                escapeCsvField(t.description),
-                escapeCsvField(ips),
-                escapeCsvField(domains),
-                escapeCsvField(sha256),
-                escapeCsvField(cves),
-                escapeCsvField(isSimulated)
-            ].join(',') + '\n';
-        });
-
-        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-        res.setHeader('Content-Disposition', `attachment; filename="no-entry-threats-${dateStr}.csv"`);
-        return res.send(csv);
-
-    } catch (error) {
-        console.error('[REPORTS ROUTE] Export threats error:', error);
-        res.status(500).json({ error: 'Failed to export threats', message: error.message });
+    } catch (err) {
+        console.error('[REPORTS ROUTE ERROR]', err);
+        res.status(500).json({ success: false, code: 'REPORT_GEN_ERROR', error: 'Failed to generate intelligence report.', details: err.message });
     }
 });
 
 /**
  * GET /api/reports/export/news
- * Default: CSV
- * ?format=json: JSON
+ * Exports news records in CSV or JSON.
  */
-router.get('/export/news', (req, res) => {
+router.get('/export/news', async (req, res) => {
     try {
-        const news = loadData(NEWS_FILE);
-        const dateStr = new Date().toISOString().split('T')[0];
-        const format = (req.query.format || 'csv').toLowerCase();
+        const timeRange = (req.query.time || req.query.range || 'all').toLowerCase();
+        const format = (req.query.format || 'json').toLowerCase();
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+        const articles = await getArticles({ limit: 500, timeRange, isDemoEnabled });
 
-        res.setHeader('Cache-Control', 'private, no-store');
+        if (format === 'csv') {
+            const headers = ['Date', 'Severity', 'Category', 'Source', 'Title', 'Link', 'Snippet'];
+            const rows = articles.map(item => [
+                escapeCsvField(item.pubDate || ''),
+                escapeCsvField(item.severity || ''),
+                escapeCsvField(item.category || item.sourceCategory || ''),
+                escapeCsvField(item.source || ''),
+                escapeCsvField(item.title || ''),
+                escapeCsvField(item.link || ''),
+                escapeCsvField(item.contentSnippet || item.snippet || '')
+            ].join(','));
 
-        if (format === 'json') {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="no-entry-news-${dateStr}.json"`);
-            return res.json(news);
+            const csvContent = [headers.join(','), ...rows].join('\r\n');
+            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+            res.setHeader('Content-Disposition', 'attachment; filename="no-entry-news-export.csv"');
+            return res.send(csvContent);
         }
 
-        let csv = 'Date,Severity,Category,Source,Title,Link,Snippet\n';
-        news.forEach(n => {
-            csv += [
-                escapeCsvField(n.pubDate),
-                escapeCsvField(n.severity),
-                escapeCsvField(n.category || 'General'),
-                escapeCsvField(n.source),
-                escapeCsvField(n.title),
-                escapeCsvField(n.link),
-                escapeCsvField(n.contentSnippet)
-            ].join(',') + '\n';
-        });
+        res.setHeader('Content-Type', 'application/json');
+        res.json(articles);
+    } catch (err) {
+        res.status(500).json({ success: false, code: 'EXPORT_ERROR', error: 'News export failed.' });
+    }
+});
+
+/**
+ * GET /api/reports/export/threats
+ * Exports threat records in STIX 2.1 or JSON.
+ */
+router.get('/export/threats', async (req, res) => {
+    try {
+        const format = (req.query.format || 'json').toLowerCase();
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+        const threats = await getThreatAlerts(isDemoEnabled);
+
+        if (format === 'stix') {
+            const stixBundle = exportThreatsToStix(threats);
+            res.setHeader('Content-Type', 'application/json');
+            return res.json(stixBundle);
+        }
+
+        res.setHeader('Content-Type', 'application/json');
+        res.json(threats);
+    } catch (err) {
+        res.status(500).json({ success: false, code: 'EXPORT_ERROR', error: 'Threats export failed.' });
+    }
+});
+
+/**
+ * GET /api/reports/export/csv
+ * Exports authoritative intelligence records to RFC 4180 CSV with formula injection protection.
+ */
+router.get('/export/csv', async (req, res) => {
+    try {
+        const timeRange = (req.query.time || req.query.range || '24h').toLowerCase();
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+        const articles = await getArticles({ limit: 500, timeRange, isDemoEnabled });
+
+        const headers = [
+            'ID', 'Title', 'Severity', 'Category', 'Source',
+            'Source URL', 'Published Date', 'Ingested Date', 'Classification Method'
+        ];
+
+        const rows = articles.map(item => [
+            escapeCsvField(item.id || ''),
+            escapeCsvField(item.title || ''),
+            escapeCsvField(item.severity || ''),
+            escapeCsvField(item.category || item.sourceCategory || ''),
+            escapeCsvField(item.source || ''),
+            escapeCsvField(item.link || ''),
+            escapeCsvField(item.pubDate || ''),
+            escapeCsvField(item.ingestedAt || ''),
+            escapeCsvField(item.classificationMethod || '')
+        ].join(','));
+
+        const csvContent = [headers.join(','), ...rows].join('\r\n');
+        const filename = `no-entry-threat-export-${new Date().toISOString().split('T')[0]}.csv`;
 
         res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-        res.setHeader('Content-Disposition', `attachment; filename="no-entry-news-${dateStr}.csv"`);
-        return res.send(csv);
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Cache-Control', 'private, no-store');
+        res.send(csvContent);
 
-    } catch (error) {
-        console.error('[REPORTS ROUTE] Export news error:', error);
-        res.status(500).json({ error: 'Failed to export news', message: error.message });
+    } catch (err) {
+        console.error('[CSV EXPORT ERROR]', err);
+        res.status(500).json({ success: false, code: 'EXPORT_ERROR', error: 'CSV export failed.' });
+    }
+});
+
+/**
+ * GET /api/reports/export/json
+ * Full structured JSON dump of authoritative intelligence records.
+ */
+router.get('/export/json', async (req, res) => {
+    try {
+        const timeRange = (req.query.time || req.query.range || '24h').toLowerCase();
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+        const articles = await getArticles({ limit: 500, timeRange, isDemoEnabled });
+
+        const exportPayload = {
+            metadata: {
+                platform: 'NO ENTRY SOC Intelligence Platform',
+                reportingWindow: timeRange,
+                generatedAt: new Date().toISOString(),
+                recordCount: articles.length,
+                isDemoEnabled
+            },
+            articles
+        };
+
+        const filename = `no-entry-intel-${new Date().toISOString().split('T')[0]}.json`;
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.json(exportPayload);
+
+    } catch (err) {
+        res.status(500).json({ success: false, code: 'EXPORT_ERROR', error: 'JSON export failed.' });
+    }
+});
+
+/**
+ * GET /api/reports/export/stix
+ * Exports threats in OASIS STIX 2.1 JSON format.
+ */
+router.get('/export/stix', async (req, res) => {
+    try {
+        const timeRange = (req.query.time || req.query.range || '24h').toLowerCase();
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+        const [news, threats] = await Promise.all([
+            getArticles({ limit: 100, timeRange, isDemoEnabled }),
+            getThreatAlerts(isDemoEnabled)
+        ]);
+
+        const combined = [...news, ...threats];
+        const stixBundle = exportThreatsToStix(combined);
+        const filename = `no-entry-stix2.1-bundle-${new Date().toISOString().split('T')[0]}.json`;
+
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.json(stixBundle);
+
+    } catch (err) {
+        res.status(500).json({ success: false, code: 'EXPORT_ERROR', error: 'STIX export failed.' });
     }
 });
 

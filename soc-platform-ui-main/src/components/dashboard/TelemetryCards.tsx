@@ -8,49 +8,72 @@ interface TelemetryData {
     highCount: number | null;
     activeTechniques: number | null;
     kevCount: number | null;
+    sourcesRegistered: number | null;
     sourcesConfigured: number | null;
     sourcesHealthy: number | null;
     sourcesDegraded: number | null;
+    sourcesFailed: number | null;
+    sourcesUnknown: number | null;
+    pipelineStatus: 'LIVE' | 'DEGRADED' | 'STALE' | 'NO_DATA' | 'COLLECTION_FAILURE' | string;
+    pipelineLabel: string;
+    pipelineColor: string;
     isStale: boolean;
+    lastCollectionAt?: string | null;
 }
 
 interface TelemetryCardsProps {
+    timeRange?: string;
     onRefresh?: () => void;
     isRefreshing?: boolean;
 }
 
-const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
+const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: TelemetryCardsProps) => {
     const [stats, setStats] = useState<TelemetryData>({
         totalIntel: null,
         criticalCount: null,
         highCount: null,
         activeTechniques: null,
         kevCount: null,
+        sourcesRegistered: null,
         sourcesConfigured: null,
         sourcesHealthy: null,
         sourcesDegraded: null,
+        sourcesFailed: null,
+        sourcesUnknown: null,
+        pipelineStatus: 'NO_DATA',
+        pipelineLabel: 'Checking Telemetry...',
+        pipelineColor: 'slate',
         isStale: false,
     });
     const [lastUpdated, setLastUpdated] = useState<string>('Syncing...');
     const [hasError, setHasError] = useState<boolean>(false);
 
     const fetchStats = useCallback(() => {
-        fetch(`${API_BASE}/api/dashboard/snapshot`)
+        const queryParam = timeRange ? `?time=${encodeURIComponent(timeRange)}` : '';
+        fetch(`${API_BASE}/api/dashboard/snapshot${queryParam}`)
             .then(res => {
                 if (!res.ok) throw new Error(`Snapshot failed: ${res.status}`);
                 return res.json();
             })
             .then(snapshot => {
+                const pipe = snapshot.pipeline || {};
                 setStats({
                     totalIntel: snapshot.news?.total24h ?? null,
                     criticalCount: snapshot.news?.critical ?? null,
                     highCount: snapshot.news?.high ?? null,
                     activeTechniques: snapshot.mitre?.activeTechniques ?? null,
                     kevCount: snapshot.kev?.total ?? null,
-                    sourcesConfigured: snapshot.sources?.configured ?? null,
-                    sourcesHealthy: snapshot.sources?.healthy ?? null,
-                    sourcesDegraded: snapshot.sources?.degraded ?? null,
+                    sourcesRegistered: snapshot.sources?.registered ?? null,
+                    sourcesConfigured: snapshot.sources?.enabled ?? snapshot.sources?.configured ?? null,
+                    sourcesHealthy: snapshot.sources?.healthy ?? 0,
+                    sourcesDegraded: snapshot.sources?.degraded ?? 0,
+                    sourcesFailed: snapshot.sources?.failed ?? 0,
+                    sourcesUnknown: snapshot.sources?.unknown ?? 0,
+                    pipelineStatus: pipe.status || (snapshot.news?.total24h > 0 ? 'LIVE' : 'NO_DATA'),
+                    pipelineLabel: pipe.label || (snapshot.news?.total24h > 0 ? 'Live Telemetry Active' : 'No Intel Collected'),
+                    pipelineColor: pipe.color || 'slate',
                     isStale: Boolean(snapshot.isStale),
+                    lastCollectionAt: pipe.lastRunAt || null
                 });
                 setHasError(false);
                 const syncTime = snapshot.generatedAt 
@@ -62,7 +85,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
                 console.warn('Dashboard snapshot telemetry unavailable:', err);
                 setHasError(true);
             });
-    }, []);
+    }, [timeRange]);
 
     useEffect(() => {
         fetchStats();
@@ -73,13 +96,15 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         return val.toLocaleString();
     };
 
+    const timeWindowLabel = timeRange === '24h' ? 'Last 24 Hours' : timeRange === '7d' ? 'Last 7 Days' : timeRange === '30d' ? 'Last 30 Days' : 'All Time';
+
     const cards = [
         {
             title: 'Critical Threat Radar',
             value: formatValue(stats.criticalCount),
             sub: stats.highCount !== null ? `${stats.highCount} High Priority Alerts` : 'Telemetry pending',
             icon: AlertTriangle,
-            tag: 'SLA Response < 15m',
+            tag: `${timeWindowLabel}`,
             color: 'from-rose-500/10 to-red-500/5',
             border: 'border-red-200/80',
             badgeBg: 'bg-red-50 text-red-700 border-red-200',
@@ -89,9 +114,9 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         {
             title: 'Total Ingested Intel',
             value: formatValue(stats.totalIntel),
-            sub: stats.sourcesConfigured !== null ? `Across ${stats.sourcesConfigured} Monitored Feeds` : 'Verifying sources...',
+            sub: stats.sourcesConfigured !== null ? `Across ${stats.sourcesConfigured} Enabled Feeds` : 'Verifying sources...',
             icon: Activity,
-            tag: stats.isStale ? 'Stale Snapshot' : 'Validated Telemetry',
+            tag: stats.isStale ? 'Stale Snapshot' : `${timeWindowLabel}`,
             color: 'from-blue-500/10 to-indigo-500/5',
             border: 'border-blue-200/80',
             badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
@@ -101,7 +126,7 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         {
             title: 'ATT&CK Techniques',
             value: formatValue(stats.activeTechniques),
-            sub: 'Active Tactics Correlated',
+            sub: 'Unique Tactics Correlated',
             icon: Target,
             tag: 'v16 ATT&CK Framework',
             color: 'from-purple-500/10 to-violet-500/5',
@@ -124,16 +149,14 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
         },
         {
             title: 'Ingestion Pipeline',
-            value: stats.sourcesConfigured !== null ? `${stats.sourcesHealthy ?? 0}/${stats.sourcesConfigured}` : 'Unavailable',
-            sub: stats.sourcesDegraded ? `${stats.sourcesDegraded} degraded feeds` : 'Measured source health',
+            value: stats.sourcesHealthy !== null ? `${stats.sourcesHealthy} Healthy` : 'Unavailable',
+            sub: `${stats.sourcesDegraded ?? 0} Degraded · ${stats.sourcesFailed ?? 0} Failed · ${stats.sourcesUnknown ?? 0} Unknown`,
             icon: Radio,
-            tag: stats.sourcesHealthy && stats.sourcesConfigured && stats.sourcesHealthy === stats.sourcesConfigured 
-                ? 'Healthy' 
-                : (stats.sourcesHealthy ?? 0) > 0 ? 'Measured Collection' : 'Offline',
-            color: 'from-amber-500/10 to-yellow-500/5',
-            border: 'border-amber-200/80',
+            tag: `${stats.sourcesConfigured ?? 0} Enabled (${stats.sourcesRegistered ?? 0} Reg)`,
+            color: stats.pipelineColor === 'emerald' ? 'from-emerald-500/10 to-teal-500/5' : stats.pipelineColor === 'amber' ? 'from-amber-500/10 to-yellow-500/5' : 'from-slate-500/10 to-slate-400/5',
+            border: stats.pipelineColor === 'emerald' ? 'border-emerald-200/80' : stats.pipelineColor === 'amber' ? 'border-amber-200/80' : 'border-slate-200/80',
             badgeBg: 'bg-slate-50 text-slate-700 border-slate-200',
-            accent: 'text-amber-600',
+            accent: stats.pipelineColor === 'emerald' ? 'text-emerald-600' : stats.pipelineColor === 'amber' ? 'text-amber-600' : 'text-slate-600',
             ping: false,
         },
     ];
@@ -165,9 +188,17 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
                 <div className="flex items-center gap-2">
                     <span className="section-label">SOC Telemetry</span>
                     <div className="availability-chip text-[11px] py-0.5 px-2.5">
-                        <span className="chip-dot"></span>
-                        <span className="font-semibold text-emerald-800">
-                            {stats.isStale ? "Cached Snapshot Active" : "Live Telemetry Active"}
+                        <span className={`chip-dot ${
+                            stats.pipelineColor === 'emerald' ? 'bg-emerald-500' :
+                            stats.pipelineColor === 'amber' ? 'bg-amber-500' :
+                            stats.pipelineColor === 'rose' ? 'bg-rose-500' : 'bg-slate-400'
+                        }`}></span>
+                        <span className={`font-semibold ${
+                            stats.pipelineColor === 'emerald' ? 'text-emerald-800' :
+                            stats.pipelineColor === 'amber' ? 'text-amber-800' :
+                            stats.pipelineColor === 'rose' ? 'text-rose-800' : 'text-slate-700'
+                        }`}>
+                            {stats.pipelineLabel}
                         </span>
                     </div>
                 </div>
@@ -180,10 +211,10 @@ const TelemetryCards = ({ onRefresh, isRefreshing }: TelemetryCardsProps) => {
                         }}
                         disabled={isRefreshing}
                         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-sans font-medium transition-all text-xs"
-                        title="Force refresh all telemetry"
+                        title="Reload dashboard telemetry"
                     >
                         <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-blue-600' : ''}`} />
-                        <span>Refresh</span>
+                        <span>Reload</span>
                     </button>
                 </div>
             </div>

@@ -1,1 +1,30 @@
-{}
+{
+  "test-rec-1791144731194": {
+    "recordId": "test-rec-1791144731194",
+    "status": "action_required",
+    "notes": "Verified asset is behind internal bastion host. Incident ticket #INC-8891.",
+    "assignee": null,
+    "dismissedReason": null,
+    "history": [
+      {
+        "actionId": "act-1791144731199",
+        "actionType": "note_added",
+        "previousValue": "",
+        "newValue": "Verified asset is behind internal bastion host. Incident ticket #INC-8891.",
+        "comment": null,
+        "analystId": "lead-analyst",
+        "timestamp": "2026-10-04T20:12:11.199Z"
+      },
+      {
+        "actionId": "act-1791144731196",
+        "actionType": "status_change",
+        "previousValue": "new",
+        "newValue": "action_required",
+        "comment": null,
+        "analystId": "lead-analyst",
+        "timestamp": "2026-10-04T20:12:11.196Z"
+      }
+    ],
+    "updatedAt": "2026-10-04T20:12:11.199Z"
+  }
+}

@@ -1,6 +1,13 @@
 -- ==============================================================================
--- NO ENTRY — Threat Intelligence Platform Authoritative Schema
--- PostgreSQL / Supabase / Neon
+-- MIGRATION 003: Authoritative PostgreSQL Single Source of Truth
+-- Creates comprehensive relational schema for:
+--  1. intel_sources & canonical permission contract
+--  2. source_health (measured telemetry: unknown, healthy, degraded, failed, stale, disabled)
+--  3. intel_articles & IOC relationships with stable IDs and date validation
+--  4. collection_runs & collection_results
+--  5. analyst_records & analyst_actions (audit history)
+--  6. threat_alerts & incident_clusters
+--  7. ai_briefs & system_state
 -- ==============================================================================
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -42,7 +49,7 @@ CREATE INDEX IF NOT EXISTS idx_intel_sources_enabled ON intel_sources(is_enabled
 CREATE INDEX IF NOT EXISTS idx_intel_sources_category ON intel_sources(category);
 CREATE INDEX IF NOT EXISTS idx_intel_sources_perm ON intel_sources(permission_outcome);
 
--- ── 2. SOURCE HEALTH ─────────────────────────────────────────────────────────
+-- ── 2. SOURCE HEALTH (Real measured telemetry) ───────────────────────────────
 CREATE TABLE IF NOT EXISTS source_health (
     source_id VARCHAR(100) PRIMARY KEY REFERENCES intel_sources(id) ON DELETE CASCADE,
     status VARCHAR(20) CHECK (status IN ('unknown', 'healthy', 'degraded', 'failed', 'stale', 'disabled')) DEFAULT 'unknown',
@@ -60,7 +67,7 @@ CREATE TABLE IF NOT EXISTS source_health (
 CREATE INDEX IF NOT EXISTS idx_source_health_status ON source_health(status);
 CREATE INDEX IF NOT EXISTS idx_source_health_success ON source_health(last_success_at);
 
--- ── 3. INTEL ARTICLES ────────────────────────────────────────────────────────
+-- ── 3. INTEL ARTICLES (Authoritative Intelligence Store) ─────────────────────
 CREATE TABLE IF NOT EXISTS intel_articles (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
@@ -77,7 +84,7 @@ CREATE TABLE IF NOT EXISTS intel_articles (
     content_type VARCHAR(50) DEFAULT 'unknown',
     evidence_status VARCHAR(30) CHECK (evidence_status IN ('verified', 'unverified-claim', 'advisory', 'unassessed', 'insufficient-evidence')) DEFAULT 'unassessed',
     severity VARCHAR(20) CHECK (severity IN ('Critical', 'High', 'Medium', 'Low', 'Informational')) DEFAULT 'Informational',
-    published_at TIMESTAMPTZ,
+    published_at TIMESTAMPTZ, -- Nullable if publisher timestamp is missing
     ingested_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     date_anomaly BOOLEAN DEFAULT FALSE,
     classification_method VARCHAR(50) DEFAULT 'rule-based',
@@ -96,8 +103,9 @@ CREATE INDEX IF NOT EXISTS idx_articles_severity ON intel_articles(severity);
 CREATE INDEX IF NOT EXISTS idx_articles_source_id ON intel_articles(source_id);
 CREATE INDEX IF NOT EXISTS idx_articles_intel_category ON intel_articles(intel_category);
 CREATE INDEX IF NOT EXISTS idx_articles_simulated ON intel_articles(is_simulated, environment);
+CREATE INDEX IF NOT EXISTS idx_articles_title_trgm ON intel_articles USING gin (title gin_trgm_ops);
 
--- Backward-compatibility: threats table
+-- Backward-compatibility: Sync existing threats table or view if threats exists
 CREATE TABLE IF NOT EXISTS threats (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
@@ -147,7 +155,7 @@ CREATE INDEX IF NOT EXISTS idx_art_mitre_technique ON article_mitre_mapping(tech
 -- ── 6. COLLECTION RUNS & DETAILED RESULTS ────────────────────────────────────
 CREATE TABLE IF NOT EXISTS collection_runs (
     run_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    trigger VARCHAR(50) NOT NULL DEFAULT 'scheduled',
+    trigger VARCHAR(50) NOT NULL DEFAULT 'scheduled', -- 'scheduled', 'manual', 'cli'
     started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     completed_at TIMESTAMPTZ,
     duration_ms INT,
@@ -174,7 +182,7 @@ CREATE TABLE IF NOT EXISTS collection_results (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     run_id UUID REFERENCES collection_runs(run_id) ON DELETE CASCADE,
     source_id VARCHAR(100) REFERENCES intel_sources(id) ON DELETE CASCADE,
-    status VARCHAR(20) NOT NULL,
+    status VARCHAR(20) NOT NULL, -- 'success', 'failure', 'skipped', 'not_modified'
     http_status INT,
     latency_ms INT,
     articles_found INT DEFAULT 0,
@@ -182,6 +190,9 @@ CREATE TABLE IF NOT EXISTS collection_results (
     error_message TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_collection_results_run ON collection_results(run_id);
+CREATE INDEX IF NOT EXISTS idx_collection_results_source ON collection_results(source_id);
 
 -- ── 7. ANALYST WORKFLOW & AUDIT ACTIONS ──────────────────────────────────────
 CREATE TABLE IF NOT EXISTS analyst_records (
@@ -207,7 +218,10 @@ CREATE TABLE IF NOT EXISTS analyst_actions (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── 8. THREAT ALERTS ─────────────────────────────────────────────────────────
+CREATE INDEX IF NOT EXISTS idx_analyst_actions_record ON analyst_actions(record_id);
+CREATE INDEX IF NOT EXISTS idx_analyst_actions_created ON analyst_actions(created_at DESC);
+
+-- ── 8. THREAT ALERTS (SIEM & Detection Ingestion) ────────────────────────────
 CREATE TABLE IF NOT EXISTS threat_alerts (
     id VARCHAR(100) PRIMARY KEY,
     type VARCHAR(50) NOT NULL,
@@ -223,7 +237,10 @@ CREATE TABLE IF NOT EXISTS threat_alerts (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ── 9. AI BRIEFS ─────────────────────────────────────────────────────────────
+CREATE INDEX IF NOT EXISTS idx_threat_alerts_sev ON threat_alerts(severity);
+CREATE INDEX IF NOT EXISTS idx_threat_alerts_time ON threat_alerts(last_seen DESC);
+
+-- ── 9. AI BRIEFS (Scheduled Precomputation & Controlled Cache) ───────────────
 CREATE TABLE IF NOT EXISTS ai_briefs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     time_range VARCHAR(20) NOT NULL DEFAULT '24h',
@@ -238,6 +255,8 @@ CREATE TABLE IF NOT EXISTS ai_briefs (
     is_ai_generated BOOLEAN DEFAULT TRUE,
     generated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_ai_briefs_range_time ON ai_briefs(time_range, generated_at DESC);
 
 -- ── 10. SYSTEM STATE ─────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS system_state (

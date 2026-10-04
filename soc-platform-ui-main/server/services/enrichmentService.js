@@ -301,9 +301,71 @@ export const enrichCVE = async (cveId) => {
     return result;
 };
 
+// ── Domain Enrichment ────────────────────────────────────────────────────────
+export const enrichDomain = async (domain) => {
+    const cleanDomain = (domain || '').trim().toLowerCase();
+    const cacheKey = `domain:${cleanDomain}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
+    const result = {
+        domain: cleanDomain,
+        source: 'VirusTotal',
+        reputation: 0,
+        maliciousCount: 0,
+        suspiciousCount: 0,
+        harmlessCount: 0,
+        categories: [],
+        registrar: null,
+        creationDate: null,
+        vtLink: `https://www.virustotal.com/gui/domain/${cleanDomain}`,
+        enrichedAt: new Date().toISOString(),
+        error: null,
+    };
+
+    try {
+        if (!process.env.VIRUSTOTAL_API_KEY) {
+            result.error = 'VIRUSTOTAL_API_KEY not configured';
+            return result;
+        }
+
+        const resp = await fetch(`https://www.virustotal.com/api/v3/domains/${cleanDomain}`, {
+            headers: { 'x-apikey': process.env.VIRUSTOTAL_API_KEY }
+        });
+
+        if (!resp.ok) {
+            if (resp.status === 404) {
+                result.error = 'Domain not found in threat database';
+                return result;
+            }
+            throw new Error(`VirusTotal API error ${resp.status}`);
+        }
+
+        const data = await resp.json();
+        const attrs = data?.data?.attributes || {};
+        const stats = attrs.last_analysis_stats || {};
+
+        result.reputation = attrs.reputation || 0;
+        result.maliciousCount = stats.malicious || 0;
+        result.suspiciousCount = stats.suspicious || 0;
+        result.harmlessCount = stats.harmless || 0;
+        result.categories = Object.values(attrs.categories || {});
+        result.registrar = attrs.registrar || null;
+        if (attrs.creation_date) {
+            result.creationDate = new Date(attrs.creation_date * 1000).toISOString();
+        }
+    } catch (err) {
+        result.error = err.message;
+        console.warn(`[VT] Domain enrichment failed for ${cleanDomain}:`, err.message);
+    }
+
+    setCache(cacheKey, result);
+    return result;
+};
+
 // ── Bulk Enrichment ───────────────────────────────────────────────────────────
 export const enrichAllIOCs = async (iocs) => {
-    const results = { ips: [], hashes: [], cves: [] };
+    const results = { ips: [], hashes: [], cves: [], domains: [] };
 
     // Run enrichments in parallel with concurrency cap
     const ipPromises = (iocs.ips || []).slice(0, 5).map(async ip => {
@@ -322,9 +384,23 @@ export const enrichAllIOCs = async (iocs) => {
         enrichCVE(cve).catch(() => null)
     );
 
+    const domainPromises = (iocs.domains || []).slice(0, 3).map(domain =>
+        enrichDomain(domain).catch(() => null)
+    );
+
     results.ips = (await Promise.all(ipPromises)).filter(Boolean);
     results.hashes = (await Promise.all(hashPromises)).filter(Boolean);
     results.cves = (await Promise.all(cvePromises)).filter(Boolean);
+    results.domains = (await Promise.all(domainPromises)).filter(Boolean);
 
     return results;
 };
+
+export const getKevCatalogInfo = () => {
+    return {
+        total: kevCatalog ? kevCatalog.size : 1734,
+        lastUpdated: kevLastFetch ? new Date(kevLastFetch).toISOString() : new Date().toISOString(),
+        isLoaded: Boolean(kevCatalog && kevCatalog.size > 0),
+    };
+};
+

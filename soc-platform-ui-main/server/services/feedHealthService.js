@@ -1,21 +1,47 @@
 /**
  * feedHealthService.js
  * Tracks measured operational telemetry and health status for all configured threat intelligence feeds.
- * Eliminates assumed "Active" labels in favor of evidence-based health.
+ * Strictly eliminates fabricated 'healthy' labels, simulated latencies, or fake HTTP 200s.
+ *
+ * Health Rules:
+ * - unknown: Source has never completed a real successful fetch.
+ * - healthy: Last real fetch succeeded AND occurred within acceptable threshold (expectedIntervalMinutes * 2).
+ * - degraded: Recent fetch failures exist but has had a relatively recent successful fetch.
+ * - failed: Repeated consecutive failures exceed threshold (>= 3).
+ * - stale: Last successful fetch is older than expected threshold (> expectedIntervalMinutes * 3).
+ * - disabled: Source is not enabled.
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { recordSourceHealth as dbRecordSourceHealth, upsertSource as dbUpsertSource } from '../db/db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const SOURCES_FILE = path.join(__dirname, '../data/sources.json');
-const HEALTH_FILE = path.join(__dirname, '../data/feed_health.json');
 
-// In-memory health map: sourceId -> FeedHealth
+// In-memory telemetry map: sourceId -> MeasuredHealth
 const healthMap = new Map();
+
+export const CANONICAL_RULES = {
+    fetchingPermitted: true,
+    cachingPermitted: true,
+    storingPermitted: true,
+    summarizingPermitted: true,
+    aiProcessingPermitted: true,
+    displayingPermitted: true,
+    exportingPermitted: false,
+    commercialUsePermitted: false,
+};
+
+export const CANONICAL_REQUIREMENTS = {
+    attributionRequired: true,
+    originalLinkRequired: true,
+    retentionDaysLimit: 90,
+    rateLimitPerMinute: 30,
+    maxSummaryLength: 500,
+};
 
 /**
  * Clean & Deduplicate raw sources from sources.json
@@ -30,7 +56,7 @@ export function getUniqueSources() {
 
         for (const s of raw) {
             if (!s.url || seenUrls.has(s.url.toLowerCase())) {
-                continue; // Deduplicate Troy Hunt and duplicate URLs
+                continue;
             }
             seenUrls.add(s.url.toLowerCase());
 
@@ -41,10 +67,20 @@ export function getUniqueSources() {
             seenNames.add(name);
 
             const sourceId = `src-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`;
+            
+            // Canonical permission model: default to 'pending' unless formally reviewed
+            const permissionOutcome = s.permissionOutcome || 'pending';
+
             unique.push({
                 ...s,
                 id: sourceId,
                 name,
+                isEnabled: s.isEnabled !== false,
+                expectedIntervalMinutes: s.expectedIntervalMinutes || 60,
+                provenance: s.provenance || 'Publisher RSS/API',
+                permissionOutcome,
+                rules: { ...CANONICAL_RULES, ...(s.rules || {}) },
+                requirements: { ...CANONICAL_REQUIREMENTS, ...(s.requirements || {}) },
             });
         }
         return unique;
@@ -55,39 +91,30 @@ export function getUniqueSources() {
 }
 
 /**
- * Initialize health states from disk
+ * Initialize health states. Strictly initializes un-fetched sources as 'unknown'.
+ * Never fabricates HTTP 200, fake latency, or fake success timestamps.
  */
 function initHealth() {
-    if (fs.existsSync(HEALTH_FILE)) {
-        try {
-            const raw = JSON.parse(fs.readFileSync(HEALTH_FILE, 'utf8'));
-            for (const item of raw) {
-                healthMap.set(item.sourceId, item);
-            }
-        } catch {}
-    }
-
-    // Ensure all unique sources have an entry
     const sources = getUniqueSources();
-    const now = new Date().toISOString();
     for (const s of sources) {
         if (!healthMap.has(s.id)) {
             healthMap.set(s.id, {
                 sourceId: s.id,
                 name: s.name,
                 url: s.url,
-                category: s.category,
-                type: s.type,
-                status: 'healthy', // initial measured state
-                lastAttemptAt: now,
-                lastSuccessAt: now,
-                lastItemReceivedAt: now,
-                lastHttpStatus: 200,
+                category: s.category || 'General',
+                type: s.type || 'Feed',
+                status: s.isEnabled === false ? 'disabled' : 'unknown', // TRUTHFUL INITIAL STATE
+                expectedIntervalMinutes: s.expectedIntervalMinutes || 60,
+                lastAttemptAt: null,
+                lastSuccessAt: null,
+                lastHttpStatus: null,
                 consecutiveFailures: 0,
-                itemsLast24Hours: 12,
-                averageLatencyMs: 240,
-                parserErrorsLast24Hours: 0,
+                consecutiveSuccesses: 0,
+                averageLatencyMs: 0,
+                itemsLast24Hours: 0,
                 lastError: null,
+                errorCategory: null
             });
         }
     }
@@ -95,22 +122,49 @@ function initHealth() {
 
 initHealth();
 
-function persistHealth() {
-    try {
-        const list = Array.from(healthMap.values());
-        fs.writeFileSync(HEALTH_FILE, JSON.stringify(list, null, 2));
-    } catch (err) {
-        console.error('[FEED HEALTH] Error saving feed health:', err.message);
+/**
+ * Determine dynamic measured health status according to operational rules
+ */
+export function calculateSourceStatus(entry) {
+    if (!entry) return 'unknown';
+    if (entry.status === 'disabled') return 'disabled';
+
+    if (entry.consecutiveFailures >= 3) {
+        return 'failed';
     }
+
+    if (!entry.lastSuccessAt) {
+        return entry.consecutiveFailures > 0 ? 'failed' : 'unknown';
+    }
+
+    const intervalMinutes = entry.expectedIntervalMinutes || 60;
+    const elapsedMinutes = (Date.now() - new Date(entry.lastSuccessAt).getTime()) / (1000 * 60);
+
+    // If older than 3x expected interval, it is stale
+    if (elapsedMinutes > intervalMinutes * 3) {
+        return 'stale';
+    }
+
+    // If there were recent failures but has had success within 3x interval
+    if (entry.consecutiveFailures > 0) {
+        return 'degraded';
+    }
+
+    // Normal healthy condition
+    if (elapsedMinutes <= intervalMinutes * 2) {
+        return 'healthy';
+    }
+
+    return 'stale';
 }
 
 /**
- * Update telemetry for a specific source
+ * Update measured telemetry for a specific source
  */
 export function recordCollectionResult(sourceId, {
     success,
     httpStatus,
-    latencyMs,
+    latencyMs = 0,
     itemsCount = 0,
     itemsAccepted = 0,
     itemsRejected = 0,
@@ -129,20 +183,15 @@ export function recordCollectionResult(sourceId, {
             url: source?.url || '',
             category: source?.category || 'General',
             type: source?.type || 'Feed',
-            provenance: 'Publisher RSS/API',
             status: 'unknown',
-            expectedIntervalMinutes: 60,
+            expectedIntervalMinutes: source?.expectedIntervalMinutes || 60,
             lastAttemptAt: now,
             lastSuccessAt: null,
-            lastItemReceivedAt: null,
-            lastNewPublication: null,
+            lastHttpStatus: null,
             consecutiveFailures: 0,
-            itemsReceivedTotal: 0,
-            itemsAcceptedTotal: 0,
-            itemsRejectedTotal: 0,
+            consecutiveSuccesses: 0,
+            averageLatencyMs: 0,
             itemsLast24Hours: 0,
-            averageLatencyMs: latencyMs || 0,
-            parserErrorsLast24Hours: 0,
             lastError: null,
             errorCategory: null
         };
@@ -152,94 +201,113 @@ export function recordCollectionResult(sourceId, {
     entry.lastAttemptAt = now;
     entry.lastHttpStatus = httpStatus || (success ? 200 : 500);
 
-    if (latencyMs) {
-        entry.averageLatencyMs = Math.round(
-            entry.averageLatencyMs ? (entry.averageLatencyMs * 0.7 + latencyMs * 0.3) : latencyMs
-        );
+    if (latencyMs > 0) {
+        entry.averageLatencyMs = entry.averageLatencyMs > 0
+            ? Math.round(entry.averageLatencyMs * 0.7 + latencyMs * 0.3)
+            : latencyMs;
     }
-
-    entry.itemsReceivedTotal = (entry.itemsReceivedTotal || 0) + itemsCount;
-    entry.itemsAcceptedTotal = (entry.itemsAcceptedTotal || 0) + itemsAccepted;
-    entry.itemsRejectedTotal = (entry.itemsRejectedTotal || 0) + itemsRejected;
 
     if (success) {
         entry.lastSuccessAt = now;
+        entry.consecutiveSuccesses = (entry.consecutiveSuccesses || 0) + 1;
         entry.consecutiveFailures = 0;
         entry.lastError = null;
         entry.errorCategory = null;
-        if (itemsCount > 0) {
-            entry.lastItemReceivedAt = now;
+        if (itemsAccepted > 0) {
             entry.itemsLast24Hours = (entry.itemsLast24Hours || 0) + itemsAccepted;
         }
-        if (latestPubDate) {
-            entry.lastNewPublication = latestPubDate;
-        }
-        entry.status = 'healthy';
     } else {
         entry.consecutiveFailures = (entry.consecutiveFailures || 0) + 1;
-        entry.lastError = error ? String(error).slice(0, 200) : 'HTTP connection error';
+        entry.consecutiveSuccesses = 0;
+        entry.lastError = error ? String(error).slice(0, 200) : 'Connection failed';
         entry.errorCategory = errorCategory || (httpStatus >= 500 ? 'HTTP_SERVER_ERROR' : (httpStatus >= 400 ? 'HTTP_CLIENT_ERROR' : 'NETWORK_ERROR'));
-        entry.parserErrorsLast24Hours = (entry.parserErrorsLast24Hours || 0) + 1;
-
-        if (entry.consecutiveFailures >= 3) {
-            entry.status = 'failed';
-        } else {
-            entry.status = 'degraded';
-        }
     }
 
-    // Check if delayed against expected schedule (e.g. > 180 min since last success)
-    if (entry.status === 'healthy' && entry.lastSuccessAt) {
-        const elapsedMin = (Date.now() - new Date(entry.lastSuccessAt).getTime()) / (1000 * 60);
-        if (elapsedMin > (entry.expectedIntervalMinutes || 60) * 3) {
-            entry.status = 'delayed';
-        }
-    }
+    entry.status = calculateSourceStatus(entry);
 
-    persistHealth();
+    // Save asynchronously to PostgreSQL if available
+    try {
+        dbRecordSourceHealth(sourceId, {
+            status: entry.status,
+            lastAttemptAt: entry.lastAttemptAt,
+            lastSuccessAt: entry.lastSuccessAt,
+            lastHttpStatus: entry.lastHttpStatus,
+            consecutiveFailures: entry.consecutiveFailures,
+            consecutiveSuccesses: entry.consecutiveSuccesses,
+            averageLatencyMs: entry.averageLatencyMs,
+            itemsLast24Hours: entry.itemsLast24Hours,
+            lastError: entry.lastError
+        });
+    } catch {}
+
     return entry;
 }
 
 /**
- * Get all feeds paired with measured health
+ * Get all feeds paired with real measured health
  */
 export function getFeedHealthRecords() {
     const sources = getUniqueSources();
     return sources.map(s => {
-        const health = healthMap.get(s.id);
+        let health = healthMap.get(s.id);
+        if (!health) {
+            health = {
+                sourceId: s.id,
+                name: s.name,
+                url: s.url,
+                category: s.category || 'General',
+                type: s.type || 'Feed',
+                status: s.isEnabled === false ? 'disabled' : 'unknown',
+                expectedIntervalMinutes: s.expectedIntervalMinutes || 60,
+                lastAttemptAt: null,
+                lastSuccessAt: null,
+                lastHttpStatus: null,
+                consecutiveFailures: 0,
+                consecutiveSuccesses: 0,
+                averageLatencyMs: 0,
+                itemsLast24Hours: 0,
+                lastError: null,
+                errorCategory: null
+            };
+            healthMap.set(s.id, health);
+        } else {
+            health.status = calculateSourceStatus(health);
+        }
+
         return {
             ...s,
-            status: health?.status || 'healthy',
-            health: health || {
-                status: 'healthy',
-                lastAttemptAt: new Date().toISOString(),
-                consecutiveFailures: 0,
-                averageLatencyMs: 250,
-                itemsLast24Hours: 8,
-            }
+            status: health.status,
+            health
         };
     });
 }
 
 /**
- * Aggregate stats across all configured sources
+ * Aggregate measured telemetry across all configured sources
  */
 export function getFeedHealthStats() {
     const records = getFeedHealthRecords();
     const stats = {
+        registered: records.length,
         configured: records.length,
+        enabled: 0,
         healthy: 0,
         degraded: 0,
         failed: 0,
+        stale: 0,
         disabled: 0,
+        unknown: 0,
     };
 
     for (const r of records) {
-        const st = r.status || 'healthy';
+        if (r.isEnabled !== false) {
+            stats.enabled++;
+        }
+        const st = r.status || 'unknown';
         if (st in stats) {
             stats[st]++;
         } else {
-            stats.healthy++;
+            stats.unknown++;
         }
     }
 

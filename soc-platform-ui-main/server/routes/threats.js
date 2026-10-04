@@ -1,17 +1,14 @@
-import express from 'express';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+/**
+ * routes/threats.js
+ * Express router for Threat Ingestion & Alert Records.
+ * Strictly separates demo simulation from production data.
+ */
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DATA_FILE = path.join(__dirname, '../data/threats.json');
+import express from 'express';
+import { getThreatAlerts, getArticles } from '../db/db.js';
 
 const router = express.Router();
 
-/**
- * Curated Demo Threat Records (strictly labeled with isSimulated: true and fixed timestamps)
- */
 export const DEMO_THREATS = [
     {
         id: 'DEMO-TRT-001',
@@ -58,54 +55,45 @@ export const DEMO_THREATS = [
             domains: ['c2-telemetry-beacon.org'],
             ip_addresses: ['194.165.16.11']
         },
-        firstSeen: '2026-09-12T09:15:00Z',
-        lastSeen: '2026-09-18T20:00:00Z',
-        ingestedAt: '2026-09-12T09:15:00Z',
-        timestamp: '2026-09-18T20:00:00Z',
+        firstSeen: '2026-09-12T04:00:00Z',
+        lastSeen: '2026-09-18T22:00:00Z',
+        ingestedAt: '2026-09-12T04:00:00Z',
+        timestamp: '2026-09-18T22:00:00Z',
         isSimulated: true,
         environment: 'demo'
     }
 ];
 
-// Helper to load threats from disk
 export const loadThreats = () => {
-    if (!fs.existsSync(DATA_FILE)) return [];
+    return [];
+};
+
+/**
+ * GET /api/threats
+ * Returns active operational threats. In production, never injects demo records.
+ */
+router.get('/', async (req, res) => {
     try {
-        const raw = fs.readFileSync(DATA_FILE, 'utf8');
-        if (!raw || !raw.trim()) return [];
-        return JSON.parse(raw);
-    } catch {
-        return [];
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+        const alerts = await getThreatAlerts(isDemoEnabled);
+
+        let threatsToReturn;
+        if (isDemoEnabled) {
+            threatsToReturn = [...alerts, ...DEMO_THREATS];
+        } else {
+            threatsToReturn = alerts.filter(t => !t.isSimulated && t.environment !== 'demo');
+        }
+
+        res.json(threatsToReturn);
+    } catch (err) {
+        res.status(500).json({ success: false, code: 'FETCH_ERROR', error: 'Failed to retrieve threats' });
     }
-};
-
-// Helper to save threats
-export const saveThreats = (data) => {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-};
-
-router.get('/', (req, res) => {
-    const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
-    const rawThreats = loadThreats();
-
-    // Clean any old corrupted or mock random threats with empty sha256
-    const validRaw = rawThreats.filter(t => {
-        const hash = t.ioc?.sha256;
-        return hash !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
-    });
-
-    let threatsToReturn;
-    if (isDemoEnabled) {
-        // Return demo threats combined with real threats
-        threatsToReturn = [...validRaw.filter(t => !t.isSimulated), ...DEMO_THREATS];
-    } else {
-        // Production: return ONLY real non-simulated operational threats
-        threatsToReturn = validRaw.filter(t => !t.isSimulated && t.environment !== 'demo');
-    }
-
-    res.json(threatsToReturn);
 });
 
+/**
+ * GET /api/threats/status
+ * Returns operational mode and demo status.
+ */
 router.get('/status', (req, res) => {
     const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
     const appMode = process.env.APP_MODE || 'production';
@@ -116,17 +104,20 @@ router.get('/status', (req, res) => {
     });
 });
 
-router.get('/:id', (req, res) => {
+/**
+ * GET /api/threats/:id
+ * Lookup single threat
+ */
+router.get('/:id', async (req, res) => {
     const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
-    const all = isDemoEnabled
-        ? [...loadThreats(), ...DEMO_THREATS]
-        : loadThreats().filter(t => !t.isSimulated);
+    const alerts = await getThreatAlerts(isDemoEnabled);
+    const all = isDemoEnabled ? [...alerts, ...DEMO_THREATS] : alerts;
 
     const threat = all.find(t => t.id === req.params.id);
     if (threat) {
         res.json(threat);
     } else {
-        res.status(404).json({ error: 'Threat not found', id: req.params.id });
+        res.status(404).json({ success: false, code: 'NOT_FOUND', error: 'Threat not found', id: req.params.id });
     }
 });
 

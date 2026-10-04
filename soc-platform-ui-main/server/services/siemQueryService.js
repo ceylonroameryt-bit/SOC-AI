@@ -1,3 +1,5 @@
+import YAML from 'yaml';
+
 /**
  * siemQueryService.js
  * Generates copy-paste threat hunting queries for Splunk, Microsoft Sentinel (KQL),
@@ -89,76 +91,79 @@ export const generateSigmaRule = (ioc, iocType = 'auto', context = {}) => {
     const { title, description, severity = 'high', tags = [] } = context;
 
     const ruleAuthor = process.env.SIGMA_AUTHOR || 'NO ENTRY SOC Platform (auto-generated)';
-    const ruleTitle = title || `Detected IOC: ${ioc}`;
-    const ruleDesc = description || `Auto-generated rule to detect IOC ${ioc} (${type}) in security logs.`;
+    const cleanIoc = String(ioc || '').trim();
+    const ruleTitle = title ? String(title).trim() : `Detected IOC: ${cleanIoc}`;
+    const ruleDesc = description ? String(description).trim() : `Auto-generated rule to detect IOC ${cleanIoc} (${type}) in security logs.`;
     const ruleId = generateUUID();
     const date = new Date().toISOString().split('T')[0];
 
-    const baseTags = ['attack.execution', ...tags];
+    const safeTags = Array.isArray(tags) ? tags : [tags].filter(Boolean);
+    const baseTags = Array.from(new Set(['attack.execution', ...safeTags.map(String).filter(Boolean)]));
 
-    let detection = '';
-    let logsource = '';
+    let logsource = {};
+    let detection = {};
 
     switch (type) {
         case 'ip':
-            logsource = `category: network
-    product: any`;
-            detection = `  keywords:
-        - '${ioc}'
-  condition: keywords`;
+            logsource = { category: 'network', product: 'any' };
+            detection = {
+                keywords: [cleanIoc],
+                condition: 'keywords'
+            };
             break;
 
         case 'domain':
-            logsource = `category: dns
-    product: any`;
-            detection = `  selection:
-        dns.question.name: '${ioc}'
-  condition: selection`;
+            logsource = { category: 'dns', product: 'any' };
+            detection = {
+                selection: {
+                    'dns.question.name': cleanIoc
+                },
+                condition: 'selection'
+            };
             break;
 
         case 'hash':
-            logsource = `category: process_creation
-    product: windows`;
-            detection = `  selection:
-        Hashes|contains:
-          - '${ioc}'
-  condition: selection`;
+            logsource = { category: 'process_creation', product: 'windows' };
+            detection = {
+                selection: {
+                    'Hashes|contains': [cleanIoc]
+                },
+                condition: 'selection'
+            };
             break;
 
         case 'cve':
-            logsource = `category: application
-    product: any`;
-            detection = `  keywords:
-        - '${ioc}'
-  condition: keywords`;
+            logsource = { category: 'application', product: 'any' };
+            detection = {
+                keywords: [cleanIoc],
+                condition: 'keywords'
+            };
             break;
 
         default:
-            logsource = `product: any
-    category: any`;
-            detection = `  keywords:
-        - '${ioc}'
-  condition: keywords`;
+            logsource = { category: 'any', product: 'any' };
+            detection = {
+                keywords: [cleanIoc],
+                condition: 'keywords'
+            };
     }
 
-    return `title: ${ruleTitle}
-id: ${ruleId}
-status: experimental
-description: ${ruleDesc}
-references:
-    - https://www.virustotal.com
-date: ${date}
-author: ${ruleAuthor}
-tags:
-${baseTags.map(t => `    - ${t}`).join('\n')}
-logsource:
-    ${logsource}
-detection:
-${detection}
-falsepositives:
-    - Unknown - review and tune before production use
-level: ${severity}
-`;
+    const doc = {
+        title: ruleTitle,
+        id: ruleId,
+        status: 'experimental',
+        description: ruleDesc,
+        references: ['https://www.virustotal.com'],
+        date,
+        author: ruleAuthor,
+        tags: baseTags,
+        logsource,
+        detection,
+        falsepositives: ['Unknown - review and tune before production use'],
+        level: ['low', 'medium', 'high', 'critical'].includes(String(severity).toLowerCase()) ? String(severity).toLowerCase() : 'high'
+    };
+
+    return YAML.stringify(doc);
 };
 
 /**

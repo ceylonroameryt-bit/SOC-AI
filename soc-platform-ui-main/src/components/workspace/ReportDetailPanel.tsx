@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ExternalLink, ShieldCheck, Target, Search, FileDown, ShieldAlert, ArrowUpRight, CheckCircle2, Tag, Building2, UserCheck, MessageSquare, Ban } from 'lucide-react';
+import { X, ExternalLink, ShieldCheck, Target, Search, FileDown, ShieldAlert, ArrowUpRight, CheckCircle2, Tag, Building2, UserCheck, MessageSquare, Ban, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SeverityBadge from './SeverityBadge';
 import { INTEL_CATEGORY_LABELS } from '../../types/intelligence';
@@ -83,31 +83,51 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
     const [isDismissing, setIsDismissing] = React.useState(false);
     const [dismissReason, setDismissReason] = React.useState('Not applicable to current organizational threat model');
 
-    // Sync state when selected record changes
+    const [mutationError, setMutationError] = React.useState<string | null>(null);
+
+    // Sync state from authoritative database when selected record changes
     React.useEffect(() => {
         if (!recordKey) return;
-        try {
-            const saved = localStorage.getItem(`analyst_state_${recordKey}`);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                setWorkflowStatus(parsed.status || 'new');
-                setAnalystNote(parsed.notes || '');
-            } else {
+        setMutationError(null);
+
+        // First check authoritative API
+        fetch(`${API_BASE}/api/analyst/record/${encodeURIComponent(recordKey)}`)
+            .then(res => (res.ok ? res.json() : null))
+            .then(data => {
+                if (data && data.status) {
+                    setWorkflowStatus(data.status || 'new');
+                    setAnalystNote(data.notes || '');
+                } else {
+                    // Fallback to local cache if present
+                    try {
+                        const saved = localStorage.getItem(`analyst_state_${recordKey}`);
+                        if (saved) {
+                            const parsed = JSON.parse(saved);
+                            setWorkflowStatus(parsed.status || 'new');
+                            setAnalystNote(parsed.notes || '');
+                        } else {
+                            setWorkflowStatus('new');
+                            setAnalystNote('');
+                        }
+                    } catch {
+                        setWorkflowStatus('new');
+                        setAnalystNote('');
+                    }
+                }
+            })
+            .catch(() => {
                 setWorkflowStatus('new');
                 setAnalystNote('');
-            }
-        } catch {
-            setWorkflowStatus('new');
-            setAnalystNote('');
-        }
+            });
     }, [recordKey]);
 
-    const handleStatusChange = (newStatus: 'new' | 'reviewing' | 'action_required' | 'closed') => {
+    const handleStatusChange = async (newStatus: 'new' | 'reviewing' | 'action_required' | 'closed') => {
+        const previousStatus = workflowStatus;
         setWorkflowStatus(newStatus);
-        const data = { status: newStatus, notes: analystNote, updatedAt: new Date().toISOString() };
+        setMutationError(null);
+
         try {
-            localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify(data));
-            fetch(`${API_BASE}/api/analyst/action`, {
+            const res = await fetch(`${API_BASE}/api/analyst/action`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -116,17 +136,29 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
                     value: newStatus,
                     analystId: 'analyst-1'
                 })
-            }).catch(() => {});
-        } catch {
-            /* ignore storage error */
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                const msg = errData.error || errData.message || (res.status === 403 ? 'Guest access is read-only. Analyst login required to modify incident status.' : 'Failed to update analyst status');
+                setMutationError(msg);
+                setWorkflowStatus(previousStatus);
+                return;
+            }
+
+            try {
+                localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify({ status: newStatus, notes: analystNote, updatedAt: new Date().toISOString() }));
+            } catch {}
+        } catch (err: any) {
+            setMutationError(err.message || 'Network error updating analyst status');
+            setWorkflowStatus(previousStatus);
         }
     };
 
-    const handleSaveNote = () => {
-        const data = { status: workflowStatus, notes: analystNote, updatedAt: new Date().toISOString() };
+    const handleSaveNote = async () => {
+        setMutationError(null);
         try {
-            localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify(data));
-            fetch(`${API_BASE}/api/analyst/action`, {
+            const res = await fetch(`${API_BASE}/api/analyst/action`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -135,21 +167,33 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
                     value: analystNote,
                     analystId: 'analyst-1'
                 })
-            }).catch(() => {});
-        } catch {
-            /* ignore storage error */
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                const msg = errData.error || errData.message || (res.status === 403 ? 'Guest access is read-only. Analyst credentials required to persist notes.' : 'Failed to save note');
+                setMutationError(msg);
+                return;
+            }
+
+            try {
+                localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify({ status: workflowStatus, notes: analystNote, updatedAt: new Date().toISOString() }));
+            } catch {}
+            setNoteSavedNotice(true);
+            setTimeout(() => setNoteSavedNotice(false), 2500);
+        } catch (err: any) {
+            setMutationError(err.message || 'Network error saving note');
         }
-        setNoteSavedNotice(true);
-        setTimeout(() => setNoteSavedNotice(false), 2500);
     };
 
-    const handleConfirmDismiss = () => {
+    const handleConfirmDismiss = async () => {
+        const previousStatus = workflowStatus;
         setWorkflowStatus('closed');
         setIsDismissing(false);
-        const data = { status: 'closed', notes: analystNote, dismissedReason: dismissReason, updatedAt: new Date().toISOString() };
+        setMutationError(null);
+
         try {
-            localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify(data));
-            fetch(`${API_BASE}/api/analyst/action`, {
+            const res = await fetch(`${API_BASE}/api/analyst/action`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -158,9 +202,22 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
                     value: dismissReason,
                     analystId: 'analyst-1'
                 })
-            }).catch(() => {});
-        } catch {
-            /* ignore storage error */
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                const msg = errData.error || errData.message || (res.status === 403 ? 'Guest access is read-only. Analyst authentication required.' : 'Failed to dismiss record');
+                setMutationError(msg);
+                setWorkflowStatus(previousStatus);
+                return;
+            }
+
+            try {
+                localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify({ status: 'closed', notes: analystNote, dismissedReason: dismissReason, updatedAt: new Date().toISOString() }));
+            } catch {}
+        } catch (err: any) {
+            setMutationError(err.message || 'Network error dismissing record');
+            setWorkflowStatus(previousStatus);
         }
     };
 
@@ -507,6 +564,17 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
                              workflowStatus === 'closed' ? 'Closed' : 'New'}
                         </span>
                     </div>
+
+                    {/* Operational Mutation Error Notice (e.g. Guest Read-Only) */}
+                    {mutationError && (
+                        <div className="p-2.5 rounded-md bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-start gap-2">
+                            <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                                <span className="font-semibold block">Authorization Notice</span>
+                                <span>{mutationError}</span>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Status Toggle Buttons */}
                     <div className="grid grid-cols-4 gap-1 bg-[#F1F5F9] p-1 rounded-md text-[11px]">

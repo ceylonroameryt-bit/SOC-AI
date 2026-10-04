@@ -33,7 +33,9 @@ jobs:
 
       - name: Run Test Suite & Build
         working-directory: soc-platform-ui-main
-        run: npm test
+        run: |
+          npm test
+          npm run build
 
   python-microservice:
     name: Validate Python AI Microservice

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { LayoutDashboard, Newspaper, Flame, BarChart3, Radio, ShieldAlert, AlertOctagon } from 'lucide-react';
 import TelemetryCards from '../components/dashboard/TelemetryCards';
 import NewsFeed from '../components/dashboard/NewsFeed';
@@ -13,6 +14,11 @@ import { API_BASE } from '../config/api';
 type DashboardTab = 'overview' | 'news' | 'critical' | 'metrics';
 
 const Dashboard = () => {
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const timeParam = params.get('time') || params.get('range');
+    const timeRange = (timeParam && ['24h', '7d', '30d', 'all'].includes(timeParam)) ? timeParam : '24h';
+
     const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
     const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
@@ -20,7 +26,7 @@ const Dashboard = () => {
     const { announceMessage } = useAccessibility();
 
     useEffect(() => {
-        fetch(`${API_BASE}/api/dashboard/snapshot`)
+        fetch(`${API_BASE}/api/dashboard/snapshot?time=${encodeURIComponent(timeRange)}`)
             .then(res => (res.ok ? res.json() : null))
             .then(snapshot => {
                 if (snapshot?.environment?.isDemoEnabled) {
@@ -28,7 +34,7 @@ const Dashboard = () => {
                 }
             })
             .catch(() => {});
-    }, []);
+    }, [timeRange]);
 
     const handleTabChange = (tab: DashboardTab, label: string) => {
         setActiveTab(tab);
@@ -160,7 +166,7 @@ const Dashboard = () => {
 
             {/* Top Telemetry Strip */}
             <section aria-label="System Telemetry Overview">
-                <TelemetryCards onRefresh={handleRefreshAll} />
+                <TelemetryCards timeRange={timeRange} onRefresh={handleRefreshAll} />
             </section>
 
             {/* Dynamic Content Views */}
@@ -175,7 +181,7 @@ const Dashboard = () => {
                     {/* Top Tier: AI Executive Brief + CISA KEV Tracker */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                         <div className="lg:col-span-7">
-                            <AiExecutiveWidget />
+                            <AiExecutiveWidget timeRange={timeRange} />
                         </div>
                         <div className="lg:col-span-5">
                             <CveTrackerWidget />
@@ -212,7 +218,7 @@ const Dashboard = () => {
 
                         {/* Embedded Feed */}
                         <div key={refreshTrigger}>
-                            <NewsFeed mode="all" severityFilter={selectedSeverity} isEmbedded={true} />
+                            <NewsFeed mode="all" severityFilter={selectedSeverity} isEmbedded={true} timeRange={timeRange} />
                         </div>
                     </div>
                 </div>
@@ -226,7 +232,7 @@ const Dashboard = () => {
                     className="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs focus:outline-none"
                     tabIndex={0}
                 >
-                    <NewsFeed mode="timeline" isEmbedded={true} />
+                    <NewsFeed mode="timeline" isEmbedded={true} timeRange={timeRange} />
                 </div>
             )}
 
@@ -251,7 +257,7 @@ const Dashboard = () => {
                             </p>
                         </div>
                     </div>
-                    <NewsFeed mode="critical" isEmbedded={true} />
+                    <NewsFeed mode="critical" isEmbedded={true} timeRange={timeRange} />
                 </div>
             )}
 

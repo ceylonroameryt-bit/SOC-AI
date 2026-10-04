@@ -163,8 +163,9 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
         const uniqueSources = getUniqueSources();
         const summary = getFeedHealthStats();
         assert.equal(summary.configured, uniqueSources.length);
-        const sum = summary.healthy + summary.degraded + summary.failed + summary.disabled;
-        assert.equal(sum, summary.configured, 'Sum of health buckets must exactly match configured sources');
+        const sum = summary.healthy + summary.degraded + summary.failed + summary.stale + summary.disabled + summary.unknown;
+        assert.equal(sum, summary.configured, 'Sum of all health buckets must exactly match configured sources');
+        assert.ok(summary.unknown > 0, 'Untested sources must be marked unknown, not fake healthy');
     });
 
     // Test 11: Clustering regression test - unrelated articles are not clustered together
@@ -459,14 +460,17 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
         assert.equal(relevance.exposureStatus, 'possible-relevance'); // MUST NOT claim confirmed-exposure
     });
 
-    // Test 22: Analyst action endpoint persists status transitions, notes, and dismissals
-    test('22. Analyst action endpoint persists status transitions, notes, and dismissals', async () => {
+    // Test 22: Analyst action endpoint persists status transitions, notes, and dismissals with auth
+    test('22. Analyst action endpoint persists status transitions, notes, and dismissals with auth', async () => {
         const testRecordId = `test-rec-${Date.now()}`;
 
-        // 1. Status transition
+        // 1. Status transition with analyst auth header
         const statusRes = await fetch(`${baseUrl}/api/analyst/action`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer soc-analyst-session'
+            },
             body: JSON.stringify({
                 recordId: testRecordId,
                 actionType: 'status_change',
@@ -481,7 +485,10 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
         // 2. Note added
         const noteRes = await fetch(`${baseUrl}/api/analyst/action`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer soc-analyst-session'
+            },
             body: JSON.stringify({
                 recordId: testRecordId,
                 actionType: 'note_added',
@@ -512,9 +519,109 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
 
         const sample = sources[0];
         assert.ok(sample.health, 'Source must have health object');
-        assert.ok(['healthy', 'degraded', 'failed', 'delayed', 'unknown'].includes(sample.health.status));
-        assert.ok(typeof sample.health.lastAttemptAt === 'string');
+        assert.ok(['healthy', 'degraded', 'failed', 'delayed', 'unknown', 'stale', 'disabled'].includes(sample.health.status));
+        assert.ok(sample.health.lastAttemptAt === null || typeof sample.health.lastAttemptAt === 'string');
         assert.ok(typeof sample.health.consecutiveFailures === 'number');
+    });
+
+    // Test 24: Unauthenticated guest cannot perform analyst actions (Phase 9)
+    test('24. Unauthenticated guest cannot modify analyst state (HTTP 403)', async () => {
+        const res = await fetch(`${baseUrl}/api/analyst/action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                recordId: 'guest-tamper-attempt',
+                actionType: 'status_change',
+                value: 'closed'
+            })
+        });
+        assert.equal(res.status, 403);
+        const body = await res.json();
+        assert.equal(body.code, 'GUEST_READ_ONLY');
+    });
+
+    // Test 25: Unauthenticated webhook test is protected (Phase 10)
+    test('25. Unauthenticated webhook test dispatch is rejected (HTTP 401/403)', async () => {
+        const res = await fetch(`${baseUrl}/api/webhooks/test`, { method: 'POST' });
+        assert.ok([401, 403].includes(res.status), `Expected 401 or 403, got ${res.status}`);
+        const body = await res.json();
+        assert.equal(body.code, 'AUTH_REQUIRED');
+    });
+
+    // Test 26: Feed collection refresh endpoint is protected (Phase 11)
+    test('26. Feed refresh endpoint rejects anonymous triggers (HTTP 401/403)', async () => {
+        const res = await fetch(`${baseUrl}/api/news/refresh`, { method: 'POST' });
+        assert.equal(res.status, 401);
+        const body = await res.json();
+        assert.equal(body.code, 'UNAUTHORIZED');
+    });
+
+    // Test 27: Route order bug regression - /api/sources/runs precedes /:id (Phase 13)
+    test('27. GET /api/sources/runs returns collection history and is not captured by /:id', async () => {
+        const res = await fetch(`${baseUrl}/api/sources/runs`);
+        assert.equal(res.status, 200);
+        const data = await res.json();
+        assert.ok(Array.isArray(data.runs), 'Should return runs array');
+    });
+
+    // Test 28: Domain enrichment endpoint functions truthfully (Phase 19)
+    test('28. GET /api/enrich/domain/:domain returns domain analysis and SIEM hunting queries', async () => {
+        const res = await fetch(`${baseUrl}/api/enrich/domain/malicious-threat-sample.test`);
+        assert.equal(res.status, 200);
+        const data = await res.json();
+        assert.equal(data.domain, 'malicious-threat-sample.test');
+        assert.ok(data.queries, 'Must include hunting queries');
+        assert.ok(data.queries.splunk.includes('malicious-threat-sample.test'));
+        assert.ok(data.queries.kql.includes('malicious-threat-sample.test'));
+    });
+
+    // Test 29: Pipeline status determines LIVE vs NO_DATA honestly without hardcoding (Phase 6 & 35)
+    test('29. Dashboard telemetry reports truthful pipeline status matching database count', async () => {
+        const res = await fetch(`${baseUrl}/api/dashboard/snapshot?time=24h`);
+        assert.equal(res.status, 200);
+        const snapshot = await res.json();
+        assert.ok(snapshot.pipeline, 'Snapshot must include pipeline telemetry');
+        assert.ok(['LIVE', 'DEGRADED', 'STALE', 'NO_DATA', 'COLLECTION_FAILURE'].includes(snapshot.pipeline.status));
+        if (snapshot.news.total24h === 0) {
+            assert.notEqual(snapshot.pipeline.status, 'LIVE', '0 intelligence must not claim Live Telemetry Active');
+        }
+    });
+
+    // Test 30: AI executive brief reflects reporting window and honest empty state (Phase 8)
+    test('30. AI Executive Brief endpoint respects timeRange query and returns honest empty notice if 0 records', async () => {
+        const res = await fetch(`${baseUrl}/api/ai/brief?time=24h`);
+        assert.equal(res.status, 200);
+        const brief = await res.json();
+        assert.equal(brief.timeRange, '24h');
+        assert.ok(brief.headline);
+        if (brief.sourcesCount === 0) {
+            assert.ok(brief.content.includes('No briefing available because no intelligence reports were collected'));
+        }
+    });
+
+    // Test 31: Canonical source permission schema (Phase 15 & 16)
+    test('31. Sources return canonical permissions schema with pending as default for unassessed feeds', async () => {
+        const res = await fetch(`${baseUrl}/api/sources`);
+        const sources = await res.json();
+        const sample = sources[0];
+        assert.ok(sample.permissionOutcome, 'Source must have permissionOutcome');
+        assert.ok(['permitted_for_intended_use', 'restricted', 'denied', 'pending'].includes(sample.permissionOutcome));
+        assert.ok(sample.rules && typeof sample.rules === 'object');
+        assert.ok(sample.requirements && typeof sample.requirements === 'object');
+    });
+
+    // Test 32: Future publication date validation marks dateAnomaly (Phase 17)
+    test('32. Ingestion pipeline tags future-dated articles with dateAnomaly', async () => {
+        const futureDate = new Date(Date.now() + 86400000 * 30).toISOString();
+        const res = await fetch(`${baseUrl}/api/news`);
+        assert.equal(res.status, 200);
+        const articles = await res.json();
+        // Any article with future date must have dateAnomaly: true
+        for (const art of articles) {
+            if (art.pubDate && new Date(art.pubDate).getTime() > Date.now() + 86400000) {
+                assert.equal(art.dateAnomaly, true);
+            }
+        }
     });
 
 });

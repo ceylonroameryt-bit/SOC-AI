@@ -1,49 +1,30 @@
-import fs from 'fs';
-import path from 'path';
+/**
+ * newsService.js
+ * Ingestion and classification pipeline for multi-source threat intelligence.
+ * Backed authoritatively by PostgreSQL (with seamless in-memory DAO fallback).
+ * Never writes runtime operational state to local JSON files in production.
+ */
+
 import Parser from 'rss-parser';
-import { fileURLToPath } from 'url';
-import { insertThreat, insertIOCs, isDbConnected } from '../db/db.js';
-import { extractIOCs } from './enrichmentService.js';
+import { getUniqueSources, recordCollectionResult } from './feedHealthService.js';
 import { assessSeverity } from './severityEngine.js';
-import { recordCollectionResult } from './feedHealthService.js';
-import { classifyRecord, mapLegacyCategory, INTEL_CATEGORIES } from './classificationEngine.js';
+import { classifyRecord, mapLegacyCategory } from './classificationEngine.js';
+import { extractIOCs } from './enrichmentService.js';
+import {
+    insertArticle,
+    getArticles,
+    getArticleStats,
+    isDbConnected,
+    query
+} from '../db/db.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DATA_FILE = path.join(__dirname, '../data/news.json');
-
-const parser = new Parser();
-
-const SOURCES_FILE = path.join(__dirname, '../data/sources.json');
+const parser = new Parser({
+    timeout: 10000,
+    headers: { 'User-Agent': 'NO-ENTRY-ThreatIntel-Collector/1.0 (+https://github.com/ceylonroameryt-bit/SOC-AI)' }
+});
 
 const getFeeds = () => {
-    try {
-        if (fs.existsSync(SOURCES_FILE)) {
-            const data = fs.readFileSync(SOURCES_FILE, 'utf8');
-            const sources = JSON.parse(data);
-            return sources.filter(s => s.url);
-        }
-    } catch (err) {
-        console.error('Error reading sources file:', err);
-    }
-    return [];
-};
-
-// Keywords for severity tagging
-const SEVERITY_KEYWORDS = {
-    CRITICAL: ['zero-day', 'rce', 'remote code execution', 'critical', 'exploit', 'unpatched', 'active exploitation'],
-    HIGH: ['ransomware', 'breach', 'leak', 'vulnerability', 'attack', 'malware', 'backdoor', 'trojan', 'apt'],
-    MEDIUM: ['patch', 'update', 'warning', 'advisory', 'phishing', 'scam', 'botnet', 'ddos']
-};
-
-const CATEGORY_KEYWORDS = {
-    'Ransomware': ['ransomware', 'encrypt', 'extortion', 'lockbit', 'clop', 'blackcat', 'royal'],
-    'Data Breach': ['breach', 'leak', 'database', 'exposed', 'records', 'dump', 'stolen'],
-    'Vulnerability': ['vulnerability', 'cve', 'zero-day', 'exploit', 'bug', 'patch', 'rce'],
-    'Malware': ['malware', 'trojan', 'virus', 'spyware', 'backdoor', 'loader', 'botnet'],
-    'Phishing': ['phishing', 'scam', 'credential', 'harvesting', 'social engineering'],
-    'Government': ['cisa', 'fbi', 'nsa', 'nist', 'directive', 'act', 'regulation'],
-    'Dark Web': ['dark web', 'onion', 'tor', 'market', 'underground', 'forum']
+    return getUniqueSources().filter(s => s.isEnabled !== false && s.url);
 };
 
 const determineSeverity = (title, snippet, source = '') => {
@@ -55,82 +36,47 @@ const determineSeverity = (title, snippet, source = '') => {
     return 'Low';
 };
 
-const determineCategory = (title, snippet) => {
+const deriveEvidenceStatus = (title, snippet, classification) => {
+    if (classification.evidenceStatus && classification.evidenceStatus !== 'unassessed') {
+        return classification.evidenceStatus;
+    }
     const text = `${title} ${snippet}`.toLowerCase();
-
-    for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-        if (keywords.some(k => text.includes(k))) return category;
+    if (text.includes('claim') || text.includes('alleged') || text.includes('leak site')) {
+        return 'unverified-claim';
     }
-    return 'General Info';
+    if (text.includes('advisory') || text.includes('cisa') || text.includes('bulletin')) {
+        return 'advisory';
+    }
+    if (text.includes('confirmed') || text.includes('patch available') || text.includes('cve-')) {
+        return 'verified';
+    }
+    return 'unassessed';
 };
 
-// IN-MEMORY CACHE
-let NEWS_CACHE = [];
-
-const loadNewsData = () => {
-    if (NEWS_CACHE && NEWS_CACHE.length > 0) return NEWS_CACHE;
-
-    if (!fs.existsSync(DATA_FILE)) {
-        return [];
-    }
-    try {
-        const data = fs.readFileSync(DATA_FILE, 'utf8');
-        if (!data || !data.trim()) return NEWS_CACHE || [];
-        NEWS_CACHE = JSON.parse(data);
-        return NEWS_CACHE;
-    } catch (err) {
-        console.error('Error reading news data:', err.message);
-        return NEWS_CACHE || [];
-    }
-};
-
-const saveNewsData = (data) => {
-    // Update Cache Immediately
-    NEWS_CACHE = data;
-
-    // Atomic write via temp file prevents concurrent reads from hitting partial JSON
-    const tmpFile = `${DATA_FILE}.${process.pid}.tmp`;
-    try {
-        fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2));
-        fs.renameSync(tmpFile, DATA_FILE);
-    } catch (err) {
-        try {
-            fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-        } catch (writeErr) {
-            console.error('Error saving news data to disk:', writeErr.message);
-        }
-        if (fs.existsSync(tmpFile)) {
-            try { fs.unlinkSync(tmpFile); } catch {}
-        }
-    }
-};
-
-// Initialize Cache on Module Load
-loadNewsData();
-
+/**
+ * Fetch and process external threat intelligence feeds.
+ * Persists all accepted intelligence to the authoritative database.
+ */
 export const fetchAndProcessNews = async () => {
-    // Use Cache directly
-    let existingNews = NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
     let newItemsCount = 0;
+    const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
 
     try {
         const feeds = getFeeds();
-        console.log(`Fetching from ${feeds.length} sources...`);
+        console.log(`[INGESTION] Fetching from ${feeds.length} configured threat intel sources...`);
 
-        // Process in chunks to avoid overwhelming the network
+        // Bounded concurrency chunks
         const CHUNK_SIZE = 10;
-
         for (let i = 0; i < feeds.length; i += CHUNK_SIZE) {
             const chunk = feeds.slice(i, i + CHUNK_SIZE);
-            console.log(`Processing chunk ${i / CHUNK_SIZE + 1}/${Math.ceil(feeds.length / CHUNK_SIZE)}...`);
             const chunkPromises = chunk.map(async (sourceObj) => {
                 const start = Date.now();
-                const sourceId = `src-${(sourceObj.name || 'feed').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')}`;
+                const sourceId = sourceObj.id;
                 try {
                     const parsed = await parser.parseURL(sourceObj.url);
                     const latencyMs = Date.now() - start;
                     const items = parsed?.items || [];
-                    const latestPub = items[0]?.pubDate || null;
+                    const latestPub = items[0]?.pubDate || items[0]?.isoDate || null;
                     return {
                         feed: parsed,
                         sourceObj,
@@ -154,72 +100,95 @@ export const fetchAndProcessNews = async () => {
                     return null;
                 }
             });
+
             const chunkResults = await Promise.all(chunkPromises);
+            const validChunk = chunkResults.filter(Boolean);
 
-            // Process and save chunk immediately
-            const validChunk = chunkResults.filter(res => res !== null);
-            let chunkNewItems = 0;
-
-            validChunk.forEach(({ feed, sourceObj, sourceId, latencyMs, itemsCount, latestPub }) => {
+            for (const { feed, sourceObj, sourceId, latencyMs, itemsCount, latestPub } of validChunk) {
                 let acceptedForFeed = 0;
                 let rejectedForFeed = 0;
 
-                (feed.items || []).forEach(item => {
+                for (const item of (feed.items || [])) {
                     if (!item || !item.link || !item.title) {
                         rejectedForFeed++;
-                        return;
+                        continue;
                     }
-                    const exists = existingNews.some(n => n.link === item.link);
-                    if (!exists) {
-                        acceptedForFeed++;
-                        const severity = determineSeverity(item.title, item.contentSnippet || '', sourceObj.name || feed.title || '');
-                        const category = determineCategory(item.title, item.contentSnippet || '');
-                        // Classify with the new taxonomy engine
-                        const classification = classifyRecord({
-                            title: item.title,
-                            contentSnippet: item.contentSnippet || '',
-                            source: sourceObj.name || feed.title || '',
-                            category: sourceObj.category
-                        });
 
-                        const newItem = {
-                            title: item.title,
-                            link: item.link,
-                            pubDate: item.pubDate || new Date().toISOString(),
-                            contentSnippet: item.contentSnippet || '',
-                            source: sourceObj.name || feed.title || 'Unknown Source',
-                            severity: severity,
-                            // Legacy category field (raw value) - preserved for reversibility
-                            sourceCategory: category,
-                            category: category,
-                            // New taxonomy fields
-                            intelCategory: classification.intelCategory,
-                            intelCategoryDisplay: classification.displayName,
-                            secondaryTopics: classification.secondaryTopics,
-                            contentType: classification.contentType,
-                            classificationMethod: classification.method,
-                            classificationConfidence: classification.confidence,
-                            classificationReason: classification.reason,
-                            taxonomyVersion: classification.taxonomyVersion,
-                            evidenceStatus: deriveEvidenceStatus(item.title, item.contentSnippet || '', classification),
-                            fetchedAt: new Date().toISOString()
-                        };
-                        existingNews.push(newItem);
-                        chunkNewItems++;
-                        newItemsCount++;
+                    const severity = determineSeverity(item.title, item.contentSnippet || '', sourceObj.name || feed.title || '');
+                    const classification = classifyRecord({
+                        title: item.title,
+                        contentSnippet: item.contentSnippet || '',
+                        source: sourceObj.name || feed.title || '',
+                        category: sourceObj.category
+                    });
 
-                        // Asynchronously persist to PostgreSQL if connected
-                        if (isDbConnected()) {
-                            insertThreat(newItem).then(threatId => {
-                                if (threatId) {
-                                    const text = `${newItem.title} ${newItem.contentSnippet || ''}`;
-                                    const extracted = extractIOCs(text);
-                                    insertIOCs(threatId, extracted);
-                                }
-                            }).catch(() => {});
+                    // Validate publication date (Phase 17 & 18)
+                    let pubDate = null;
+                    let dateAnomaly = false;
+                    if (item.pubDate || item.isoDate) {
+                        const parsedDate = new Date(item.pubDate || item.isoDate);
+                        if (!isNaN(parsedDate.getTime())) {
+                            if (parsedDate.getTime() > Date.now() + 24 * 60 * 60 * 1000) {
+                                dateAnomaly = true;
+                                pubDate = new Date().toISOString();
+                            } else {
+                                pubDate = parsedDate.toISOString();
+                            }
                         }
                     }
-                });
+
+                    const newItem = {
+                        title: item.title.trim(),
+                        link: item.link.trim(),
+                        pubDate: pubDate, // Null if publisher missing
+                        contentSnippet: item.contentSnippet || '',
+                        content: item.content || item.contentSnippet || '',
+                        source: sourceObj.name || feed.title || 'Threat Intel Feed',
+                        sourceId,
+                        severity,
+                        sourceCategory: sourceObj.category || 'General',
+                        category: sourceObj.category || 'General',
+                        intelCategory: classification.intelCategory,
+                        intelCategoryDisplay: classification.displayName,
+                        secondaryTopics: classification.secondaryTopics,
+                        contentType: classification.contentType,
+                        classificationMethod: classification.method,
+                        classificationConfidence: classification.confidence,
+                        classificationReason: classification.reason,
+                        taxonomyVersion: classification.taxonomyVersion,
+                        evidenceStatus: deriveEvidenceStatus(item.title, item.contentSnippet || '', classification),
+                        dateAnomaly,
+                        isSimulated: false,
+                        environment: 'production'
+                    };
+
+                    try {
+                        const articleId = await insertArticle(newItem);
+                        if (articleId) {
+                            acceptedForFeed++;
+                            newItemsCount++;
+
+                            // Extract IOCs and link
+                            const text = `${newItem.title} ${newItem.contentSnippet}`;
+                            const extracted = extractIOCs(text);
+                            if (isDbConnected()) {
+                                for (const ip of extracted.ips) {
+                                    await query(`INSERT INTO iocs (article_id, type, value) VALUES ($1, 'IPv4', $2) ON CONFLICT DO NOTHING`, [articleId, ip]).catch(() => {});
+                                }
+                                for (const cve of extracted.cves) {
+                                    await query(`INSERT INTO iocs (article_id, type, value) VALUES ($1, 'CVE', $2) ON CONFLICT DO NOTHING`, [articleId, cve]).catch(() => {});
+                                }
+                                for (const h of extracted.hashes) {
+                                    await query(`INSERT INTO iocs (article_id, type, value) VALUES ($1, 'SHA256', $2) ON CONFLICT DO NOTHING`, [articleId, h]).catch(() => {});
+                                }
+                            }
+                        } else {
+                            rejectedForFeed++;
+                        }
+                    } catch {
+                        rejectedForFeed++;
+                    }
+                }
 
                 recordCollectionResult(sourceId, {
                     success: true,
@@ -230,159 +199,50 @@ export const fetchAndProcessNews = async () => {
                     itemsRejected: rejectedForFeed,
                     latestPubDate: latestPub
                 });
-            });
-
-            if (chunkNewItems > 0) {
-                // Note: final sort + save happens once after all chunks complete
-                console.log(`Processed ${chunkNewItems} new items from chunk ${i / CHUNK_SIZE + 1}.`);
             }
         }
 
-        if (newItemsCount > 0) {
-            // Sort by date descending
-            existingNews.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-            saveNewsData(existingNews);
-            console.log(`Added ${newItemsCount} new news items.`);
-        }
-
-        return existingNews;
+        console.log(`[INGESTION] Completed ingestion run. Processed ${newItemsCount} new intelligence articles.`);
+        return await getArticles({ limit: 100, isDemoEnabled });
     } catch (error) {
-        console.error('Error in fetchAndProcessNews:', error);
-        return existingNews;
+        console.error('[INGESTION] Fatal error in fetchAndProcessNews:', error);
+        return await getArticles({ limit: 100, isDemoEnabled });
     }
 };
 
-export const getNews = () => {
-    return NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
+/**
+ * Authoritative News Retrieval
+ * Queries PostgreSQL / In-Memory DAO with support for timeRange, severity, category, and pagination.
+ */
+export const getNews = async (options = {}) => {
+    const isDemoEnabled = options.isDemoEnabled ?? (process.env.ENABLE_DEMO_DATA === 'true');
+    return await getArticles({
+        limit: options.limit || 100,
+        offset: options.offset || 0,
+        severity: options.severity || null,
+        category: options.category || null,
+        intelCategory: options.intelCategory || null,
+        timeRange: options.timeRange || '24h',
+        q: options.q || null,
+        isDemoEnabled
+    });
 };
 
 /**
- * Derive evidence status for a news record.
- * Kept separate from severity to avoid conflating the two dimensions.
- * @returns {'verified' | 'unverified-claim' | 'advisory' | 'unassessed'}
+ * Returns severity counts for the selected time window
  */
-function deriveEvidenceStatus(title, snippet, classification) {
-    const text = `${title} ${snippet}`.toLowerCase();
-    if (
-        text.includes('security advisory') ||
-        text.includes('patch advisory') ||
-        text.includes('cisa advisory') ||
-        text.includes('cert advisory') ||
-        classification.intelCategory === 'vuln-disclosure'
-    ) return 'advisory';
-    if (
-        text.includes('leak site') ||
-        text.includes('victim published') ||
-        text.includes('allegedly') ||
-        text.includes('claims to have') ||
-        text.includes('unverified') ||
-        text.includes('dark web post')
-    ) return 'unverified-claim';
-    if (
-        text.includes('confirmed') ||
-        text.includes('verified') ||
-        text.includes('official statement') ||
-        text.includes('breach notification')
-    ) return 'verified';
-    return 'unassessed';
-}
+export const getSeverityStats = async (timeRange = '24h') => {
+    const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+    const stats = await getArticleStats(timeRange, isDemoEnabled);
+    return [
+        { name: 'Critical', value: stats.critical, color: '#ef4444' },
+        { name: 'High', value: stats.high, color: '#f97316' },
+        { name: 'Medium', value: stats.medium, color: '#eab308' },
+        { name: 'Low', value: stats.low, color: '#22c55e' },
+        { name: 'Informational', value: stats.informational, color: '#3b82f6' }
+    ];
+};
 
-/**
- * backfillClassification — runs a classification pass over all existing news records
- * that lack an `intelCategory` field or have category='undefined'.
- *
- * Preserves `sourceCategory` (original raw value).
- * Does NOT delete or overwrite records that already have `analystCategory` set.
- * Called once on server startup after initial news load.
- */
-export function backfillClassification() {
-    const news = NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
-    if (!news || news.length === 0) return;
-
-    let updatedCount = 0;
-    const updated = news.map(item => {
-        // Skip records already classified by the engine or an analyst
-        if (item.intelCategory && item.classificationMethod) return item;
-
-        // Try reversible legacy category mapping first
-        const legacyMapped = mapLegacyCategory(item.category);
-
-        let classification;
-        if (legacyMapped) {
-            // Direct mapping available — use it but still derive secondary topics
-            classification = {
-                intelCategory: legacyMapped,
-                displayName: INTEL_CATEGORIES[legacyMapped],
-                secondaryTopics: [],
-                method: 'legacy-mapping',
-                confidence: 70,
-                reason: `Mapped from legacy category: "${item.category}".`,
-                taxonomyVersion: 'v1.0',
-            };
-        } else {
-            // Need full classification engine
-            classification = classifyRecord({
-                title: item.title,
-                contentSnippet: item.contentSnippet || '',
-                source: item.source || '',
-                analystCategory: item.analystCategory,
-            });
-        }
-
-        updatedCount++;
-        return {
-            ...item,
-            // Preserve original source category
-            sourceCategory: item.sourceCategory || item.category || undefined,
-            // Apply new taxonomy
-            intelCategory: classification.intelCategory,
-            intelCategoryDisplay: classification.displayName,
-            secondaryTopics: item.secondaryTopics || classification.secondaryTopics,
-            classificationMethod: classification.method,
-            classificationConfidence: classification.confidence,
-            classificationReason: classification.reason,
-            taxonomyVersion: classification.taxonomyVersion,
-            evidenceStatus: item.evidenceStatus || deriveEvidenceStatus(
-                item.title || '',
-                item.contentSnippet || '',
-                classification
-            ),
-        };
-    });
-
-    if (updatedCount > 0) {
-        console.log(`[CLASSIFICATION] Backfilled ${updatedCount} records with new taxonomy.`);
-        saveNewsData(updated);
-    }
-}
-
-export const getSeverityStats = () => {
-    const news = loadNewsData();
-    const now = new Date();
-    // Fix: avoid mutating `now` with setDate(); compute 30 days ago safely
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
-    const stats = {
-        Critical: 0,
-        High: 0,
-        Medium: 0,
-        Low: 0
-    };
-
-    news.forEach(item => {
-        const itemDate = new Date(item.pubDate);
-        if (itemDate >= thirtyDaysAgo) {
-            if (stats[item.severity] !== undefined) {
-                stats[item.severity]++;
-            } else {
-                stats['Low']++; // Default fallback
-            }
-        }
-    });
-
-    // Format for Recharts
-    return Object.keys(stats).map(key => ({
-        name: key,
-        count: stats[key]
-    }));
+export const backfillClassification = () => {
+    // No-op for DB-backed architecture since all ingested articles are classified on insert
 };

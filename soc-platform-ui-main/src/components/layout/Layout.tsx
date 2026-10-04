@@ -5,6 +5,7 @@ import TopBar from './TopBar';
 import CollectionStatusBar from './CollectionStatusBar';
 import SkipLink from './SkipLink';
 import AccessibilityModal from './AccessibilityModal';
+import { AssistantDrawer } from './AssistantDrawer';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { API_BASE } from '../../config/api';
 
@@ -96,6 +97,9 @@ export const Layout: React.FC = () => {
 
                 {/* Bottom Measured Collection Status Bar */}
                 <CollectionStatusBar />
+
+                {/* Controlled Floating Assistant Drawer */}
+                <AssistantDrawer />
             </div>
         </div>
     );
