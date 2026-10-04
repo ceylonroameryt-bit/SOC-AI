@@ -17,6 +17,8 @@ build/
 .env.local
 .env.*.local
 soc-platform-ui-main/.env
+soc-platform-ui-main/.env.local
+soc-platform-ui-main/.env.*.local
 
 # Logs
 *.log

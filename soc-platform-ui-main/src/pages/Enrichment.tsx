@@ -118,17 +118,27 @@ export default function Enrichment() {
         let url = '';
 
         const type = targetType !== 'auto' ? targetType : detectType(ioc);
-        if (type === 'ip')     url = `${API_BASE}/api/enrich/ip/${encodeURIComponent(ioc)}`;
-        else if (type === 'hash') url = `${API_BASE}/api/enrich/hash/${encodeURIComponent(ioc)}`;
-        else if (type === 'cve')  url = `${API_BASE}/api/enrich/cve/${encodeURIComponent(ioc)}`;
-        else                       url = `${API_BASE}/api/enrich/queries/${encodeURIComponent(ioc)}`;
+        if (type === 'ip')          url = `${API_BASE}/api/enrich/ip/${encodeURIComponent(ioc)}`;
+        else if (type === 'hash')   url = `${API_BASE}/api/enrich/hash/${encodeURIComponent(ioc)}`;
+        else if (type === 'cve')    url = `${API_BASE}/api/enrich/cve/${encodeURIComponent(ioc)}`;
+        else if (type === 'domain') url = `${API_BASE}/api/enrich/domain/${encodeURIComponent(ioc)}`;
+        else                        url = `${API_BASE}/api/enrich/queries/${encodeURIComponent(ioc)}`;
 
         try {
             const resp = await fetch(url);
-            const json = await resp.json();
-            setResult(json);
+            const json = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                let errorMsg = 'Enrichment failed.';
+                if (resp.status === 400) errorMsg = json.error || 'Invalid IOC format or parameters.';
+                else if (resp.status === 429) errorMsg = 'Rate limit exceeded: Provider requests exceeded limit (VirusTotal free tier allows 4 req/min).';
+                else if (resp.status === 503) errorMsg = json.error || 'Provider API key missing or provider service unavailable.';
+                else if (resp.status === 500) errorMsg = 'Server failure during enrichment analysis.';
+                setResult({ error: errorMsg });
+            } else {
+                setResult(json);
+            }
         } catch {
-            setResult({ error: 'Enrichment request failed. Is the server running?' });
+            setResult({ error: 'Enrichment request failed. Could not reach server.' });
         } finally {
             setLoading(false);
         }
@@ -153,9 +163,19 @@ export default function Enrichment() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: bulkText }),
             });
-            setBulkResult(await resp.json());
+            const json = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                let errorMsg = 'Bulk enrichment failed.';
+                if (resp.status === 400) errorMsg = json.error || 'Invalid payload text.';
+                else if (resp.status === 429) errorMsg = 'Rate limit exceeded during bulk extraction.';
+                else if (resp.status === 503) errorMsg = json.error || 'Enrichment provider unconfigured.';
+                else if (resp.status === 500) errorMsg = 'Server failure during bulk processing.';
+                setBulkResult({ error: errorMsg });
+            } else {
+                setBulkResult(json);
+            }
         } catch {
-            setBulkResult({ error: 'Bulk enrichment failed.' });
+            setBulkResult({ error: 'Bulk enrichment request failed. Network connection error.' });
         } finally {
             setBulkLoading(false);
         }

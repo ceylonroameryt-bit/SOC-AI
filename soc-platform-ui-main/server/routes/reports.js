@@ -8,18 +8,20 @@ import {
     exportThreatsToStix,
     escapeCsvField
 } from '../services/reportGenerator.js';
+import { getAuthoritativeNews } from '../services/newsService.js';
+import { getThreatsFromDb, isDbConnected } from '../db/db.js';
+import { filterByRange } from '../services/dashboardEvidence.js';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const NEWS_FILE = path.join(__dirname, '../data/news.json');
 const THREATS_FILE = path.join(__dirname, '../data/threats.json');
 
-const loadData = (filePath) => {
-    if (!fs.existsSync(filePath)) return [];
+const loadThreatsFallback = () => {
+    if (!fs.existsSync(THREATS_FILE)) return [];
     try {
-        const raw = fs.readFileSync(filePath, 'utf8');
+        const raw = fs.readFileSync(THREATS_FILE, 'utf8');
         if (!raw || !raw.trim()) return [];
         return JSON.parse(raw);
     } catch {
@@ -27,19 +29,46 @@ const loadData = (filePath) => {
     }
 };
 
+async function getAuthoritativeThreats() {
+    if (isDbConnected()) {
+        try {
+            return await getThreatsFromDb({ limit: 1000 });
+        } catch {
+            return loadThreatsFallback();
+        }
+    }
+    return loadThreatsFallback();
+}
+
 /**
  * GET /api/reports/daily
  * Default: Returns PDF
  * ?format=docx: Returns DOCX
+ * Phase 14: queries authoritative database and includes provenance and honest empty explanation.
  */
-router.get('/daily', (req, res) => {
+router.get('/daily', async (req, res) => {
     try {
-        const news = loadData(NEWS_FILE);
-        const threats = loadData(THREATS_FILE);
+        const range = req.query.time || req.query.range || '24h';
+        const allNews = await getAuthoritativeNews();
+        const news = filterByRange(allNews, range);
+        const threats = await getAuthoritativeThreats();
         const dateStr = new Date().toISOString().split('T')[0];
         const format = (req.query.format || 'pdf').toLowerCase();
 
         res.setHeader('Cache-Control', 'private, no-store');
+
+        const metadata = {
+            reportingWindow: range,
+            generationTimestamp: new Date().toISOString(),
+            intelligenceCount: news.length,
+            threatCount: threats.length,
+            criticalCount: news.filter(n => n.severity === 'Critical').length,
+            highCount: news.filter(n => n.severity === 'High').length,
+            provenance: 'Generated from authoritative PostgreSQL threat intelligence database.',
+            notice: news.length === 0
+                ? 'Notice: No intelligence records were collected for this reporting window.'
+                : undefined,
+        };
 
         if (format === 'docx') {
             const docxBuffer = generateDocxReport({
@@ -47,6 +76,7 @@ router.get('/daily', (req, res) => {
                 date: dateStr,
                 news,
                 threats,
+                metadata,
             });
             res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
             res.setHeader('Content-Disposition', `attachment; filename="no-entry-daily-report-${dateStr}.docx"`);
@@ -59,6 +89,7 @@ router.get('/daily', (req, res) => {
             date: dateStr,
             news,
             threats,
+            metadata,
         });
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="no-entry-daily-report-${dateStr}.pdf"`);
@@ -76,9 +107,9 @@ router.get('/daily', (req, res) => {
  * ?format=json: JSON
  * ?format=stix2: STIX 2.1 bundle
  */
-router.get('/export/threats', (req, res) => {
+router.get('/export/threats', async (req, res) => {
     try {
-        const threats = loadData(THREATS_FILE);
+        const threats = await getAuthoritativeThreats();
         const dateStr = new Date().toISOString().split('T')[0];
         const format = (req.query.format || 'csv').toLowerCase();
 
@@ -136,9 +167,11 @@ router.get('/export/threats', (req, res) => {
  * Default: CSV
  * ?format=json: JSON
  */
-router.get('/export/news', (req, res) => {
+router.get('/export/news', async (req, res) => {
     try {
-        const news = loadData(NEWS_FILE);
+        const range = req.query.time || req.query.range || 'all';
+        const allNews = await getAuthoritativeNews();
+        const news = filterByRange(allNews, range);
         const dateStr = new Date().toISOString().split('T')[0];
         const format = (req.query.format || 'csv').toLowerCase();
 

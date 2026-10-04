@@ -13,6 +13,17 @@ interface CveItem {
     dateAdded: string;
 }
 
+function formatCatalogDate(dateStr?: string | null) {
+    if (!dateStr || dateStr === 'unknown') return 'Status: Active';
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return `Updated ${dateStr}`;
+        return `Updated ${d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}`;
+    } catch {
+        return `Updated ${dateStr}`;
+    }
+}
+
 const CveTrackerWidget = () => {
     const [catalogStatus, setCatalogStatus] = useState('');
     const [loading, setLoading] = useState(true);
@@ -25,7 +36,8 @@ const CveTrackerWidget = () => {
             .then(snapshot => {
                 if (snapshot?.kev?.featured && Array.isArray(snapshot.kev.featured)) {
                     setCves(snapshot.kev.featured);
-                    setCatalogStatus(`${snapshot.kev.status || 'unknown'} · updated ${snapshot.kev.lastUpdated || 'unknown'}`);
+                    const count = snapshot.kev.total || snapshot.kev.featured.length;
+                    setCatalogStatus(`${count} catalogued · ${formatCatalogDate(snapshot.kev.lastUpdated)}`);
                 }
             })
             .catch(() => {}).finally(() => setLoading(false));
@@ -51,7 +63,7 @@ const CveTrackerWidget = () => {
                             CISA KEV Catalog
                         </h3>
                         <p className="text-[11px] text-slate-500">
-                            {catalogStatus || 'Known exploited vulnerabilities from CISA'}
+                            {catalogStatus || 'Known exploited vulnerabilities reference'}
                         </p>
                     </div>
                 </div>
@@ -96,11 +108,11 @@ const CveTrackerWidget = () => {
                                 )}
                             </div>
                             <div className="flex items-center gap-1.5 text-[11px]">
-                                <span className="font-mono font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded">
-                                    CVSS {cve.cvss ?? 'N/A'}
+                                <span className="font-mono text-[10px] text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded" title={cve.cvss !== null ? `CVSS score: ${cve.cvss}` : 'CVSS score not available'}>
+                                    {cve.cvss !== null ? `CVSS ${cve.cvss}` : 'CVSS not available'}
                                 </span>
-                                <span className="font-mono text-slate-500 text-[10px]" title="Exploit Prediction Scoring System">
-                                    EPSS {cve.epss === null ? 'N/A' : `${(cve.epss * 100).toFixed(0)}%`}
+                                <span className="font-mono text-slate-500 text-[10px]" title={cve.epss !== null ? `Exploit Prediction Scoring System: ${(cve.epss * 100).toFixed(0)}%` : 'EPSS score not available'}>
+                                    {cve.epss !== null ? `EPSS ${(cve.epss * 100).toFixed(0)}%` : 'EPSS not available'}
                                 </span>
                             </div>
                         </div>

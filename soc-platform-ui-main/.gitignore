@@ -7,3 +7,5 @@ backend/__pycache__/
 frontend/dist/
 ce_engine.db
 .env
+.env.local
+.env.*.local

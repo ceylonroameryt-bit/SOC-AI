@@ -1,6 +1,6 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { enrichIP, enrichHash, enrichCVE, checkAbuseIPDB, enrichAllIOCs, extractIOCs } from '../services/enrichmentService.js';
+import { enrichIP, enrichHash, enrichCVE, enrichDomain, checkAbuseIPDB, enrichAllIOCs, extractIOCs } from '../services/enrichmentService.js';
 import { generateQueryBundle, detectIOCType } from '../services/siemQueryService.js';
 
 const router = express.Router();
@@ -93,6 +93,31 @@ router.get('/cve/:cveId', vtLimiter, async (req, res) => {
     } catch (err) {
         console.error('[ENRICH CVE]', err.message);
         res.status(500).json({ error: 'CVE enrichment failed.' });
+    }
+});
+
+// ── Domain Enrichment ──────────────────────────────────────────────────────────
+// GET /api/enrich/domain/:domain (Phase 19)
+router.get('/domain/:domain', vtLimiter, async (req, res) => {
+    const { domain } = req.params;
+
+    if (!domain || domain.length > 253) {
+        return res.status(400).json({ error: 'Invalid domain length.' });
+    }
+    if (!/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(domain)) {
+        return res.status(400).json({ error: 'Invalid domain format.' });
+    }
+
+    try {
+        const [virustotal, queries] = await Promise.all([
+            enrichDomain(domain),
+            Promise.resolve(generateQueryBundle(domain, 'domain')),
+        ]);
+
+        res.json({ domain, virustotal, queries });
+    } catch (err) {
+        console.error('[ENRICH DOMAIN]', err.message);
+        res.status(500).json({ error: 'Domain enrichment failed.' });
     }
 });
 

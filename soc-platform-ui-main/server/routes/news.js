@@ -1,14 +1,15 @@
 import { filterByRange, severityStats } from '../services/dashboardEvidence.js';
 import express from 'express';
-import { fetchAndProcessNews, getNews } from '../services/newsService.js';
+import { fetchAndProcessNews, getAuthoritativeNews } from '../services/newsService.js';
 import { classifyRecord, INTEL_CATEGORIES } from '../services/classificationEngine.js';
+import { requireApiKeyMiddleware } from '../utils/auth.js';
 
 const router = express.Router();
 
-// Serve news from in-memory cache (instant response)
-router.get('/', (req, res) => {
+// Serve authoritative news (PostgreSQL single source of truth with memory cache)
+router.get('/', async (req, res) => {
     try {
-        const rawNews = getNews();
+        const rawNews = await getAuthoritativeNews();
         // P1 item 21: clamp limit 1–1000, default 100
         const rawLimit = parseInt(req.query.limit);
         const limit = Math.min(1000, Math.max(1, isNaN(rawLimit) ? 100 : rawLimit));
@@ -63,20 +64,30 @@ router.get('/', (req, res) => {
 });
 
 
-// Force refresh news feeds
-router.post('/refresh', async (req, res) => {
+// Force refresh news feeds - Protected with INGEST_API_KEY (Phase 11)
+router.post('/refresh', requireApiKeyMiddleware('INGEST_API_KEY'), async (req, res) => {
     try {
-        const news = await fetchAndProcessNews();
+        const isAsync = req.query.async === 'true';
+        if (isAsync) {
+            fetchAndProcessNews('manual').catch(err => console.error('[REFRESH ERROR]', err));
+            return res.json({
+                success: true,
+                message: 'Feed refresh job initiated in background.',
+                timestamp: new Date().toISOString()
+            });
+        }
+        const news = await fetchAndProcessNews('manual');
         res.json({ success: true, count: news.length });
     } catch (err) {
         res.status(500).json({ error: 'Failed to refresh feeds.', details: err.message });
     }
 });
 
-// Get stats for chart
-router.get('/stats', (req, res) => {
+// Get stats for chart from authoritative news
+router.get('/stats', async (req, res) => {
     try {
-        const stats = severityStats(filterByRange(getNews(), req.query.time || req.query.range || 'all'));
+        const news = await getAuthoritativeNews();
+        const stats = severityStats(filterByRange(news, req.query.time || req.query.range || 'all'));
         res.json(stats);
     } catch (err) {
         res.status(500).json({ error: 'Failed to retrieve stats.' });

@@ -92,7 +92,8 @@ const allowedOrigins = [
     'http://localhost:5175',   // Vite dev server (fallback)
     'http://localhost:5176',   // Vite dev server (fallback)
     'http://localhost:4173',   // Vite preview
-    'http://localhost:3000',   // Server itself
+    'http://localhost:3000',   // Server default port
+    'http://localhost:3001',   // Alternate server port
     process.env.ALLOWED_ORIGIN, // Production domain from .env
     process.env.WEBSITE_HOSTNAME ? `https://${process.env.WEBSITE_HOSTNAME}` : null // Azure specific hostname
 ].filter(Boolean);
@@ -112,7 +113,7 @@ app.use(cors({
     },
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    credentials: true,
+    credentials: false,
     maxAge: 86400 // Cache preflight for 24 hours
 }));
 
@@ -375,10 +376,23 @@ app.post('/api/notifications/send', strictLimiter, async (req, res) => {
             return res.status(403).json({ error: 'Target email recipient is not in the authorized domain list.' });
         }
 
-        // In test or non-production environment without SMTP, log and mock success
-        if (process.env.NODE_ENV === 'test' || !process.env.SMTP_HOST) {
-            console.log(`[EMAIL AUDIT] Mock dispatch to ${targetEmail} (Audit logged)`);
-            return res.json({ success: true, message: 'Report dispatch accepted (mock delivery in test/dev).' });
+        // Phase 21: Production must never claim message sent successfully when SMTP is unconfigured.
+        // Mock success is only permitted when ENABLE_DEMO_DATA=true.
+        if (!process.env.SMTP_HOST) {
+            if (process.env.ENABLE_DEMO_DATA === 'true') {
+                console.log(`[EMAIL AUDIT] Simulated dispatch to ${targetEmail} (ENABLE_DEMO_DATA=true)`);
+                return res.json({
+                    success: true,
+                    isSimulated: true,
+                    environment: 'demo',
+                    message: 'Simulated email dispatch accepted (ENABLE_DEMO_DATA=true).'
+                });
+            }
+            return res.status(503).json({
+                success: false,
+                code: 'SMTP_NOT_CONFIGURED',
+                error: 'SMTP service is not configured on this server. Configure SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS.'
+            });
         }
 
         console.log(`[EMAIL AUDIT] Sending report to ${targetEmail}...`);

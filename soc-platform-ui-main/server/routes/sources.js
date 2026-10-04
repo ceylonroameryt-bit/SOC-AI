@@ -105,27 +105,12 @@ router.get('/permissions', (req, res) => {
     }
 });
 
-/**
- * GET /api/sources/:id
- * Returns single source record with full health and permission evidence.
- */
-router.get('/:id', (req, res) => {
-    try {
-        const { id } = req.params;
-        const all = getFeedHealthRecords({ page: 1, limit: 5000 });
-        const record = all.records.find(s => s.id === id);
-        if (!record) {
-            return res.status(404).json({ error: 'Source not found in registry' });
-        }
-        res.setHeader('Cache-Control', 'public, s-maxage=60');
-        res.json(record);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to retrieve source' });
-    }
-});
+import { requireApiKeyMiddleware } from '../utils/auth.js';
+
 /**
  * GET /api/sources/runs
  * Returns history of background ingestion runs with Section 6 telemetry metrics.
+ * Note: Must appear before /:id to prevent Express treating 'runs' as a dynamic source ID.
  */
 router.get('/runs', (req, res) => {
     try {
@@ -146,6 +131,7 @@ router.get('/runs', (req, res) => {
 /**
  * GET /api/sources/runs/latest
  * Returns most recent background ingestion run.
+ * Note: Must appear before /:id to prevent Express treating 'runs' as a dynamic source ID.
  */
 router.get('/runs/latest', (req, res) => {
     try {
@@ -161,10 +147,30 @@ router.get('/runs/latest', (req, res) => {
 });
 
 /**
+ * GET /api/sources/:id
+ * Returns single source record with full health and permission evidence.
+ */
+router.get('/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const all = getFeedHealthRecords({ page: 1, limit: 5000 });
+        const record = all.records.find(s => s.id === id);
+        if (!record) {
+            return res.status(404).json({ error: 'Source not found in registry' });
+        }
+        res.setHeader('Cache-Control', 'public, s-maxage=60');
+        res.json(record);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve source' });
+    }
+});
+
+/**
  * POST /api/sources/refresh
  * Triggers an ingestion run for active feeds.
+ * Protected with INGEST_API_KEY (Phase 11).
  */
-router.post('/refresh', async (req, res) => {
+router.post('/refresh', requireApiKeyMiddleware('INGEST_API_KEY'), async (req, res) => {
     try {
         const isAsync = req.query.async === 'true';
         if (isAsync) {

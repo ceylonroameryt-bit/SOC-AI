@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, ExternalLink, ShieldCheck, Target, Search, FileDown, ShieldAlert, ArrowUpRight, CheckCircle2, Tag, Building2, UserCheck, MessageSquare, Ban } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SeverityBadge from './SeverityBadge';
@@ -87,80 +87,138 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
     React.useEffect(() => {
         if (!recordKey) return;
         try {
-            const saved = localStorage.getItem(`analyst_state_${recordKey}`);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                setWorkflowStatus(parsed.status || 'new');
-                setAnalystNote(parsed.notes || '');
-            } else {
-                setWorkflowStatus('new');
-                setAnalystNote('');
-            }
+            // Load from authoritative server record with local fallback
+            fetch(`${API_BASE}/api/analyst/record/${encodeURIComponent(recordKey)}`)
+                .then(res => (res.ok ? res.json() : null))
+                .then(serverRecord => {
+                    if (serverRecord && serverRecord.status) {
+                        setWorkflowStatus(serverRecord.status);
+                        setAnalystNote(serverRecord.notes || '');
+                    } else {
+                        const saved = localStorage.getItem(`analyst_state_${recordKey}`);
+                        if (saved) {
+                            const parsed = JSON.parse(saved);
+                            setWorkflowStatus(parsed.status || 'new');
+                            setAnalystNote(parsed.notes || '');
+                        } else {
+                            setWorkflowStatus('new');
+                            setAnalystNote('');
+                        }
+                    }
+                })
+                .catch(() => {
+                    const saved = localStorage.getItem(`analyst_state_${recordKey}`);
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        setWorkflowStatus(parsed.status || 'new');
+                        setAnalystNote(parsed.notes || '');
+                    }
+                });
         } catch {
             setWorkflowStatus('new');
             setAnalystNote('');
         }
     }, [recordKey]);
 
-    const handleStatusChange = (newStatus: 'new' | 'reviewing' | 'action_required' | 'closed') => {
-        setWorkflowStatus(newStatus);
-        const data = { status: newStatus, notes: analystNote, updatedAt: new Date().toISOString() };
+    const [actionError, setActionError] = useState<string | null>(null);
+
+    const handleStatusChange = async (newStatus: 'new' | 'reviewing' | 'action_required' | 'closed') => {
+        setActionError(null);
         try {
-            localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify(data));
-            fetch(`${API_BASE}/api/analyst/action`, {
+            const resp = await fetch(`${API_BASE}/api/analyst/action`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     recordId: recordKey,
                     actionType: 'status_change',
                     value: newStatus,
-                    analystId: 'analyst-1'
                 })
-            }).catch(() => {});
+            });
+
+            if (!resp.ok) {
+                const errData = await resp.json().catch(() => ({}));
+                const msg = resp.status === 401 || resp.status === 403
+                    ? 'Read-only Guest Session: Status changes require authenticated analyst credentials.'
+                    : (errData.error || 'Server error saving status.');
+                setActionError(msg);
+                setTimeout(() => setActionError(null), 5000);
+                return;
+            }
+
+            setWorkflowStatus(newStatus);
+            const data = { status: newStatus, notes: analystNote, updatedAt: new Date().toISOString() };
+            localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify(data));
         } catch {
-            /* ignore storage error */
+            setActionError('Network error connecting to analyst service.');
+            setTimeout(() => setActionError(null), 5000);
         }
     };
 
-    const handleSaveNote = () => {
-        const data = { status: workflowStatus, notes: analystNote, updatedAt: new Date().toISOString() };
+    const handleSaveNote = async () => {
+        setActionError(null);
         try {
-            localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify(data));
-            fetch(`${API_BASE}/api/analyst/action`, {
+            const resp = await fetch(`${API_BASE}/api/analyst/action`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     recordId: recordKey,
                     actionType: 'note_added',
                     value: analystNote,
-                    analystId: 'analyst-1'
                 })
-            }).catch(() => {});
+            });
+
+            if (!resp.ok) {
+                const errData = await resp.json().catch(() => ({}));
+                const msg = resp.status === 401 || resp.status === 403
+                    ? 'Read-only Guest Session: Saving notes to database requires authenticated analyst credentials.'
+                    : (errData.error || 'Server error saving note.');
+                setActionError(msg);
+                setTimeout(() => setActionError(null), 5000);
+                return;
+            }
+
+            const data = { status: workflowStatus, notes: analystNote, updatedAt: new Date().toISOString() };
+            localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify(data));
+            setNoteSavedNotice(true);
+            setTimeout(() => setNoteSavedNotice(false), 2500);
         } catch {
-            /* ignore storage error */
+            setActionError('Network error saving note.');
+            setTimeout(() => setActionError(null), 5000);
         }
-        setNoteSavedNotice(true);
-        setTimeout(() => setNoteSavedNotice(false), 2500);
     };
 
-    const handleConfirmDismiss = () => {
-        setWorkflowStatus('closed');
-        setIsDismissing(false);
-        const data = { status: 'closed', notes: analystNote, dismissedReason: dismissReason, updatedAt: new Date().toISOString() };
+    const handleConfirmDismiss = async () => {
+        setActionError(null);
         try {
-            localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify(data));
-            fetch(`${API_BASE}/api/analyst/action`, {
+            const resp = await fetch(`${API_BASE}/api/analyst/action`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     recordId: recordKey,
                     actionType: 'dismissed',
                     value: dismissReason,
-                    analystId: 'analyst-1'
                 })
-            }).catch(() => {});
+            });
+
+            if (!resp.ok) {
+                const errData = await resp.json().catch(() => ({}));
+                const msg = resp.status === 401 || resp.status === 403
+                    ? 'Read-only Guest Session: Incident dismissal requires authenticated analyst credentials.'
+                    : (errData.error || 'Server error dismissing record.');
+                setActionError(msg);
+                setIsDismissing(false);
+                setTimeout(() => setActionError(null), 5000);
+                return;
+            }
+
+            setWorkflowStatus('closed');
+            setIsDismissing(false);
+            const data = { status: 'closed', notes: analystNote, dismissedReason: dismissReason, updatedAt: new Date().toISOString() };
+            localStorage.setItem(`analyst_state_${recordKey}`, JSON.stringify(data));
         } catch {
-            /* ignore storage error */
+            setActionError('Network error executing dismissal.');
+            setIsDismissing(false);
+            setTimeout(() => setActionError(null), 5000);
         }
     };
 
@@ -507,6 +565,13 @@ export const ReportDetailPanel: React.FC<ReportDetailPanelProps> = ({
                              workflowStatus === 'closed' ? 'Closed' : 'New'}
                         </span>
                     </div>
+
+                    {actionError && (
+                        <div className="p-2 rounded bg-amber-50 border border-amber-300 text-amber-800 text-[11px] flex items-center justify-between">
+                            <span>⚠️ {actionError}</span>
+                            <button onClick={() => setActionError(null)} className="text-amber-900 font-bold ml-2">✕</button>
+                        </div>
+                    )}
 
                     {/* Status Toggle Buttons */}
                     <div className="grid grid-cols-4 gap-1 bg-[#F1F5F9] p-1 rounded-md text-[11px]">

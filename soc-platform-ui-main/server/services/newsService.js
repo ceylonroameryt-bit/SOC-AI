@@ -3,7 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 import Parser from 'rss-parser';
 import { fileURLToPath } from 'url';
-import { insertThreat, insertIOCs, isDbConnected } from '../db/db.js';
+import { insertThreat, insertIOCs, isDbConnected, getThreatsFromDb } from '../db/db.js';
 import { extractIOCs } from './enrichmentService.js';
 import { assessSeverity } from './severityEngine.js';
 import { recordCollectionResult } from './feedHealthService.js';
@@ -73,6 +73,18 @@ export const parsePubDate = (raw) => {
     const d = new Date(raw);
     if (isNaN(d.getTime())) return null;
     return d.toISOString();
+};
+
+/**
+ * Phase 17: Date anomaly check.
+ * Identifies future-dated articles exceeding current time by more than 24 hours.
+ */
+export const checkDateAnomaly = (pubDateIso) => {
+    if (!pubDateIso) return false;
+    const ms = new Date(pubDateIso).getTime();
+    if (isNaN(ms)) return false;
+    const now = Date.now();
+    return ms > now + (24 * 60 * 60 * 1000);
 };
 
 const REGISTRY_FILE = path.join(__dirname, '../data/sources_registry.json');
@@ -162,24 +174,45 @@ export const invalidateNewsCache = () => {
 const SEED_FILE = path.join(__dirname, '../data/news_seed.json');
 
 export const loadNewsData = () => {
-    const targetFile = fs.existsSync(DATA_FILE) ? DATA_FILE : (fs.existsSync(SEED_FILE) ? SEED_FILE : null);
+    const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+    let targetFile = null;
+    let isSeed = false;
+
+    if (fs.existsSync(DATA_FILE)) {
+        targetFile = DATA_FILE;
+    } else if (isDemoEnabled && fs.existsSync(SEED_FILE)) {
+        targetFile = SEED_FILE;
+        isSeed = true;
+    }
+
     if (!targetFile) {
         return [];
     }
+
     try {
         const stat = fs.statSync(targetFile);
         // Return in-memory cache only if disk file has not been modified since last read
         if (NEWS_CACHE && NEWS_CACHE.length > 0 && stat.mtimeMs <= lastMtimeMs) {
-            return NEWS_CACHE;
+            return isDemoEnabled ? NEWS_CACHE : NEWS_CACHE.filter(item => !item.isSimulated);
         }
         const data = fs.readFileSync(targetFile, 'utf8');
-        if (!data || !data.trim()) return NEWS_CACHE || [];
-        NEWS_CACHE = JSON.parse(data);
+        if (!data || !data.trim()) return [];
+        let parsed = JSON.parse(data);
+        if (isSeed) {
+            parsed = parsed.map(item => ({
+                ...item,
+                isSimulated: true,
+                environment: 'demo'
+            }));
+        } else if (!isDemoEnabled) {
+            parsed = parsed.filter(item => !item.isSimulated);
+        }
+        NEWS_CACHE = parsed;
         lastMtimeMs = stat.mtimeMs;
         return NEWS_CACHE;
     } catch (err) {
-        console.error('Error reading news data:', err.message);
-        return NEWS_CACHE || [];
+        console.error('[NEWS SERVICE] Error reading news data:', err.message);
+        return [];
     }
 };
 
@@ -284,13 +317,39 @@ export const fetchAndProcessNews = async (trigger = 'scheduled') => {
                 totalParsed += feedItems.length;
 
                 feedItems.forEach(item => {
-                    if (!item || !item.title) {
+                    let normalizedTitle = '';
+                    if (typeof item?.title === 'string') {
+                        normalizedTitle = item.title.trim();
+                    } else if (item?.title?._ && typeof item.title._ === 'string') {
+                        normalizedTitle = item.title._.trim();
+                    } else if (item?.title?.name && typeof item.title.name === 'string') {
+                        normalizedTitle = item.title.name.trim();
+                    } else if (item?.title) {
+                        normalizedTitle = String(item.title).trim();
+                    }
+
+                    let normalizedSnippet = '';
+                    if (typeof item?.contentSnippet === 'string') {
+                        normalizedSnippet = item.contentSnippet;
+                    } else if (typeof item?.summary === 'string') {
+                        normalizedSnippet = item.summary;
+                    } else if (typeof item?.snippet === 'string') {
+                        normalizedSnippet = item.snippet;
+                    } else if (typeof item?.content === 'string') {
+                        normalizedSnippet = item.content;
+                    } else if (item?.contentSnippet) {
+                        normalizedSnippet = String(item.contentSnippet);
+                    }
+
+                    if (!item || !normalizedTitle || normalizedTitle === '[object Object]') {
                         // P0 item 8: items without a title are rejected (can't dedupe or display)
                         rejectedForFeed++;
                         totalRejected++;
                         rejectionReasons.missing_required_fields++;
                         return;
                     }
+                    item.title = normalizedTitle;
+                    item.contentSnippet = normalizedSnippet;
 
                     // P0 item 8: validate link — null if not http(s)
                     const safeLink = validateLink(item.link);
@@ -328,6 +387,7 @@ export const fetchAndProcessNews = async (trigger = 'scheduled') => {
                         pubDate: resolvedPubDate,
                         // pubDateMissing flag allows UI to display an honest "publication date unknown" label
                         pubDateMissing: resolvedPubDate === null,
+                        dateAnomaly: checkDateAnomaly(resolvedPubDate),
                         // ingestedAt is when the collector fetched this article — always set
                         ingestedAt,
                         // fetchedAt preserved as alias for backward compatibility
@@ -428,6 +488,24 @@ export const getNews = () => {
     return NEWS_CACHE.length > 0 ? NEWS_CACHE : loadNewsData();
 };
 
+export const getAuthoritativeNews = async (opts = {}) => {
+    if (isDbConnected()) {
+        const fromDb = await getThreatsFromDb({
+            limit: opts.limit || 1000,
+            range: opts.range || opts.time || 'all',
+            severity: opts.severity,
+            category: opts.category,
+            intelCategory: opts.intelCategory,
+            search: opts.q,
+            includeSimulated: process.env.ENABLE_DEMO_DATA === 'true'
+        });
+        if (fromDb !== null && fromDb.length > 0) {
+            return fromDb;
+        }
+    }
+    return getNews();
+};
+
 /**
  * queryArchive — server-side date-range + keyword + category + MITRE filter.
  *
@@ -479,6 +557,8 @@ export function queryArchive(opts = {}) {
 
     if (hasDateFilter) {
         records = records.filter(item => {
+            // Future date anomaly must NOT be classified as fresh or included in past windows
+            if (item.dateAnomaly) return false;
             // Articles with no pubDate are excluded from date-bounded windows
             if (!item.pubDate) return false;
             const ms = new Date(item.pubDate).getTime();

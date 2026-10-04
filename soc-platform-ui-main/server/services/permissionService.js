@@ -69,20 +69,62 @@ export function savePermissions() {
 
 /**
  * Retrieve permission record for a specific source ID.
+ * Returns normalized canonical schema: permissionOutcome, permissionStatus, rules, requirements.
  */
 export function getSourcePermission(sourceId) {
     if (permissionsMap.size === 0) loadPermissions();
-    return permissionsMap.get(sourceId) || null;
+    const raw = permissionsMap.get(sourceId);
+    if (!raw) return null;
+
+    let outcome = raw.permissionOutcome || raw.permissionStatus || 'pending';
+    // Do not call something Permitted when fetching or displaying is prohibited
+    if (outcome === 'permitted_for_intended_use' || outcome === 'permitted_intended_use') {
+        if (raw.rules?.fetchingPermitted === false || raw.rules?.displayingPermitted === false) {
+            outcome = 'restricted';
+        }
+    }
+
+    const rules = {
+        fetchingPermitted: raw.rules?.fetchingPermitted !== false,
+        cachingPermitted: raw.rules?.cachingPermitted !== false,
+        storingPermitted: raw.rules?.storingPermitted !== false,
+        summarizingPermitted: raw.rules?.summarizingPermitted !== false,
+        aiProcessingPermitted: raw.rules?.aiProcessingPermitted === true,
+        displayingPermitted: raw.rules?.displayingPermitted !== false,
+        exportingPermitted: raw.rules?.exportingPermitted === true,
+        commercialUsePermitted: raw.rules?.commercialUsePermitted === true,
+        ...(raw.rules || {})
+    };
+
+    const requirements = {
+        attributionRequired: raw.requirements?.attributionRequired !== false,
+        originalLinkRequired: raw.requirements?.originalLinkRequired !== false,
+        retentionDaysLimit: raw.requirements?.retentionDaysLimit || 365,
+        rateLimitPerMinute: raw.requirements?.rateLimitPerMinute || 60,
+        maxSummaryLength: raw.requirements?.maxSummaryLength || 500,
+        ...(raw.requirements || {})
+    };
+
+    return {
+        ...raw,
+        permissionOutcome: outcome,
+        permissionStatus: outcome === 'permitted_for_intended_use' ? 'permitted_intended_use' : outcome,
+        rules,
+        requirements,
+        attributionRequired: requirements.attributionRequired
+    };
 }
 
 /**
  * Check if a source is permitted for the documented intended platform use.
- * Does NOT certify full legal clearance; certifies satisfaction of documented reuse rules.
+ * Strictly verifies fetchingPermitted and displayingPermitted.
  */
 export function isPermittedForIntendedUse(sourceId) {
     const perm = getSourcePermission(sourceId);
     if (!perm) return false;
-    return perm.permissionOutcome === 'permitted_for_intended_use';
+    return (perm.permissionOutcome === 'permitted_for_intended_use' || perm.permissionOutcome === 'permitted_intended_use') &&
+        perm.rules?.fetchingPermitted === true &&
+        perm.rules?.displayingPermitted === true;
 }
 
 /**

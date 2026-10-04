@@ -1,3 +1,6 @@
+import crypto from 'crypto';
+import yaml from 'js-yaml';
+
 /**
  * siemQueryService.js
  * Generates copy-paste threat hunting queries for Splunk, Microsoft Sentinel (KQL),
@@ -97,11 +100,11 @@ export const generateKQLQuery = (ioc, iocType = 'auto') => {
  * Generate a basic Sigma rule YAML for a given IOC.
  * P0 item 20: lowercase level, no hard-coded attack.execution tag,
  *             correct logsource field names.
+ * Phase 31: safe YAML serialization using js-yaml.
  */
 export const generateSigmaRule = (ioc, iocType = 'auto', context = {}) => {
     const type = iocType === 'auto' ? detectIOCType(ioc) : iocType;
     const { title, description, severity = 'high', tags = [] } = context;
-    const safeIoc = escapeSigmaYaml(ioc);
 
     const ruleAuthor = process.env.SIGMA_AUTHOR || 'NO ENTRY SOC Platform (auto-generated)';
     const ruleTitle = title || `Detected IOC: ${ioc}`;
@@ -118,38 +121,51 @@ export const generateSigmaRule = (ioc, iocType = 'auto', context = {}) => {
         else if (type === 'cve') baseTags.push('attack.initial_access');
     }
 
-    let detection = '';
-    let logsource = '';
+    let detection = {};
+    let logsource = {};
 
     switch (type) {
         case 'ip':
-            // P0 item 20: correct logsource field names for network category
-            logsource = `category: network_connection\n    product: any`;
-            detection = `  keywords:\n        - '${safeIoc}'\n  condition: keywords`;
+            logsource = { category: 'network_connection', product: 'any' };
+            detection = { keywords: [String(ioc)], condition: 'keywords' };
             break;
 
         case 'domain':
-            logsource = `category: dns\n    product: any`;
-            detection = `  selection:\n        dns.question.name: '${safeIoc}'\n  condition: selection`;
+            logsource = { category: 'dns', product: 'any' };
+            detection = { selection: { 'dns.question.name': String(ioc) }, condition: 'selection' };
             break;
 
         case 'hash':
-            logsource = `category: process_creation\n    product: windows`;
-            detection = `  selection:\n        Hashes|contains:\n          - '${safeIoc}'\n  condition: selection`;
+            logsource = { category: 'process_creation', product: 'windows' };
+            detection = { selection: { 'Hashes|contains': [String(ioc)] }, condition: 'selection' };
             break;
 
         case 'cve':
-            logsource = `category: application\n    product: any`;
-            detection = `  keywords:\n        - '${safeIoc}'\n  condition: keywords`;
+            logsource = { category: 'application', product: 'any' };
+            detection = { keywords: [String(ioc)], condition: 'keywords' };
             break;
 
         default:
-            logsource = `product: any\n    category: any`;
-            detection = `  keywords:\n        - '${safeIoc}'\n  condition: keywords`;
+            logsource = { product: 'any', category: 'any' };
+            detection = { keywords: [String(ioc)], condition: 'keywords' };
     }
 
-    // P0 item 20: lowercase level (Sigma spec requires lowercase)
-    return `title: ${ruleTitle}\nid: ${ruleId}\nstatus: experimental\ndescription: ${ruleDesc}\nreferences:\n    - https://www.virustotal.com\ndate: ${date}\nauthor: ${ruleAuthor}\ntags:\n${baseTags.map(t => `    - ${t}`).join('\n')}\nlogsource:\n    ${logsource}\ndetection:\n${detection}\nfalsepositives:\n    - Unknown - review and tune before production use\nlevel: ${severity.toLowerCase()}\n`;
+    const ruleObj = {
+        title: ruleTitle,
+        id: ruleId,
+        status: 'experimental',
+        description: ruleDesc,
+        references: ['https://www.virustotal.com'],
+        date: date,
+        author: ruleAuthor,
+        tags: baseTags,
+        logsource: logsource,
+        detection: detection,
+        falsepositives: ['Unknown - review and tune before production use'],
+        level: severity.toLowerCase()
+    };
+
+    return yaml.dump(ruleObj, { lineWidth: -1, noRefs: true });
 };
 
 /**
@@ -185,6 +201,3 @@ export const detectIOCType = (ioc) => {
         /^(?:xn--[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/.test(ioc)) return 'domain';
     return 'unknown';
 };
-
-// Need crypto for UUID generation
-import crypto from 'crypto';

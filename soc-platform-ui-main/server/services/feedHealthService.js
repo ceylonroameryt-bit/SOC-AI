@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getSourcePermission, getPermissionStats } from './permissionService.js';
+import { saveSourceHealthToDb, isDbConnected } from '../db/db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -265,26 +266,38 @@ export function recordCollectionResult(sourceId, {
         }
     }
 
-    // Delayed evaluation: if status is healthy but exceeded interval * 3
+    // Stale/delayed evaluation: if status is healthy but exceeded interval * 3
     if (entry.status === 'healthy' && entry.lastSuccessAt) {
         const elapsedMin = (Date.now() - new Date(entry.lastSuccessAt).getTime()) / (1000 * 60);
         if (elapsedMin > (entry.expectedIntervalMinutes || 60) * 3) {
-            entry.status = 'delayed';
+            entry.status = 'stale';
         }
     }
 
     persistHealth();
+    if (isDbConnected()) {
+        saveSourceHealthToDb(entry).catch(() => {});
+    }
     return entry;
 }
 
 /**
  * Returns dynamic, authentic collection health status for a record.
+ * Follows Phase 4 Health Rules:
+ * - unknown: Source has never completed a real successful fetch.
+ * - healthy: Last real fetch succeeded AND occurred within expected interval.
+ * - degraded: Recent failures exist but had relatively recent success.
+ * - failed: Repeated consecutive collection failures (>= 3).
+ * - stale: Last successful fetch is older than expected (3x interval).
+ * - disabled: Source is not enabled.
  */
 export function resolveDynamicHealth(health, registryEntry) {
     if (!registryEntry.enabled) {
         return 'disabled';
     }
-    if (!health || (!health.lastAttemptAt && !health.lastSuccessAt)) {
+    if (!health || !health.lastSuccessAt) {
+        if (health && health.consecutiveFailures >= 3) return 'failed';
+        if (health && health.consecutiveFailures > 0) return 'degraded';
         return 'unknown';
     }
     if (health.consecutiveFailures >= 3) {
@@ -293,15 +306,12 @@ export function resolveDynamicHealth(health, registryEntry) {
     if (health.consecutiveFailures > 0) {
         return 'degraded';
     }
-    if (health.lastSuccessAt) {
-        const elapsedMin = (Date.now() - new Date(health.lastSuccessAt).getTime()) / (1000 * 60);
-        const interval = health.expectedIntervalMinutes || registryEntry.expectedIntervalMinutes || 60;
-        if (elapsedMin > interval * 3) {
-            return 'delayed';
-        }
-        return 'healthy';
+    const elapsedMin = (Date.now() - new Date(health.lastSuccessAt).getTime()) / (1000 * 60);
+    const interval = health.expectedIntervalMinutes || registryEntry.expectedIntervalMinutes || 60;
+    if (elapsedMin > interval * 3) {
+        return 'stale';
     }
-    return health.status || 'unknown';
+    return 'healthy';
 }
 
 /**
@@ -439,8 +449,9 @@ export function getFeedHealthStats() {
         retired: 0,
         rejected: 0,
 
-        // Overall health buckets (Legacy backward-compatible)
+        // Overall health buckets (Legacy backward-compatible + Phase 4)
         healthy: 0,
+        stale: 0,
         delayed: 0,
         degraded: 0,
         failed: 0,
@@ -449,6 +460,7 @@ export function getFeedHealthStats() {
 
         // Operational health for actively enabled/scheduled sources
         activeHealthy: 0,
+        activeStale: 0,
         activeDelayed: 0,
         activeDegraded: 0,
         activeFailed: 0,
@@ -497,7 +509,10 @@ export function getFeedHealthStats() {
         const dynamicStatus = resolveDynamicHealth(h, s);
 
         if (dynamicStatus !== 'disabled') {
-            if (dynamicStatus in stats) {
+            if (dynamicStatus === 'stale') {
+                stats.stale++;
+                stats.delayed++; // alias
+            } else if (dynamicStatus in stats) {
                 stats[dynamicStatus]++;
             } else {
                 stats.unknown++;
@@ -507,7 +522,10 @@ export function getFeedHealthStats() {
         // Operational health specific to enabled feeds
         if (s.enabled) {
             if (dynamicStatus === 'healthy') stats.activeHealthy++;
-            else if (dynamicStatus === 'delayed') stats.activeDelayed++;
+            else if (dynamicStatus === 'stale' || dynamicStatus === 'delayed') {
+                stats.activeStale++;
+                stats.activeDelayed++;
+            }
             else if (dynamicStatus === 'degraded') stats.activeDegraded++;
             else if (dynamicStatus === 'failed') stats.activeFailed++;
             else stats.activeUnknown++;

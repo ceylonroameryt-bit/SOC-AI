@@ -4,12 +4,6 @@ import { Bot, Sparkles, ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { API_BASE } from '../../config/api';
 
-interface BriefData {
-    headline?: string;
-    content?: string;
-    fallback?: string;
-}
-
 const AiExecutiveWidget = () => {
     const [rangeParams] = useSearchParams();
     const range = rangeParams.get('time') || rangeParams.get('range') || '24h';
@@ -17,24 +11,56 @@ const AiExecutiveWidget = () => {
     const [points, setPoints] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const [telemetry, setTelemetry] = useState<{
+        lastCollection: string | null;
+        lastArticle: string | null;
+        healthy: number;
+        degraded: number;
+        failed: number;
+        unknown: number;
+    }>({
+        lastCollection: null,
+        lastArticle: null,
+        healthy: 0,
+        degraded: 0,
+        failed: 0,
+        unknown: 0,
+    });
+
     useEffect(() => {
-        fetch(`${API_BASE}/api/ai/brief?time=${encodeURIComponent(range)}`)
-            .then(res => (res.ok ? res.json() : null))
-            .then((data: BriefData | null) => {
-                if (data?.headline) setHeadline(data.headline);
-                const text = data?.content || data?.fallback;
-                if (text) {
-                    const lines = text
-                        .split('\n')
-                        .filter(l => l.trim().startsWith('- **') || l.trim().startsWith('- '))
-                        .slice(0, 3)
-                        .map(l => l.replace(/^[-\s*#]+/, '').replace(/\*\*/g, '').replace(/`/g, '').trim());
-                    if (lines.length > 0) setPoints(lines);
-                }
-            })
-            .catch(() => {})
-            .finally(() => setLoading(false));
+        Promise.all([
+            fetch(`${API_BASE}/api/ai/brief?time=${encodeURIComponent(range)}`).then(r => r.ok ? r.json() : null),
+            fetch(`${API_BASE}/api/dashboard/snapshot?time=${encodeURIComponent(range)}`).then(r => r.ok ? r.json() : null)
+        ]).then(([data, snapshot]) => {
+            if (data?.headline) setHeadline(data.headline);
+            const text = data?.content || data?.fallback;
+            if (text && !text.includes('No briefing available because no intelligence reports were collected')) {
+                const lines = text
+                    .split('\n')
+                    .filter((l: string) => l.trim().startsWith('- **') || l.trim().startsWith('- '))
+                    .slice(0, 3)
+                    .map((l: string) => l.replace(/^[-\s*#]+/, '').replace(/\*\*/g, '').replace(/`/g, '').trim());
+                setPoints(lines);
+            } else {
+                setPoints([]);
+            }
+
+            if (snapshot) {
+                setTelemetry({
+                    lastCollection: snapshot.lastSuccessfulIngestion || snapshot.generatedAt || null,
+                    lastArticle: snapshot.latestPublication || null,
+                    healthy: snapshot.sources?.healthy || 0,
+                    degraded: snapshot.sources?.degraded || 0,
+                    failed: snapshot.sources?.failed || 0,
+                    unknown: snapshot.sources?.unknown || 0,
+                });
+            }
+        }).catch(() => {
+            setPoints([]);
+        }).finally(() => setLoading(false));
     }, [range]);
+
+    const rangeLabel = range === '24h' ? 'Last 24 Hours' : range === '7d' ? 'Last 7 Days' : range === '30d' ? 'Last 30 Days' : 'all time';
 
     return (
         <div className="glass-card p-4 sm:p-5 flex flex-col h-full bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/20">
@@ -68,14 +94,42 @@ const AiExecutiveWidget = () => {
                 </Link>
             </div>
 
-            {/* Campaign Summary Points */}
+            {/* Campaign Summary Points / Honest Empty State */}
             <div className="flex-1 space-y-2">
                 {loading ? (
                     <div className="py-6 flex justify-center text-xs text-slate-400 animate-pulse">
                         Synthesizing intelligence telemetry...
                     </div>
+                ) : points.length === 0 ? (
+                    <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80 text-xs text-slate-700 space-y-2">
+                        <p className="font-semibold text-slate-900">
+                            No intelligence collected for {rangeLabel}.
+                        </p>
+                        <div className="space-y-1 text-[11px] text-slate-600 font-sans">
+                            <div>
+                                <span className="text-slate-500">Last successful collection:</span>{' '}
+                                <strong className="text-slate-800 font-mono">{telemetry.lastCollection ? new Date(telemetry.lastCollection).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pending'}</strong>
+                            </div>
+                            <div>
+                                <span className="text-slate-500">Latest article:</span>{' '}
+                                <strong className="text-slate-800">{telemetry.lastArticle ? new Date(telemetry.lastArticle).toLocaleDateString() : 'No recent records'}</strong>
+                            </div>
+                            <div>
+                                <span className="text-slate-500">Sources:</span>{' '}
+                                <strong className="text-emerald-700">{telemetry.healthy} healthy</strong> ·{' '}
+                                <strong className="text-amber-700">{telemetry.degraded} degraded</strong> ·{' '}
+                                <strong className="text-rose-700">{telemetry.failed} failed</strong> ·{' '}
+                                <strong className="text-slate-500">{telemetry.unknown} unknown</strong>
+                            </div>
+                        </div>
+                        <div className="pt-1.5 border-t border-slate-200 text-[11px]">
+                            <Link to="/sources" className="text-blue-600 hover:underline font-semibold">
+                                Suggested action: Check collection status →
+                            </Link>
+                        </div>
+                    </div>
                 ) : (
-                    points.length === 0 ? <p className="text-xs text-slate-500">No briefing available for this window.</p> : points.map((pt, i) => (
+                    points.map((pt, i) => (
                         <div
                             key={i}
                             className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 hover:border-blue-300 transition-all flex items-start gap-2 text-xs text-slate-700 leading-relaxed shadow-2xs"

@@ -123,8 +123,10 @@ const INFORMATIONAL_SIGNALS = [
  * @returns {SeverityAssessment}
  */
 export function assessSeverity(item = {}) {
-    const title = (item.title || '').toLowerCase();
-    const snippet = (item.contentSnippet || '').toLowerCase();
+    const rawTitle = typeof item.title === 'string' ? item.title : (item.title?._ || item.title?.name || (item.title ? String(item.title) : ''));
+    const rawSnippet = typeof item.contentSnippet === 'string' ? item.contentSnippet : (typeof item.summary === 'string' ? item.summary : (typeof item.snippet === 'string' ? item.snippet : (item.contentSnippet ? String(item.contentSnippet) : '')));
+    const title = rawTitle.toLowerCase();
+    const snippet = rawSnippet.toLowerCase();
     const combined = `${title} ${snippet}`;
 
     let score = 20; // baseline score (low/general)

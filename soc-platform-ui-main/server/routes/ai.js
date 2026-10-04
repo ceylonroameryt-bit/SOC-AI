@@ -17,21 +17,70 @@ const aiLimiter = rateLimit({
     message: { error: 'AI rate limit exceeded. Please slow down.' }
 });
 
-// GET /api/ai/brief — Daily executive briefing
-router.get('/brief', async (req, res) => {
+import { getAuthoritativeNews } from '../services/newsService.js';
+import { saveAiBriefToDb, getLatestAiBriefFromDb, isDbConnected } from '../db/db.js';
+
+// GET /api/ai/brief — Executive briefing with PostgreSQL persistence and rate protection
+router.get('/brief', aiLimiter, async (req, res) => {
     try {
-        const news = filterByRange(getNews(), req.query.time || req.query.range || '24h').slice(0, 50);
+        const range = req.query.time || req.query.range || '24h';
+
+        // Check if fresh brief exists in PostgreSQL (< 4 hours old)
+        if (isDbConnected()) {
+            try {
+                const storedBrief = await getLatestAiBriefFromDb(range);
+                if (storedBrief && storedBrief.generated_at) {
+                    const ageMs = Date.now() - new Date(storedBrief.generated_at).getTime();
+                    if (ageMs < 4 * 60 * 60 * 1000) {
+                        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+                        return res.json({
+                            headline: storedBrief.headline,
+                            content: storedBrief.content,
+                            sources: storedBrief.sources || [],
+                            sourceCount: storedBrief.source_count || 0,
+                            reportingWindow: storedBrief.reporting_window || range,
+                            generationMethod: storedBrief.generation_method,
+                            generatedAt: storedBrief.generated_at,
+                            notice: storedBrief.notice,
+                            cached: true
+                        });
+                    }
+                }
+            } catch (dbErr) {
+                console.warn('[AI BRIEF] DB lookup failed:', dbErr.message);
+            }
+        }
+
+        const allNews = await getAuthoritativeNews();
+        const news = filterByRange(allNews, range).slice(0, 50);
         const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
         const rawThreats = loadThreats();
         const threats = isDemoEnabled
             ? [...rawThreats.filter(t => !t.isSimulated), ...DEMO_THREATS]
             : rawThreats.filter(t => !t.isSimulated);
 
-        const result = await generateExecutiveBrief(news, threats);
+        const result = await generateExecutiveBrief(news, threats, range);
+
+        // Save generated briefing to PostgreSQL
+        if (isDbConnected() && result.content && !result.error) {
+            try {
+                await saveAiBriefToDb({
+                    reportingWindow: range,
+                    headline: result.headline || 'Executive Threat Briefing',
+                    content: result.content,
+                    sources: result.sources || [],
+                    sourceCount: result.sourceCount || 0,
+                    generationMethod: result.generationMethod || 'heuristic-digest',
+                    notice: result.notice || 'AI-generated assessment'
+                });
+            } catch (saveErr) {
+                console.warn('[AI BRIEF] Failed to save brief to DB:', saveErr.message);
+            }
+        }
+
         res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
         res.json(result);
     } catch (err) {
-        // P0 item 22: no err.message in response
         console.error('[AI BRIEF]', err.message);
         res.status(500).json({ error: 'Failed to generate executive briefing.' });
     }

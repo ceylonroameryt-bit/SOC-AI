@@ -15,6 +15,7 @@ interface WebhookConfig {
 interface TestResult {
     success: boolean;
     message: string;
+    code?: string;
     results?: {
         slack: { success: boolean; error?: string; reason?: string };
         teams: { success: boolean; error?: string; reason?: string };
@@ -119,9 +120,42 @@ export default function Settings() {
         setTestResult(null);
         try {
             const resp = await fetch(`${API_BASE}/api/webhooks/test`, { method: 'POST' });
-            setTestResult(await resp.json());
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                if (resp.status === 401 || resp.status === 403 || data.code === 'AUTH_REQUIRED') {
+                    setTestResult({
+                        success: false,
+                        code: 'AUTH_REQUIRED',
+                        message: 'Authentication required — webhook testing requires administrative credentials. Guest access is view-only.'
+                    });
+                } else if (resp.status === 429 || data.code === 'RATE_LIMITED') {
+                    setTestResult({
+                        success: false,
+                        code: 'RATE_LIMITED',
+                        message: 'Rate limited — too many test attempts. Please wait.'
+                    });
+                } else if (resp.status === 503 || data.code === 'NO_WEBHOOK_CONFIGURED') {
+                    setTestResult({
+                        success: false,
+                        code: 'NO_WEBHOOK_CONFIGURED',
+                        message: 'No webhook configured. Add webhook URLs to .env to enable dispatch.'
+                    });
+                } else {
+                    setTestResult({
+                        success: false,
+                        code: data.code || 'DELIVERY_FAILED',
+                        message: data.message || 'Delivery failed — check destination URL and connectivity.'
+                    });
+                }
+            } else {
+                setTestResult({
+                    success: true,
+                    code: 'TEST_SUCCESSFUL',
+                    message: data.message || 'Test alert sent successfully!'
+                });
+            }
         } catch {
-            setTestResult({ success: false, message: 'Request failed. Is the server running?' });
+            setTestResult({ success: false, code: 'NETWORK_ERROR', message: 'Request failed. Is the server running?' });
         } finally {
             setTesting(false);
         }

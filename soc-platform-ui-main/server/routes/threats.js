@@ -84,26 +84,44 @@ export const saveThreats = (data) => {
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 };
 
-router.get('/', (req, res) => {
-    const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
-    const rawThreats = loadThreats();
+import { getThreatsFromDb, isDbConnected } from '../db/db.js';
 
-    // Clean any old corrupted or mock random threats with empty sha256
-    const validRaw = rawThreats.filter(t => {
-        const hash = t.ioc?.sha256;
-        return hash !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
-    });
+router.get('/', async (req, res) => {
+    try {
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+        let rawThreats = [];
 
-    let threatsToReturn;
-    if (isDemoEnabled) {
-        // Return demo threats combined with real threats
-        threatsToReturn = [...validRaw.filter(t => !t.isSimulated), ...DEMO_THREATS];
-    } else {
-        // Production: return ONLY real non-simulated operational threats
-        threatsToReturn = validRaw.filter(t => !t.isSimulated && t.environment !== 'demo');
+        if (isDbConnected()) {
+            try {
+                rawThreats = await getThreatsFromDb({ limit: 1000 });
+            } catch (err) {
+                console.warn('[THREATS] DB query failed, falling back to disk cache:', err.message);
+                rawThreats = loadThreats();
+            }
+        } else {
+            rawThreats = loadThreats();
+        }
+
+        // Clean any old corrupted or mock random threats with empty sha256
+        const validRaw = (rawThreats || []).filter(t => {
+            const hash = t.ioc?.sha256;
+            return hash !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+        });
+
+        let threatsToReturn;
+        if (isDemoEnabled) {
+            // Return demo threats combined with real threats
+            threatsToReturn = [...validRaw.filter(t => !t.isSimulated), ...DEMO_THREATS];
+        } else {
+            // Production: return ONLY real non-simulated operational threats
+            threatsToReturn = validRaw.filter(t => !t.isSimulated && t.environment !== 'demo');
+        }
+
+        res.json(threatsToReturn);
+    } catch (err) {
+        console.error('[THREATS ROUTE ERROR]', err);
+        res.status(500).json({ error: 'Failed to retrieve threats' });
     }
-
-    res.json(threatsToReturn);
 });
 
 router.get('/status', (req, res) => {
@@ -116,17 +134,33 @@ router.get('/status', (req, res) => {
     });
 });
 
-router.get('/:id', (req, res) => {
-    const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
-    const all = isDemoEnabled
-        ? [...loadThreats(), ...DEMO_THREATS]
-        : loadThreats().filter(t => !t.isSimulated);
+router.get('/:id', async (req, res) => {
+    try {
+        const isDemoEnabled = process.env.ENABLE_DEMO_DATA === 'true';
+        let all = [];
 
-    const threat = all.find(t => t.id === req.params.id);
-    if (threat) {
-        res.json(threat);
-    } else {
-        res.status(404).json({ error: 'Threat not found', id: req.params.id });
+        if (isDbConnected()) {
+            try {
+                all = await getThreatsFromDb({ limit: 1000 });
+            } catch {
+                all = loadThreats();
+            }
+        } else {
+            all = loadThreats();
+        }
+
+        const candidatePool = isDemoEnabled
+            ? [...all, ...DEMO_THREATS]
+            : all.filter(t => !t.isSimulated && t.environment !== 'demo');
+
+        const threat = candidatePool.find(t => t.id === req.params.id);
+        if (threat) {
+            res.json(threat);
+        } else {
+            res.status(404).json({ error: 'Threat not found', id: req.params.id });
+        }
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to retrieve threat' });
     }
 });
 

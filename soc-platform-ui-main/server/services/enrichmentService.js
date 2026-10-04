@@ -303,9 +303,60 @@ export const enrichCVE = async (cveId) => {
     return result;
 };
 
+// ── Domain Enrichment (VirusTotal) ──────────────────────────────────────────
+export const enrichDomain = async (domain) => {
+    if (!domain) return null;
+    const cleanDomain = String(domain).toLowerCase().trim();
+    const cacheKey = `vt:domain:${cleanDomain}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
+    const result = {
+        domain: cleanDomain,
+        source: 'VirusTotal',
+        maliciousEngines: 0,
+        totalEngines: 0,
+        maliciousnessScore: 0,
+        reputation: 0,
+        categories: [],
+        registrar: null,
+        creationDate: null,
+        vtLink: `https://www.virustotal.com/gui/domain/${cleanDomain}`,
+        enrichedAt: new Date().toISOString(),
+        error: null,
+    };
+
+    try {
+        if (!process.env.VIRUSTOTAL_API_KEY) {
+            result.error = 'VIRUSTOTAL_API_KEY not configured';
+            return result;
+        }
+        const data = await vtRequest(`domains/${cleanDomain}`);
+        const stats = data?.data?.attributes?.last_analysis_stats || {};
+        const malicious = (stats.malicious || 0) + (stats.suspicious || 0);
+        const total = Object.values(stats).reduce((a, b) => a + b, 0);
+
+        result.maliciousEngines = malicious;
+        result.totalEngines = total;
+        result.maliciousnessScore = total > 0 ? Math.round((malicious / total) * 100) : 0;
+        result.reputation = data?.data?.attributes?.reputation || 0;
+        result.categories = Object.values(data?.data?.attributes?.categories || {});
+        result.registrar = data?.data?.attributes?.registrar || null;
+        result.creationDate = data?.data?.attributes?.creation_date
+            ? new Date(data.data.attributes.creation_date * 1000).toISOString()
+            : null;
+    } catch (err) {
+        result.error = err.message;
+        console.warn(`[VT] Domain enrichment failed for ${cleanDomain}:`, err.message);
+    }
+
+    setCache(cacheKey, result);
+    return result;
+};
+
 // ── Bulk Enrichment ───────────────────────────────────────────────────────────
 export const enrichAllIOCs = async (iocs) => {
-    const results = { ips: [], hashes: [], cves: [] };
+    const results = { ips: [], hashes: [], cves: [], domains: [] };
 
     // Run enrichments in parallel with concurrency cap
     const ipPromises = (iocs.ips || []).slice(0, 5).map(async ip => {
@@ -324,9 +375,14 @@ export const enrichAllIOCs = async (iocs) => {
         enrichCVE(cve).catch(() => null)
     );
 
+    const domainPromises = (iocs.domains || []).slice(0, 3).map(domain =>
+        enrichDomain(domain).catch(() => null)
+    );
+
     results.ips = (await Promise.all(ipPromises)).filter(Boolean);
     results.hashes = (await Promise.all(hashPromises)).filter(Boolean);
     results.cves = (await Promise.all(cvePromises)).filter(Boolean);
+    results.domains = (await Promise.all(domainPromises)).filter(Boolean);
 
     return results;
 };

@@ -26,7 +26,8 @@ interface SourceHealth {
 
 interface SourcePermission {
     sourceId: string;
-    permissionStatus: 'permitted_intended_use' | 'restricted' | 'denied' | 'pending';
+    permissionStatus: 'permitted_intended_use' | 'permitted_for_intended_use' | 'restricted' | 'denied' | 'pending';
+    permissionOutcome?: string;
     permissionBasis: string;
     licenseType?: string;
     attributionRequired: boolean;
@@ -226,8 +227,12 @@ export const Sources: React.FC = () => {
             }
 
             if (selectedPermission !== 'all') {
-                const pStatus = (s.permission?.permissionStatus || 'pending').toLowerCase();
-                if (pStatus !== selectedPermission.toLowerCase()) {
+                const pStatus = (s.permission?.permissionOutcome || s.permission?.permissionStatus || 'pending').toLowerCase();
+                if (selectedPermission === 'permitted_intended_use' || selectedPermission === 'permitted_for_intended_use') {
+                    if (pStatus !== 'permitted_intended_use' && pStatus !== 'permitted_for_intended_use') {
+                        return false;
+                    }
+                } else if (pStatus !== selectedPermission.toLowerCase()) {
                     return false;
                 }
             }
@@ -370,6 +375,7 @@ export const Sources: React.FC = () => {
         const status = perm?.permissionStatus || 'pending';
         switch (status) {
             case 'permitted_intended_use':
+            case 'permitted_for_intended_use':
                 return (
                     <span
                         className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"

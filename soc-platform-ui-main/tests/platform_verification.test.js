@@ -519,8 +519,8 @@ describe('NO ENTRY SOC Intelligence Platform Verification Suite', () => {
 
         const sample = sources[0];
         assert.ok(sample.health, 'Source must have health object');
-        assert.ok(['healthy', 'degraded', 'failed', 'delayed', 'unknown'].includes(sample.health.status));
-        assert.ok(typeof sample.health.lastAttemptAt === 'string');
+        assert.ok(['healthy', 'degraded', 'failed', 'delayed', 'stale', 'unknown'].includes(sample.health.status));
+        assert.ok(sample.health.lastAttemptAt === null || typeof sample.health.lastAttemptAt === 'string');
         assert.ok(typeof sample.health.consecutiveFailures === 'number');
     });
 

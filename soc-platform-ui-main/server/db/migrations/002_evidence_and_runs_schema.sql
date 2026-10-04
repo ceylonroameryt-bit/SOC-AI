@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS sources (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
 CREATE INDEX IF NOT EXISTS idx_sources_active ON sources(is_active);
 CREATE INDEX IF NOT EXISTS idx_sources_category ON sources(category);
 
@@ -42,6 +43,8 @@ CREATE TABLE IF NOT EXISTS collection_runs (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+ALTER TABLE collection_runs ADD COLUMN IF NOT EXISTS source_id VARCHAR(100);
+ALTER TABLE collection_runs ADD COLUMN IF NOT EXISTS outcome VARCHAR(20);
 CREATE INDEX IF NOT EXISTS idx_collection_runs_source ON collection_runs(source_id);
 CREATE INDEX IF NOT EXISTS idx_collection_runs_started ON collection_runs(started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_collection_runs_outcome ON collection_runs(outcome);
@@ -85,6 +88,7 @@ CREATE TABLE IF NOT EXISTS analyst_actions (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+ALTER TABLE analyst_actions ADD COLUMN IF NOT EXISTS threat_id UUID REFERENCES threats(id) ON DELETE CASCADE;
 CREATE INDEX IF NOT EXISTS idx_analyst_actions_threat ON analyst_actions(threat_id);
 CREATE INDEX IF NOT EXISTS idx_analyst_actions_created ON analyst_actions(created_at DESC);
 
@@ -129,14 +133,24 @@ ALTER TABLE analyst_actions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE organization_watchlists ENABLE ROW LEVEL SECURITY;
 ALTER TABLE event_groups ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read on sources" ON sources;
 CREATE POLICY "Public read on sources" ON sources FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read on assessments" ON threat_assessments;
 CREATE POLICY "Public read on assessments" ON threat_assessments FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read on event_groups" ON event_groups;
 CREATE POLICY "Public read on event_groups" ON event_groups FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read on collection_runs" ON collection_runs;
 CREATE POLICY "Public read on collection_runs" ON collection_runs FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Backend full on sources" ON sources;
 CREATE POLICY "Backend full on sources" ON sources FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Backend full on collection_runs" ON collection_runs;
 CREATE POLICY "Backend full on collection_runs" ON collection_runs FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Backend full on assessments" ON threat_assessments;
 CREATE POLICY "Backend full on assessments" ON threat_assessments FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Backend full on analyst_actions" ON analyst_actions;
 CREATE POLICY "Backend full on analyst_actions" ON analyst_actions FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Backend full on watchlists" ON organization_watchlists;
 CREATE POLICY "Backend full on watchlists" ON organization_watchlists FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Backend full on event_groups" ON event_groups;
 CREATE POLICY "Backend full on event_groups" ON event_groups FOR ALL USING (true) WITH CHECK (true);

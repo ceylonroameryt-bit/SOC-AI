@@ -61,6 +61,8 @@ function persistActions() {
 
 loadActions();
 
+import { saveAnalystActionToDb, getAnalystRecordFromDb, isDbConnected } from '../db/db.js';
+
 /**
  * GET /api/analyst/status
  * Returns current analyst workflow state across all records.
@@ -73,10 +75,22 @@ router.get('/status', requireApiKeyMiddleware('INGEST_API_KEY'), (req, res) => {
 
 /**
  * GET /api/analyst/record/:id
- * Returns workflow status and action audit history for a single record.
+ * Returns workflow status and action audit history for a single record from PostgreSQL or memory.
  */
-router.get('/record/:id', (req, res) => {
+router.get('/record/:id', async (req, res) => {
     const recordId = req.params.id;
+
+    if (isDbConnected()) {
+        try {
+            const dbRecord = await getAnalystRecordFromDb(recordId);
+            if (dbRecord) {
+                return res.json(dbRecord);
+            }
+        } catch (err) {
+            console.warn('[ANALYST] Failed to load from DB:', err.message);
+        }
+    }
+
     const state = analystStates.get(recordId) || {
         recordId,
         status: 'new', // 'new' | 'reviewing' | 'action_required' | 'closed'
@@ -93,8 +107,9 @@ router.get('/record/:id', (req, res) => {
  * Records an analyst action (status change, note added, assignment, dismissal).
  * P0 item 3: rate-limited and auth-required.
  * P0 item 15: whitelisted actionType/status, capped note, UUID action id.
+ * Phase 9: PostgreSQL persistence as single source of truth.
  */
-router.post('/action', analystLimiter, requireApiKeyMiddleware('INGEST_API_KEY'), (req, res) => {
+router.post('/action', analystLimiter, requireApiKeyMiddleware('INGEST_API_KEY'), async (req, res) => {
     const {
         recordId,
         actionType, // must be one of ALLOWED_ACTION_TYPES
@@ -146,12 +161,12 @@ router.post('/action', analystLimiter, requireApiKeyMiddleware('INGEST_API_KEY')
 
     const actionEntry = {
         actionId: crypto.randomUUID(), // P0 item 15: use UUID not timestamp
+        recordId: safeRecordId,
         actionType,
         previousValue,
         newValue: value,
         comment: (comment && typeof comment === 'string') ? comment.slice(0, 2000) : null,
-        // P0 item 15: take analystId from auth header, not from request body
-        analystId: req.headers['x-api-key'] ? 'api-key-authenticated' : 'unknown',
+        analystId: req.headers['x-api-key'] ? 'api-key-authenticated' : 'analyst',
         timestamp: new Date().toISOString()
     };
 
@@ -168,9 +183,29 @@ router.post('/action', analystLimiter, requireApiKeyMiddleware('INGEST_API_KEY')
 
     state.updatedAt = new Date().toISOString();
     state.history.unshift(actionEntry);
-    // P0 item 15: cap history length to prevent unbounded growth
     if (state.history.length > MAX_HISTORY_LENGTH) {
         state.history = state.history.slice(0, MAX_HISTORY_LENGTH);
+    }
+
+    // Persist to PostgreSQL (authoritative source of truth)
+    if (isDbConnected()) {
+        try {
+            await saveAnalystActionToDb({
+                recordId: safeRecordId,
+                status: state.status,
+                notes: state.notes,
+                assignee: state.assignee,
+                dismissedReason: state.dismissedReason,
+                action: actionEntry
+            });
+        } catch (dbErr) {
+            console.error('[ANALYST ROUTE] Failed to persist action to PostgreSQL:', dbErr);
+            return res.status(500).json({
+                success: false,
+                code: 'PERSISTENCE_FAILED',
+                error: 'Failed to persist analyst action to authoritative database.'
+            });
+        }
     }
 
     persistActions();

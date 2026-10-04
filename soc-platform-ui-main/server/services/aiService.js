@@ -96,7 +96,21 @@ const callLLM = async (prompt, maxTokens = 400) => {
 let briefCache = { content: null, generatedAt: null };
 const BRIEF_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
 
-export const generateExecutiveBrief = async (newsItems = [], threats = []) => {
+export const generateExecutiveBrief = async (newsItems = [], threats = [], range = '24h') => {
+    if (!newsItems || newsItems.length === 0) {
+        return {
+            headline: 'No intelligence collected for this period',
+            content: 'No briefing available because no intelligence reports were collected for this period.',
+            sources: [],
+            sourceCount: 0,
+            reportingWindow: range,
+            generatedAt: new Date().toISOString(),
+            generationMethod: 'empty_state',
+            notice: 'AI-generated notice: No intelligence collected in window.',
+            cached: false
+        };
+    }
+
     const evidenceKey = JSON.stringify([newsItems, threats]);
     // Cache only when the underlying evidence is unchanged.
     if (briefCache.evidenceKey === evidenceKey && briefCache.content && briefCache.generatedAt && (Date.now() - briefCache.generatedAt < BRIEF_TTL_MS)) {
@@ -146,19 +160,41 @@ Format your response exactly as:
 
     try {
         let content = null;
+        let method = 'heuristic-digest';
         if (process.env.AI_SERVICE_URL) {
             content = await callPythonAI(criticalNews);
+            if (content) method = 'python-ai';
         }
         if (!content) {
             content = await callLLM(prompt, 600);
+            method = process.env.OPENAI_API_KEY ? 'openai' : 'ollama';
         }
-        briefCache = { content, evidenceKey, sources, notice: 'AI-generated assessment based on the sources below; analyst review required.', generatedAt: Date.now(), cached: false };
+        briefCache = {
+            content,
+            evidenceKey,
+            sources,
+            sourceCount: sources.length,
+            reportingWindow: range,
+            generationMethod: method,
+            notice: 'AI-generated assessment based on verified sources; analyst review required.',
+            generatedAt: Date.now(),
+            cached: false
+        };
         const { evidenceKey: _key, ...publicBrief } = briefCache;
         return publicBrief;
 
     } catch (err) {
         console.error('[AI] Executive brief generation failed:', err.message);
-        return { ...buildDigest(newsItems, 'all'), error: err.message };
+        const digest = buildDigest(newsItems, range);
+        return {
+            ...digest,
+            sources,
+            sourceCount: sources.length,
+            reportingWindow: range,
+            generationMethod: 'heuristic-digest',
+            notice: 'Automated heuristic digest generated (LLM service unconfigured or unavailable).',
+            error: err.message
+        };
     }
 };
 
