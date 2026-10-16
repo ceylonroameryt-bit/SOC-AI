@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "soc-platform-ui-main"
-  ],
   "scripts": {
     "dev": "npm run dev --prefix soc-platform-ui-main",
     "build": "npm run build --prefix soc-platform-ui-main",
