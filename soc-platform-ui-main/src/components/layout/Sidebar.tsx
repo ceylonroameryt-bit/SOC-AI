@@ -162,21 +162,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
     return (
         <aside
             aria-label="Primary Navigation Sidebar"
-            className="w-[216px] h-full bg-[#0B132B] text-slate-300 flex flex-col justify-between flex-shrink-0 select-none z-30 shadow-md border-r border-slate-800/80"
+            className="w-[216px] h-full bg-[#07090E] text-slate-300 flex flex-col justify-between flex-shrink-0 select-none z-30 shadow-md border-r border-white/5"
         >
             {/* Top Brand Header */}
             <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
-                <div className="h-16 px-4 flex items-center justify-between border-b border-slate-800/80 flex-shrink-0">
+                <div className="h-16 px-4 flex items-center justify-between border-b border-white/5 flex-shrink-0">
                     <Link to="/intelligence" onClick={onClose} className="flex items-center gap-2.5 group">
-                        <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold shadow-sm shadow-teal-600/30">
-                            <Shield className="w-4 h-4 text-white" aria-hidden="true" />
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-black font-bold shadow-sm shadow-amber-500/30">
+                            <Shield className="w-4 h-4 text-black" aria-hidden="true" />
                         </div>
                         <div className="leading-tight">
                             <span className="font-bold text-white text-sm tracking-tight block">
                                 NO ENTRY
                             </span>
-                            <span className="text-[10px] text-teal-400 block font-normal tracking-wide">
-                                Calm Resilience Grid
+                            <span className="text-[10px] text-amber-400 block font-normal tracking-wide">
+                                Obsidian AI Grid
                             </span>
                         </div>
                     </Link>
@@ -194,7 +194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
 
                 {/* Scrollable Navigation */}
                 <nav className="p-3 space-y-1 overflow-y-auto flex-1 custom-scrollbar" aria-label="Main navigation">
-                    <div className="px-2 pt-1 pb-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                    <div className="px-2 pt-1 pb-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
                         Navigation
                     </div>
 
@@ -209,8 +209,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                 <div
                                     className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                                         active
-                                            ? 'bg-teal-600 text-white shadow-xs font-semibold'
-                                            : 'text-slate-300 hover:text-teal-200 hover:bg-slate-800/60'
+                                            ? 'bg-amber-500 text-black shadow-xs font-bold'
+                                            : 'text-slate-300 hover:text-amber-300 hover:bg-white/5'
                                     }`}
                                     role="button"
                                     tabIndex={0}
@@ -232,7 +232,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                 >
                                     {hasSubLinks ? (
                                         <>
-                                            <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-slate-400'}`} aria-hidden="true" />
+                                            <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-black' : 'text-slate-400'}`} aria-hidden="true" />
                                             <span className="flex-1 truncate">{section.label}</span>
                                             {isExpanded
                                                 ? <ChevronDown className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
@@ -246,7 +246,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                             className="flex items-center gap-2.5 w-full"
                                             aria-current={active ? 'page' : undefined}
                                         >
-                                            <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-white' : 'text-slate-400'}`} aria-hidden="true" />
+                                            <Icon className={`w-4 h-4 flex-shrink-0 ${active ? 'text-black' : 'text-slate-400'}`} aria-hidden="true" />
                                             <span className="flex-1 truncate">{section.label}</span>
                                         </Link>
                                     )}
@@ -265,8 +265,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                                     onClick={onClose}
                                                     className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
                                                         subActive
-                                                            ? 'bg-teal-950/70 text-teal-300 font-semibold border-l-2 border-teal-500'
-                                                            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                                                            ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-500'
+                                                            : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
                                                     }`}
                                                     aria-current={subActive ? 'page' : undefined}
                                                 >
@@ -283,7 +283,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
 
                     {/* Quick Access Frameworks */}
                     <div className="pt-3">
-                        <div className="px-2 py-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                        <div className="px-2 py-1 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
                             Frameworks & Rules
                         </div>
                         <div className="space-y-0.5 mt-0.5">
@@ -297,8 +297,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                         onClick={onClose}
                                         className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-medium transition-colors ${
                                             active
-                                                ? 'bg-teal-600 text-white font-semibold shadow-xs'
-                                                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                                                ? 'bg-amber-500 text-black font-bold shadow-xs'
+                                                : 'text-slate-400 hover:text-white hover:bg-white/5'
                                         }`}
                                     >
                                         <SubIcon className="w-3.5 h-3.5 text-slate-400" />
@@ -312,18 +312,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
             </div>
 
             {/* Bottom Brand / Version Status */}
-            <div className="p-3 border-t border-slate-800/80 bg-[#070D18] text-[11px] text-slate-400 space-y-2">
+            <div className="p-3 border-t border-white/5 bg-[#050608] text-[11px] text-slate-400 space-y-2">
                 {user && (
-                    <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                    <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-[#0C0E14] border border-white/10">
                         <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-6 h-6 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center font-bold text-[10px]">
+                            <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center font-bold text-[10px]">
                                 {user.initials || 'SA'}
                             </div>
                             <div className="min-w-0">
-                                <span className="block text-[11px] font-semibold text-slate-200 truncate">
+                                <span className="block text-[11px] font-semibold text-white truncate">
                                     {user.name}
                                 </span>
-                                <span className="block text-[9px] text-teal-400 font-mono truncate">
+                                <span className="block text-[9px] text-amber-400 font-mono truncate">
                                     {user.role}
                                 </span>
                             </div>
@@ -345,10 +345,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                 )}
                 <div className="flex items-center justify-between text-[11px] px-1">
                     <span className="font-medium text-slate-300">NO ENTRY SOC</span>
-                    <span className="text-[10px] text-teal-400 font-mono">v2.4.0</span>
+                    <span className="text-[10px] text-amber-400 font-mono">v4.2.0</span>
                 </div>
-                <div className="text-[10px] text-slate-400 px-1 truncate">
-                    Calm Resilience Defense Grid
+                <div className="text-[10px] text-slate-500 px-1 truncate">
+                    Radial Obsidian Neural Grid
                 </div>
             </div>
         </aside>

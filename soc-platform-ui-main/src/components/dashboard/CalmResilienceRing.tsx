@@ -48,43 +48,43 @@ export const CalmResilienceRing: React.FC<ResilienceProps> = ({ timeRange = '24h
     const strokeDashoffset = circumference - (stats.managedRatio / 100) * circumference;
 
     return (
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs relative overflow-hidden">
-            {/* Subtle Soothing Teal Ambient Background */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="rounded-2xl border border-white/10 bg-[#0C0E14] p-5 sm:p-6 shadow-xl relative overflow-hidden">
+            {/* Subtle Radiant Amber-Gold Focal Spotlight */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
                 {/* Left: Psychological Stress-Reduction Headline */}
                 <div className="max-w-xl">
                     <div className="flex items-center gap-2 mb-2">
-                        <span className="section-label">Emotional Regulation · Resilience Overview</span>
+                        <span className="section-label">Obsidian AI · Defense Resilience</span>
                         <div className="availability-chip text-[11px] py-0.5 px-2.5">
                             <span className="chip-dot"></span>
-                            <span className="font-semibold text-teal-800">Defensive Shield Active</span>
+                            <span className="font-semibold text-amber-400">Autonomous Shield Active</span>
                         </div>
                     </div>
 
-                    <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
                         You are protected. Perimeter status optimal.
                     </h2>
                     
-                    <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
-                        <strong className="text-teal-700 font-semibold">{stats.resolvedToday} threat events</strong> have been automatically filtered, correlated, and contained. Zero unmanaged incident escalations across enterprise telemetry feeds.
+                    <p className="text-xs sm:text-sm text-slate-400 mt-1.5 leading-relaxed">
+                        <strong className="text-amber-400 font-semibold">{stats.resolvedToday} threat events</strong> have been autonomously filtered, correlated, and neutralized. Zero perimeter breaches detected across enterprise telemetry nodes.
                     </p>
 
                     {/* Stress Inoculation Positive Metric Pills */}
                     <div className="flex flex-wrap items-center gap-2.5 mt-3.5">
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200/80 text-xs font-semibold text-teal-900">
-                            <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0" />
-                            <span>{stats.resolvedToday} Threats Neutralized Today</span>
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs font-semibold text-amber-300">
+                            <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                            <span>{stats.resolvedToday} Threats Mitigated Today</span>
                         </div>
 
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700">
-                            <ShieldCheck className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-medium text-slate-300">
+                            <ShieldCheck className="w-4 h-4 text-amber-400 flex-shrink-0" />
                             <span>0 Active Perimeter Breaches</span>
                         </div>
 
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200/80 text-xs font-medium text-amber-900">
-                            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-950/40 border border-amber-600/40 text-xs font-medium text-amber-300">
+                            <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
                             <span>{stats.activeCritical + stats.activeHigh} Under Guarded Review</span>
                         </div>
                     </div>
@@ -101,7 +101,7 @@ export const CalmResilienceRing: React.FC<ResilienceProps> = ({ timeRange = '24h
                                     cx="70"
                                     cy="70"
                                     r={radius}
-                                    className="text-slate-100"
+                                    className="text-white/10"
                                     strokeWidth="12"
                                     stroke="currentColor"
                                     fill="transparent"
@@ -111,19 +111,19 @@ export const CalmResilienceRing: React.FC<ResilienceProps> = ({ timeRange = '24h
                                     cx="70"
                                     cy="70"
                                     r={radius}
-                                    className="text-amber-500/30"
+                                    className="text-amber-600/20"
                                     strokeWidth="12"
                                     strokeDasharray={circumference}
                                     strokeDashoffset={0}
                                     stroke="currentColor"
                                     fill="transparent"
                                 />
-                                {/* Managed Progress Ring in soothing Teal */}
+                                {/* Managed Progress Ring in Radiant Gold */}
                                 <circle
                                     cx="70"
                                     cy="70"
                                     r={radius}
-                                    className="text-teal-600 transition-all duration-1000 ease-out"
+                                    className="text-amber-500 transition-all duration-1000 ease-out"
                                     strokeWidth="12"
                                     strokeDasharray={circumference}
                                     strokeDashoffset={strokeDashoffset}
@@ -134,18 +134,18 @@ export const CalmResilienceRing: React.FC<ResilienceProps> = ({ timeRange = '24h
                             </svg>
                             {/* Inner Metric Label */}
                             <div className="absolute flex flex-col items-center justify-center text-center">
-                                <span className="text-2xl font-black text-slate-900 tracking-tight">
+                                <span className="text-2xl font-black text-white tracking-tight">
                                     {stats.managedRatio}%
                                 </span>
-                                <span className="text-[10px] font-bold text-teal-700 uppercase tracking-wider">
+                                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
                                     Managed
                                 </span>
                             </div>
                         </div>
-                        <span className="text-xs font-bold text-slate-800 mt-2">
+                        <span className="text-xs font-bold text-white mt-2">
                             Resolution Ratio
                         </span>
-                        <span className="text-[11px] text-slate-500">
+                        <span className="text-[11px] text-slate-400">
                             {stats.unmanagedRatio}% In Triage
                         </span>
                     </div>
@@ -158,7 +158,7 @@ export const CalmResilienceRing: React.FC<ResilienceProps> = ({ timeRange = '24h
                                     cx="70"
                                     cy="70"
                                     r={radius}
-                                    className="text-slate-100"
+                                    className="text-white/10"
                                     strokeWidth="12"
                                     stroke="currentColor"
                                     fill="transparent"
@@ -167,7 +167,7 @@ export const CalmResilienceRing: React.FC<ResilienceProps> = ({ timeRange = '24h
                                     cx="70"
                                     cy="70"
                                     r={radius}
-                                    className="text-teal-500 transition-all duration-1000 ease-out"
+                                    className="text-amber-400 transition-all duration-1000 ease-out"
                                     strokeWidth="12"
                                     strokeDasharray={circumference}
                                     strokeDashoffset={circumference - (stats.stabilityScore / 100) * circumference}
@@ -177,18 +177,18 @@ export const CalmResilienceRing: React.FC<ResilienceProps> = ({ timeRange = '24h
                                 />
                             </svg>
                             <div className="absolute flex flex-col items-center justify-center text-center">
-                                <span className="text-2xl font-black text-slate-900 tracking-tight">
+                                <span className="text-2xl font-black text-white tracking-tight">
                                     {stats.stabilityScore}%
                                 </span>
-                                <span className="text-[10px] font-bold text-teal-700 uppercase tracking-wider">
+                                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
                                     Optimal
                                 </span>
                             </div>
                         </div>
-                        <span className="text-xs font-bold text-slate-800 mt-2">
+                        <span className="text-xs font-bold text-white mt-2">
                             Grid Stability
                         </span>
-                        <span className="text-[11px] text-slate-500">
+                        <span className="text-[11px] text-slate-400">
                             Defense SLA 99.9%
                         </span>
                     </div>

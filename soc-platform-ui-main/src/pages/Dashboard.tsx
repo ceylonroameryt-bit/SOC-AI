@@ -67,25 +67,25 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* Header & Calm Under Fire Switcher */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+            {/* Header & Radial Obsidian Switcher */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-white/10">
                 <div>
                     <div className="flex items-center gap-2 mb-1.5">
-                        <span className="section-label">Calm Under Fire · Resilience Grid</span>
+                        <span className="section-label">Obsidian AI · Autonomous Mission Control</span>
                         <div
                             className="availability-chip text-[10px] py-0.5 px-2"
                             role="status"
                             aria-label="Threat Radar status: Active"
                         >
                             <span className="chip-dot" aria-hidden="true"></span>
-                            <span className="font-semibold text-teal-800">Perimeter Optimal</span>
+                            <span className="font-semibold text-amber-400">AI Perimeter Optimal</span>
                         </div>
                     </div>
-                    <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-                        Security Operations &amp; Intelligence Dashboard
+                    <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                        Security Operations &amp; AI Intelligence Dashboard
                     </h1>
-                    <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
-                        Operational threat intelligence and automated triage aggregated across monitored vendor labs, advisories, and CISA feeds.
+                    <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                        Autonomous threat intelligence, multi-agent triage, and vector correlation across enterprise telemetry.
                     </p>
                 </div>
 
@@ -93,7 +93,7 @@ const Dashboard = () => {
                 <div
                     role="tablist"
                     aria-label="Dashboard views"
-                    className="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200"
+                    className="flex flex-wrap items-center gap-1.5 bg-[#0C0E14] p-1 rounded-xl border border-white/10"
                 >
                     <button
                         id="tab-overview"
@@ -102,10 +102,10 @@ const Dashboard = () => {
                         aria-controls="panel-overview"
                         tabIndex={activeTab === 'overview' ? 0 : -1}
                         onClick={() => handleTabChange('overview', 'Mission Control')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-teal-600 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-amber-500 ${
                             activeTab === 'overview'
-                                ? 'bg-white text-teal-800 shadow-sm border border-slate-200'
-                                : 'text-slate-700 hover:text-slate-900'
+                                ? 'bg-amber-500 text-black shadow-sm font-extrabold'
+                                : 'text-slate-400 hover:text-white'
                         }`}
                     >
                         <LayoutDashboard className="w-3.5 h-3.5" aria-hidden="true" />
@@ -119,10 +119,10 @@ const Dashboard = () => {
                         aria-controls="panel-news"
                         tabIndex={activeTab === 'news' ? 0 : -1}
                         onClick={() => handleTabChange('news', 'Global Stream')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-teal-600 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-amber-500 ${
                             activeTab === 'news'
-                                ? 'bg-white text-teal-800 shadow-sm border border-slate-200'
-                                : 'text-slate-700 hover:text-slate-900'
+                                ? 'bg-amber-500 text-black shadow-sm font-extrabold'
+                                : 'text-slate-400 hover:text-white'
                         }`}
                     >
                         <Newspaper className="w-3.5 h-3.5" aria-hidden="true" />
@@ -136,10 +136,10 @@ const Dashboard = () => {
                         aria-controls="panel-critical"
                         tabIndex={activeTab === 'critical' ? 0 : -1}
                         onClick={() => handleTabChange('critical', 'Guarded Radar')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-teal-600 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-amber-500 ${
                             activeTab === 'critical'
-                                ? 'bg-amber-600 text-white shadow-sm shadow-amber-500/20'
-                                : 'text-amber-800 hover:text-amber-900 hover:bg-amber-50'
+                                ? 'bg-amber-500 text-black shadow-sm font-extrabold'
+                                : 'text-amber-400 hover:text-amber-300 hover:bg-amber-500/10'
                         }`}
                     >
                         <ShieldAlert className="w-3.5 h-3.5" aria-hidden="true" />
@@ -153,10 +153,10 @@ const Dashboard = () => {
                         aria-controls="panel-metrics"
                         tabIndex={activeTab === 'metrics' ? 0 : -1}
                         onClick={() => handleTabChange('metrics', 'Analytics')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-teal-600 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-amber-500 ${
                             activeTab === 'metrics'
-                                ? 'bg-white text-teal-800 shadow-sm border border-slate-200'
-                                : 'text-slate-700 hover:text-slate-900'
+                                ? 'bg-amber-500 text-black shadow-sm font-extrabold'
+                                : 'text-slate-400 hover:text-white'
                         }`}
                     >
                         <BarChart3 className="w-3.5 h-3.5" aria-hidden="true" />
@@ -197,20 +197,20 @@ const Dashboard = () => {
                     {/* Middle Tier: MITRE ATT&CK Mini Matrix */}
                     <MitreMiniMatrix />
 
-                    {/* Bottom Tier: Live Intel Feed with Severity Filter bar */}
-                    <div className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-4">
+                    {/* Bottom Tier: Live Intel Feed with Severity Bar Chart */}
+                    <div className="rounded-2xl border border-white/10 bg-[#0C0E14] p-4 sm:p-5 shadow-xl space-y-4">
                         {/* Header */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/5">
                             <div className="flex items-center gap-2">
-                                <div className="p-1.5 rounded-xl bg-teal-50 text-teal-700 border border-teal-200">
-                                    <Radio className="w-4 h-4" aria-hidden="true" />
+                                <div className="p-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                                    <Radio className="w-4 h-4 animate-pulse" aria-hidden="true" />
                                 </div>
                                 <div>
-                                    <h2 className="font-display text-sm sm:text-base font-bold text-slate-900 leading-tight">
+                                    <h2 className="font-display text-sm sm:text-base font-bold text-white leading-tight">
                                         Live Intelligence Stream
                                     </h2>
-                                    <p className="text-[11px] text-slate-600">
-                                        Chronological threat telemetry stream with automatic MITRE extraction
+                                    <p className="text-[11px] text-slate-400">
+                                        Chronological threat telemetry stream with autonomous MITRE extraction
                                     </p>
                                 </div>
                             </div>
@@ -235,7 +235,7 @@ const Dashboard = () => {
                     id="panel-news"
                     role="tabpanel"
                     aria-labelledby="tab-news"
-                    className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs focus:outline-none"
+                    className="rounded-2xl border border-white/10 bg-[#0C0E14] p-4 sm:p-5 shadow-xl focus:outline-none"
                     tabIndex={0}
                 >
                     <NewsFeed mode="timeline" isEmbedded={true} timeRange={timeRange} />
@@ -247,18 +247,18 @@ const Dashboard = () => {
                     id="panel-critical"
                     role="tabpanel"
                     aria-labelledby="tab-critical"
-                    className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs focus:outline-none"
+                    className="rounded-2xl border border-white/10 bg-[#0C0E14] p-4 sm:p-5 shadow-xl focus:outline-none"
                     tabIndex={0}
                 >
-                    <div className="mb-4 pb-3 border-b border-slate-200 flex items-center gap-2">
-                        <div className="p-1.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200">
+                    <div className="mb-4 pb-3 border-b border-white/5 flex items-center gap-2">
+                        <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/40">
                             <ShieldAlert className="w-4 h-4" aria-hidden="true" />
                         </div>
                         <div>
-                            <h2 className="font-display text-base font-bold text-slate-900">
+                            <h2 className="font-display text-base font-bold text-white">
                                 Guarded Queue &amp; Priority Intelligence
                             </h2>
-                            <p className="text-xs text-slate-600">
+                            <p className="text-xs text-slate-400">
                                 Filtered queue showing high-impact zero-days, ransomware extortion, and active exploits under containment review.
                             </p>
                         </div>
@@ -272,7 +272,7 @@ const Dashboard = () => {
                     id="panel-metrics"
                     role="tabpanel"
                     aria-labelledby="tab-metrics"
-                    className="glass-card p-4 sm:p-5 bg-white min-h-[500px] focus:outline-none"
+                    className="rounded-2xl border border-white/10 bg-[#0C0E14] p-4 sm:p-5 shadow-xl min-h-[500px] focus:outline-none"
                     tabIndex={0}
                 >
                     <SeverityChart />

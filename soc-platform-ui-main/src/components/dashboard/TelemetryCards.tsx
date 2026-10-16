@@ -105,10 +105,10 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
             sub: stats.highCount !== null ? `${stats.highCount} High Priority Alerts` : 'Telemetry pending',
             icon: AlertTriangle,
             tag: `${timeWindowLabel}`,
-            color: 'from-amber-500/10 to-amber-600/5',
-            border: 'border-amber-200/80',
-            badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
-            accent: 'text-amber-600',
+            color: 'from-amber-500/15 to-transparent',
+            border: 'border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.10)]',
+            badgeBg: 'bg-amber-950/60 text-amber-300 border-amber-500/40',
+            accent: 'text-amber-400',
             ping: (stats.criticalCount ?? 0) > 0,
         },
         {
@@ -117,10 +117,10 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
             sub: stats.sourcesConfigured !== null ? `Across ${stats.sourcesConfigured} Enabled Feeds` : 'Verifying sources...',
             icon: Activity,
             tag: stats.isStale ? 'Stale Snapshot' : `${timeWindowLabel}`,
-            color: 'from-teal-500/10 to-teal-600/5',
-            border: 'border-teal-200/80',
-            badgeBg: 'bg-teal-50 text-teal-800 border-teal-200',
-            accent: 'text-teal-600',
+            color: 'from-amber-600/10 to-transparent',
+            border: 'border-white/10',
+            badgeBg: 'bg-white/5 text-amber-300 border-white/10',
+            accent: 'text-amber-400',
             ping: false,
         },
         {
@@ -129,10 +129,10 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
             sub: 'Unique Tactics Correlated',
             icon: Target,
             tag: 'v16 ATT&CK Framework',
-            color: 'from-purple-500/10 to-violet-500/5',
-            border: 'border-purple-200/80',
-            badgeBg: 'bg-purple-50 text-purple-700 border-purple-200',
-            accent: 'text-purple-600',
+            color: 'from-white/5 to-transparent',
+            border: 'border-white/10',
+            badgeBg: 'bg-white/5 text-slate-300 border-white/10',
+            accent: 'text-amber-300',
             ping: false,
         },
         {
@@ -141,22 +141,22 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
             sub: 'Known Exploited Vulnerabilities',
             icon: ShieldCheck,
             tag: 'CISA Catalog Verified',
-            color: 'from-emerald-500/10 to-teal-500/5',
-            border: 'border-emerald-200/80',
-            badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-            accent: 'text-emerald-600',
+            color: 'from-amber-500/10 to-transparent',
+            border: 'border-white/10',
+            badgeBg: 'bg-white/5 text-amber-300 border-white/10',
+            accent: 'text-amber-400',
             ping: false,
         },
         {
             title: 'Ingestion Pipeline',
             value: stats.sourcesHealthy !== null ? `${stats.sourcesHealthy} Healthy` : 'Unavailable',
-            sub: `${stats.sourcesDegraded ?? 0} Degraded · ${stats.sourcesFailed ?? 0} Failed · ${stats.sourcesUnknown ?? 0} Unknown`,
+            sub: `${stats.sourcesDegraded ?? 0} Degraded · ${stats.sourcesFailed ?? 0} Failed`,
             icon: Radio,
             tag: `${stats.sourcesConfigured ?? 0} Enabled (${stats.sourcesRegistered ?? 0} Reg)`,
-            color: stats.pipelineColor === 'emerald' ? 'from-emerald-500/10 to-teal-500/5' : stats.pipelineColor === 'amber' ? 'from-amber-500/10 to-yellow-500/5' : 'from-slate-500/10 to-slate-400/5',
-            border: stats.pipelineColor === 'emerald' ? 'border-emerald-200/80' : stats.pipelineColor === 'amber' ? 'border-amber-200/80' : 'border-slate-200/80',
-            badgeBg: 'bg-slate-50 text-slate-700 border-slate-200',
-            accent: stats.pipelineColor === 'emerald' ? 'text-emerald-600' : stats.pipelineColor === 'amber' ? 'text-amber-600' : 'text-slate-600',
+            color: 'from-white/5 to-transparent',
+            border: 'border-white/10',
+            badgeBg: 'bg-white/5 text-slate-300 border-white/10',
+            accent: 'text-amber-400',
             ping: false,
         },
     ];
@@ -165,9 +165,9 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
         <div className="space-y-2.5">
             {/* Telemetry Stale or Error Alert */}
             {(hasError || stats.isStale) && (
-                <div className="p-2.5 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 text-xs flex items-center justify-between gap-2 shadow-2xs">
+                <div className="p-2.5 rounded-xl border border-amber-500/40 bg-amber-950/60 text-amber-200 text-xs flex items-center justify-between gap-2 shadow-2xs">
                     <div className="flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                        <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
                         <span>
                             {hasError
                                 ? "Unable to retrieve current telemetry. Showing data from the last successful snapshot."
@@ -176,7 +176,7 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
                     </div>
                     <button
                         onClick={fetchStats}
-                        className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-200 hover:bg-amber-300 text-amber-900 transition-colors"
+                        className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500 hover:bg-amber-400 text-black transition-colors"
                     >
                         Retry
                     </button>
@@ -188,21 +188,13 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
                 <div className="flex items-center gap-2">
                     <span className="section-label">SOC Telemetry</span>
                     <div className="availability-chip text-[11px] py-0.5 px-2.5">
-                        <span className={`chip-dot ${
-                            stats.pipelineColor === 'emerald' ? 'bg-emerald-500' :
-                            stats.pipelineColor === 'amber' ? 'bg-amber-500' :
-                            stats.pipelineColor === 'rose' ? 'bg-amber-500' : 'bg-slate-400'
-                        }`}></span>
-                        <span className={`font-semibold ${
-                            stats.pipelineColor === 'emerald' ? 'text-emerald-800' :
-                            stats.pipelineColor === 'amber' ? 'text-amber-800' :
-                            stats.pipelineColor === 'rose' ? 'text-amber-800' : 'text-slate-700'
-                        }`}>
+                        <span className="chip-dot"></span>
+                        <span className="font-semibold text-amber-400">
                             {stats.pipelineLabel}
                         </span>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 text-xs text-slate-500 font-mono">
+                <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
                     <span>Synced: {lastUpdated}</span>
                     <button
                         onClick={() => {
@@ -210,10 +202,10 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
                             onRefresh?.();
                         }}
                         disabled={isRefreshing}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-sans font-medium transition-all text-xs"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0C0E14] hover:bg-[#12151E] border border-white/10 hover:border-amber-500/40 text-white font-sans font-medium transition-all text-xs"
                         title="Reload dashboard telemetry"
                     >
-                        <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-teal-600' : ''}`} />
+                        <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-amber-400' : 'text-amber-400'}`} />
                         <span>Reload</span>
                     </button>
                 </div>
@@ -226,10 +218,10 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
                     return (
                         <div
                             key={idx}
-                            className={`glass-card p-3.5 sm:p-4 flex flex-col justify-between bg-gradient-to-br ${card.color} ${card.border} relative overflow-hidden`}
+                            className={`p-3.5 sm:p-4 rounded-2xl flex flex-col justify-between bg-[#0C0E14] bg-gradient-to-br ${card.color} border ${card.border} relative overflow-hidden shadow-xl`}
                         >
                             <div className="flex items-start justify-between gap-2 mb-2">
-                                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider line-clamp-1 font-sans">
+                                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider line-clamp-1 font-sans">
                                     {card.title}
                                 </span>
                                 <div className="flex items-center gap-1.5">
@@ -239,22 +231,22 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
                                             <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                                         </span>
                                     )}
-                                    <div className={`p-1.5 rounded-lg bg-white/80 border border-slate-200/60 shadow-2xs ${card.accent}`}>
+                                    <div className={`p-1.5 rounded-lg bg-black/40 border border-white/10 shadow-2xs ${card.accent}`}>
                                         <Icon className="w-4 h-4" />
                                     </div>
                                 </div>
                             </div>
 
                             <div className="my-1">
-                                <div className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+                                <div className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
                                     {card.value}
                                 </div>
-                                <div className="text-[11px] text-slate-500 font-medium line-clamp-1 mt-0.5">
+                                <div className="text-[11px] text-slate-400 font-medium line-clamp-1 mt-0.5">
                                     {card.sub}
                                 </div>
                             </div>
 
-                            <div className="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between">
+                            <div className="mt-2 pt-2 border-t border-white/5 flex items-center justify-between">
                                 <span className={`text-[9px] font-bold font-mono px-2 py-0.5 rounded-md border ${card.badgeBg}`}>
                                     {card.tag}
                                 </span>

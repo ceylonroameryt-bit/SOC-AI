@@ -37,7 +37,7 @@ export const Layout: React.FC = () => {
     }, [mobileDrawerOpen]);
 
     return (
-        <div className="flex h-screen bg-[#F8FAFC] text-[#0F172A] font-sans selection:bg-teal-500/20 selection:text-teal-700 overflow-hidden">
+        <div className="flex h-screen bg-[#050608] text-white font-sans selection:bg-amber-500/20 selection:text-amber-300 overflow-hidden">
             {/* WCAG Skip Link */}
             <SkipLink />
 
@@ -62,13 +62,13 @@ export const Layout: React.FC = () => {
                 >
                     {/* Backdrop */}
                     <div
-                        className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity"
+                        className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity"
                         onClick={() => setMobileDrawerOpen(false)}
                         aria-hidden="true"
                     />
 
                     {/* Drawer Content */}
-                    <div className="relative flex-1 flex flex-col max-w-xs w-full bg-[#0B132B] shadow-xl z-50">
+                    <div className="relative flex-1 flex flex-col max-w-xs w-full bg-[#07090E] shadow-2xl z-50">
                         <Sidebar
                             onClose={() => setMobileDrawerOpen(false)}
                             isDemoEnabled={isDemoEnabled}
@@ -78,7 +78,7 @@ export const Layout: React.FC = () => {
             )}
 
             {/* Right Main Column (TopBar + Workspace + CollectionStatusBar) */}
-            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-[#F8FAFC]">
+            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-[#050608]">
                 {/* 64px Top Bar */}
                 <TopBar
                     onMenuToggle={() => setMobileDrawerOpen(true)}

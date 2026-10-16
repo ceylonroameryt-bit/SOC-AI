@@ -46,15 +46,15 @@ export const CollectionStatusBar: React.FC = () => {
     return (
         <footer
             aria-label="Collection Telemetry Status Bar"
-            className="h-8 bg-white border-t border-[#E2E8F0] px-4 lg:px-6 flex items-center justify-between text-[11px] text-[#64748B] font-sans flex-shrink-0 select-none z-10"
+            className="h-8 bg-[#07090E] border-t border-white/5 px-4 lg:px-6 flex items-center justify-between text-[11px] text-slate-400 font-sans flex-shrink-0 select-none z-10"
         >
             {/* Left: Last Collection & Freshness */}
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5">
-                    <Clock className="w-3 h-3 text-[#94A3B8]" aria-hidden="true" />
+                    <Clock className="w-3 h-3 text-slate-500" aria-hidden="true" />
                     <span>
                         Last collection:{' '}
-                        <strong className="text-[#0F172A] font-medium font-mono">
+                        <strong className="text-white font-medium font-mono">
                             {statusData.lastCollection
                                 ? new Date(statusData.lastCollection).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
                                 : 'Syncing telemetry...'}
@@ -63,7 +63,7 @@ export const CollectionStatusBar: React.FC = () => {
                 </div>
 
                 {statusData.isStale && (
-                    <span className="text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded font-medium text-[10px]">
+                    <span className="text-amber-300 bg-amber-500/10 border border-amber-500/30 px-1.5 py-0.2 rounded font-medium text-[10px]">
                         Snapshot Cached
                     </span>
                 )}
@@ -72,27 +72,27 @@ export const CollectionStatusBar: React.FC = () => {
             {/* Right: Measured Source Health & Link */}
             <div className="flex items-center gap-4">
                 {statusData.isDemoEnabled && (
-                    <span className="text-amber-800 bg-amber-100 border border-amber-300 px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold flex items-center gap-1">
-                        <AlertOctagon className="w-3 h-3 text-amber-700" />
+                    <span className="text-amber-300 bg-amber-500/20 border border-amber-500/40 px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold flex items-center gap-1">
+                        <AlertOctagon className="w-3 h-3 text-amber-400" />
                         <span>Simulated Data Enabled</span>
                     </span>
                 )}
 
                 <Link
                     to="/sources"
-                    className="flex items-center gap-1.5 text-slate-500 hover:text-teal-600 transition-colors group"
+                    className="flex items-center gap-1.5 text-slate-400 hover:text-amber-300 transition-colors group"
                     title="View detailed Feed Health metrics"
                 >
-                    <Radio className="w-3 h-3 text-teal-600" aria-hidden="true" />
+                    <Radio className="w-3 h-3 text-amber-400 animate-pulse" aria-hidden="true" />
                     <span>
                         Feeds:{' '}
-                        <span className="font-semibold text-slate-900">
+                        <span className="font-semibold text-white">
                             {statusData.healthyCount}/{statusData.totalConfigured} Healthy
                         </span>
                     </span>
 
                     {warningCount > 0 && (
-                        <span className="ml-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                        <span className="ml-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-950/50 text-amber-300 border border-amber-500/40">
                             {warningCount} attention
                         </span>
                     )}
