@@ -38,7 +38,7 @@ const DEFAULT_TACTICS: TacticItem[] = [
         ]
     },
     {
-        id: 'TA0001', name: 'Initial Access', shortName: 'Initial Access', icon: '🚪', color: '#f87171', hitCount: 2544,
+        id: 'TA0001', name: 'Initial Access', shortName: 'Initial Access', icon: '🚪', color: '#d97706', hitCount: 2544,
         techniques: [
             { techniqueId: 'T1190', name: 'Exploit Public-Facing Application', tacticId: 'TA0001', hitCount: 2180 },
             { techniqueId: 'T1566', name: 'Phishing', tacticId: 'TA0001', hitCount: 245 },

@@ -28,18 +28,18 @@ interface HeatmapData {
 const getHeatColor = (hitCount: number, maxHits: number): string => {
     if (hitCount === 0 || maxHits === 0) return 'bg-slate-50/80 border-slate-200 text-slate-600 hover:bg-slate-100/90';
     const ratio = hitCount / maxHits;
-    if (ratio >= 0.75) return 'bg-red-50 border-red-300 text-red-800 shadow-sm font-semibold';
-    if (ratio >= 0.50) return 'bg-orange-50 border-orange-300 text-orange-800 shadow-sm font-semibold';
-    if (ratio >= 0.25) return 'bg-amber-50 border-amber-300 text-amber-800 shadow-sm font-medium';
-    return 'bg-blue-50 border-blue-200 text-blue-800 font-medium';
+    if (ratio >= 0.75) return 'bg-amber-100 border-amber-300 text-amber-900 shadow-sm font-semibold';
+    if (ratio >= 0.50) return 'bg-amber-50 border-amber-200 text-amber-800 shadow-sm font-semibold';
+    if (ratio >= 0.25) return 'bg-teal-50 border-teal-200 text-teal-800 shadow-sm font-medium';
+    return 'bg-slate-50 border-slate-200 text-slate-700 font-medium';
 };
 
 const getHeatIntensity = (hitCount: number): string => {
     if (hitCount === 0) return '';
-    if (hitCount >= 20) return '🔴';
-    if (hitCount >= 10) return '🟠';
-    if (hitCount >= 5)  return '🟡';
-    return '🟢';
+    if (hitCount >= 20) return '🔶';
+    if (hitCount >= 10) return '🔸';
+    if (hitCount >= 5)  return '🔹';
+    return '🔷';
 };
 
 export default function MitreHeatmap() {
@@ -165,10 +165,10 @@ export default function MitreHeatmap() {
                 <span className="font-bold text-slate-800">Heat Intensity:</span>
                 {[
                     { label: 'None (0)', cls: 'bg-slate-200 border border-slate-300' },
-                    { label: 'Low', cls: 'bg-blue-200 border border-blue-300' },
-                    { label: 'Medium', cls: 'bg-amber-200 border border-amber-300' },
-                    { label: 'High', cls: 'bg-orange-300 border border-orange-400' },
-                    { label: 'Critical', cls: 'bg-red-400 border border-red-500' },
+                    { label: 'Low', cls: 'bg-teal-200 border border-teal-300' },
+                    { label: 'Medium', cls: 'bg-teal-400 border border-teal-500' },
+                    { label: 'High', cls: 'bg-amber-300 border border-amber-400' },
+                    { label: 'Critical', cls: 'bg-amber-500 border border-amber-600' },
                 ].map(item => (
                     <div key={item.label} className="flex items-center gap-1.5">
                         <div className={`w-3.5 h-3.5 rounded-md ${item.cls}`}></div>
@@ -179,12 +179,12 @@ export default function MitreHeatmap() {
 
             {loading ? (
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1E3A8A]"></div>
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600"></div>
                 </div>
             ) : error ? (
-                <div className="flex flex-col items-center justify-center h-64 gap-4 bg-red-50 p-6 rounded-2xl border border-red-200">
-                    <p className="text-4xl">⚠️</p>
-                    <p className="text-red-700 font-bold font-display">Failed to load MITRE heatmap</p>
+                <div className="flex flex-col items-center justify-center h-64 gap-4 bg-amber-50 p-6 rounded-2xl border border-amber-200">
+                    <p className="text-4xl">🛡️</p>
+                    <p className="text-amber-800 font-bold font-display">Notice: MITRE heatmap feed pending</p>
                     <p className="text-slate-600 text-sm text-center max-w-md">{error}</p>
                     <button onClick={fetchHeatmap} className="btn-accent px-4 py-2 text-xs font-medium">
                         ↺ Retry

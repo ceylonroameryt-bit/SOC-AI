@@ -80,7 +80,7 @@ const AiExecutiveWidget = ({ timeRange = '24h' }: AiExecutiveWidgetProps) => {
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 mb-3 gap-2">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 shadow-2xs">
+                    <div className="p-1.5 rounded-xl bg-teal-50 text-teal-700 border border-teal-200 shadow-2xs">
                         <Bot className="w-4 h-4" />
                     </div>
                     <div>
@@ -88,8 +88,8 @@ const AiExecutiveWidget = ({ timeRange = '24h' }: AiExecutiveWidgetProps) => {
                             <h3 className="font-display text-sm font-bold text-slate-900 leading-tight">
                                 AI Threat Intelligence Brief
                             </h3>
-                            <span className="flex items-center gap-0.5 text-[9px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200 font-mono">
-                                <Sparkles className="w-2.5 h-2.5 text-blue-500" />
+                            <span className="flex items-center gap-0.5 text-[9px] font-bold text-teal-800 bg-teal-50 px-1.5 py-0.2 rounded border border-teal-200 font-mono">
+                                <Sparkles className="w-2.5 h-2.5 text-teal-600" />
                                 {hasData ? 'AI SYNTHESIS' : 'OPERATIONAL STATE'}
                             </span>
                         </div>
@@ -100,7 +100,7 @@ const AiExecutiveWidget = ({ timeRange = '24h' }: AiExecutiveWidgetProps) => {
                 </div>
                 <Link
                     to="/ai"
-                    className="text-xs font-semibold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 flex-shrink-0"
+                    className="text-xs font-semibold text-teal-700 hover:text-teal-900 inline-flex items-center gap-1 flex-shrink-0"
                 >
                     <span>Full Brief</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -117,9 +117,9 @@ const AiExecutiveWidget = ({ timeRange = '24h' }: AiExecutiveWidgetProps) => {
                     points.map((pt, i) => (
                         <div
                             key={i}
-                            className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 hover:border-blue-300 transition-all flex items-start gap-2 text-xs text-slate-700 leading-relaxed shadow-2xs"
+                            className="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 hover:border-teal-300 transition-all flex items-start gap-2 text-xs text-slate-700 leading-relaxed shadow-2xs"
                         >
-                            <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 font-bold font-mono text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="w-4 h-4 rounded-full bg-teal-100 text-teal-800 font-bold font-mono text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">
                                 {i + 1}
                             </span>
                             <span className="line-clamp-2">{pt}</span>

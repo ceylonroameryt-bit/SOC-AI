@@ -9,10 +9,10 @@ interface SeverityStat {
 }
 
 const COLORS = {
-    Critical: '#ef4444', // Red
-    High: '#f97316',     // Orange
-    Medium: '#eab308',   // Yellow
-    Low: '#3b82f6'       // Blue
+    Critical: '#D97706', // Warm Amber (no panic red)
+    High: '#F59E0B',     // Amber-500
+    Medium: '#0D9488',   // Soothing Teal
+    Low: '#64748B'       // Slate-500
 };
 
 const SeverityChart = () => {

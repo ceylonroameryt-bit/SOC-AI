@@ -41,7 +41,7 @@ export const ReportsHub: React.FC = () => {
             filename: `no-entry-daily-report-${dateStr}.pdf`,
             endpoint: `${API_BASE}/api/reports/daily?format=pdf`,
             badge: 'PDF-1.4',
-            badgeColor: 'bg-red-50 text-red-700 border-red-200'
+            badgeColor: 'bg-amber-50 text-amber-800 border-amber-200'
         },
         {
             title: 'Daily Operational Report (DOCX)',
@@ -51,7 +51,7 @@ export const ReportsHub: React.FC = () => {
             filename: `no-entry-daily-report-${dateStr}.docx`,
             endpoint: `${API_BASE}/api/reports/daily?format=docx`,
             badge: 'OpenXML DOCX',
-            badgeColor: 'bg-blue-50 text-blue-700 border-blue-200'
+            badgeColor: 'bg-teal-50 text-teal-800 border-teal-200'
         },
         {
             title: 'Threat Intelligence Export (STIX 2.1)',

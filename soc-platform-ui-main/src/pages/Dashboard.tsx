@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { LayoutDashboard, Newspaper, Flame, BarChart3, Radio, ShieldAlert, AlertOctagon } from 'lucide-react';
+import { LayoutDashboard, Newspaper, BarChart3, Radio, ShieldAlert, AlertOctagon } from 'lucide-react';
 import TelemetryCards from '../components/dashboard/TelemetryCards';
+import CalmResilienceRing from '../components/dashboard/CalmResilienceRing';
 import NewsFeed from '../components/dashboard/NewsFeed';
 import SeverityChart from '../components/dashboard/SeverityChart';
 import CveTrackerWidget from '../components/dashboard/CveTrackerWidget';
@@ -66,25 +67,25 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* Header & Mission Control Switcher */}
+            {/* Header & Calm Under Fire Switcher */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-200">
                 <div>
                     <div className="flex items-center gap-2 mb-1.5">
-                        <span className="section-label">SOC Mission Control</span>
+                        <span className="section-label">Calm Under Fire · Resilience Grid</span>
                         <div
                             className="availability-chip text-[10px] py-0.5 px-2"
                             role="status"
                             aria-label="Threat Radar status: Active"
                         >
                             <span className="chip-dot" aria-hidden="true"></span>
-                            <span className="font-semibold text-emerald-800">Threat Radar Monitored</span>
+                            <span className="font-semibold text-teal-800">Perimeter Optimal</span>
                         </div>
                     </div>
                     <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
                         Security Operations &amp; Intelligence Dashboard
                     </h1>
                     <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
-                        Precomputed operational intelligence aggregated across monitored vendor labs, advisories, and CISA feeds.
+                        Operational threat intelligence and automated triage aggregated across monitored vendor labs, advisories, and CISA feeds.
                     </p>
                 </div>
 
@@ -101,9 +102,9 @@ const Dashboard = () => {
                         aria-controls="panel-overview"
                         tabIndex={activeTab === 'overview' ? 0 : -1}
                         onClick={() => handleTabChange('overview', 'Mission Control')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-teal-600 ${
                             activeTab === 'overview'
-                                ? 'bg-white text-blue-800 shadow-sm border border-slate-200'
+                                ? 'bg-white text-teal-800 shadow-sm border border-slate-200'
                                 : 'text-slate-700 hover:text-slate-900'
                         }`}
                     >
@@ -118,9 +119,9 @@ const Dashboard = () => {
                         aria-controls="panel-news"
                         tabIndex={activeTab === 'news' ? 0 : -1}
                         onClick={() => handleTabChange('news', 'Global Stream')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-teal-600 ${
                             activeTab === 'news'
-                                ? 'bg-white text-blue-800 shadow-sm border border-slate-200'
+                                ? 'bg-white text-teal-800 shadow-sm border border-slate-200'
                                 : 'text-slate-700 hover:text-slate-900'
                         }`}
                     >
@@ -134,15 +135,15 @@ const Dashboard = () => {
                         aria-selected={activeTab === 'critical'}
                         aria-controls="panel-critical"
                         tabIndex={activeTab === 'critical' ? 0 : -1}
-                        onClick={() => handleTabChange('critical', 'Critical Radar')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                        onClick={() => handleTabChange('critical', 'Guarded Radar')}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-teal-600 ${
                             activeTab === 'critical'
-                                ? 'bg-red-700 text-white shadow-sm shadow-red-500/20'
-                                : 'text-red-700 hover:text-red-800 hover:bg-red-50'
+                                ? 'bg-amber-600 text-white shadow-sm shadow-amber-500/20'
+                                : 'text-amber-800 hover:text-amber-900 hover:bg-amber-50'
                         }`}
                     >
-                        <Flame className="w-3.5 h-3.5" aria-hidden="true" />
-                        <span>Critical Radar</span>
+                        <ShieldAlert className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span>Guarded Radar</span>
                     </button>
 
                     <button
@@ -152,9 +153,9 @@ const Dashboard = () => {
                         aria-controls="panel-metrics"
                         tabIndex={activeTab === 'metrics' ? 0 : -1}
                         onClick={() => handleTabChange('metrics', 'Analytics')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-teal-600 ${
                             activeTab === 'metrics'
-                                ? 'bg-white text-blue-800 shadow-sm border border-slate-200'
+                                ? 'bg-white text-teal-800 shadow-sm border border-slate-200'
                                 : 'text-slate-700 hover:text-slate-900'
                         }`}
                     >
@@ -163,6 +164,11 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Calm Under Fire Progress Rings & Resilience Hero */}
+            <section aria-label="Defense Resilience Overview">
+                <CalmResilienceRing timeRange={timeRange} />
+            </section>
 
             {/* Top Telemetry Strip */}
             <section aria-label="System Telemetry Overview">
@@ -192,11 +198,11 @@ const Dashboard = () => {
                     <MitreMiniMatrix />
 
                     {/* Bottom Tier: Live Intel Feed with Severity Filter bar */}
-                    <div className="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-4">
+                    <div className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-4">
                         {/* Header */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
                             <div className="flex items-center gap-2">
-                                <div className="p-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
+                                <div className="p-1.5 rounded-xl bg-teal-50 text-teal-700 border border-teal-200">
                                     <Radio className="w-4 h-4" aria-hidden="true" />
                                 </div>
                                 <div>
@@ -210,7 +216,7 @@ const Dashboard = () => {
                             </div>
                         </div>
 
-                        {/* Interactive Severity Bar Chart Widget for Critical, High, Medium, Low */}
+                        {/* Interactive Severity Bar Chart Widget */}
                         <SeverityBarChartWidget
                             selectedSeverity={selectedSeverity}
                             onSelectSeverity={handleSeverityChange}
@@ -229,7 +235,7 @@ const Dashboard = () => {
                     id="panel-news"
                     role="tabpanel"
                     aria-labelledby="tab-news"
-                    className="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs focus:outline-none"
+                    className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs focus:outline-none"
                     tabIndex={0}
                 >
                     <NewsFeed mode="timeline" isEmbedded={true} timeRange={timeRange} />
@@ -241,19 +247,19 @@ const Dashboard = () => {
                     id="panel-critical"
                     role="tabpanel"
                     aria-labelledby="tab-critical"
-                    className="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs focus:outline-none"
+                    className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs focus:outline-none"
                     tabIndex={0}
                 >
                     <div className="mb-4 pb-3 border-b border-slate-200 flex items-center gap-2">
-                        <div className="p-1.5 rounded-lg bg-red-50 text-red-700 border border-red-200">
+                        <div className="p-1.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200">
                             <ShieldAlert className="w-4 h-4" aria-hidden="true" />
                         </div>
                         <div>
                             <h2 className="font-display text-base font-bold text-slate-900">
-                                High &amp; Critical Urgency Response Queue
+                                Guarded Queue &amp; Priority Intelligence
                             </h2>
                             <p className="text-xs text-slate-600">
-                                Filtered queue showing only high-impact zero-days, ransomware extortion, and active exploits.
+                                Filtered queue showing high-impact zero-days, ransomware extortion, and active exploits under containment review.
                             </p>
                         </div>
                     </div>

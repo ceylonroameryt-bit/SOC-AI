@@ -119,7 +119,7 @@ const CveTrackerWidget = () => {
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 mb-3 gap-2">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200">
+                    <div className="p-1.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200">
                         <ShieldAlert className="w-4 h-4" />
                     </div>
                     <div>
@@ -127,7 +127,7 @@ const CveTrackerWidget = () => {
                             <h3 className="font-display text-sm font-bold text-slate-900 leading-tight">
                                 CISA KEV Catalog
                             </h3>
-                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">
+                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-teal-50 text-teal-700 border border-teal-200 font-mono">
                                 {kevInfo.status || 'Fresh'}
                             </span>
                         </div>
@@ -138,7 +138,7 @@ const CveTrackerWidget = () => {
                 </div>
                 <Link
                     to="/enrich"
-                    className="text-xs font-semibold text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 flex-shrink-0"
+                    className="text-xs font-semibold text-teal-700 hover:text-teal-900 inline-flex items-center gap-1 flex-shrink-0"
                 >
                     <span>Enrich IOCs</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -153,7 +153,7 @@ const CveTrackerWidget = () => {
                     placeholder="Filter CVEs, vendors, or exploits..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white transition-all font-sans"
+                    className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-600 focus:bg-white transition-all font-sans"
                 />
             </div>
 
@@ -166,15 +166,15 @@ const CveTrackerWidget = () => {
                     return (
                         <div
                             key={cve.id}
-                            className="p-2.5 rounded-xl border border-slate-200/90 hover:border-blue-300 hover:bg-slate-50/70 transition-all flex flex-col gap-1.5"
+                            className="p-2.5 rounded-xl border border-slate-200/90 hover:border-teal-300 hover:bg-slate-50/70 transition-all flex flex-col gap-1.5"
                         >
                             <div className="flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-1.5">
-                                    <span className="ioc-code font-bold text-red-600 bg-red-50 border-red-200">
+                                    <span className="ioc-code font-bold text-amber-800 bg-amber-50 border-amber-200">
                                         {cve.id}
                                     </span>
                                     {cve.isKEV && (
-                                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 uppercase tracking-wider">
+                                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200 uppercase tracking-wider">
                                             CISA KEV
                                         </span>
                                     )}

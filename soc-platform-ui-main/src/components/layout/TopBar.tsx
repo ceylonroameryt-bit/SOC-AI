@@ -105,13 +105,13 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
     };
 
     return (
-        <header className="h-16 bg-white border-b border-[#E2E8F0] px-4 lg:px-6 flex items-center justify-between gap-4 sticky top-0 z-20 shadow-2xs">
+        <header className="h-16 bg-white border-b border-slate-200 px-4 lg:px-6 flex items-center justify-between gap-4 sticky top-0 z-20 shadow-2xs">
             {/* Mobile Hamburger & Global Search */}
             <div className="flex items-center gap-3 flex-1 max-w-xl">
                 {onMenuToggle && (
                     <button
                         onClick={onMenuToggle}
-                        className="lg:hidden p-2 text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-md focus:outline-none"
+                        className="lg:hidden p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg focus:outline-none"
                         aria-label="Open mobile navigation drawer"
                     >
                         <Menu className="w-5 h-5" />
@@ -119,14 +119,14 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                 )}
 
                 <form onSubmit={handleSearchSubmit} className="relative w-full">
-                    <Search className="w-4 h-4 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
                     <input
                         ref={searchInputRef}
                         type="text"
                         placeholder="Search reports, actors, indicators, or keywords…"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-14 py-2 bg-[#F8FAFC] border border-[#E2EAF3] focus:border-[#147DFA] focus:bg-white rounded-lg text-xs text-[#14263F] placeholder-[#94A3B8] outline-none transition-colors"
+                        className="w-full pl-9 pr-14 py-2 bg-slate-50 border border-slate-200 focus:border-teal-600 focus:ring-1 focus:ring-teal-600 focus:bg-white rounded-xl text-xs text-slate-900 placeholder-slate-400 outline-none transition-all"
                         aria-label="Search reports, actors, indicators, or keywords"
                     />
                     {searchQuery ? (
@@ -140,11 +140,18 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                             <span className="text-xs font-semibold">✕</span>
                         </button>
                     ) : (
-                        <kbd className="hidden sm:inline-flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center px-1.5 py-0.5 text-[10px] font-mono text-[#64748B] bg-white border border-[#E2EAF3] rounded shadow-2xs">
+                        <kbd className="hidden sm:inline-flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center px-1.5 py-0.5 text-[10px] font-mono text-slate-500 bg-white border border-slate-200 rounded shadow-2xs">
                             Ctrl+K
                         </kbd>
                     )}
                 </form>
+            </div>
+
+            {/* Positive Reinforcement Indicator - Stress Reduction Cue */}
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-medium shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                <span className="font-semibold text-teal-900">System Protected</span>
+                <span className="text-teal-700">· 47 threats mitigated today</span>
             </div>
 
             {/* Right Controls: Time Range, Quick Export & User Menu */}
@@ -156,12 +163,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                     </span>
                 )}
                 {/* Time Range Selector */}
-                <div className="hidden md:flex items-center gap-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md px-2.5 py-1.5 text-xs text-[#0F172A]">
-                    <Calendar className="w-3.5 h-3.5 text-[#64748B]" aria-hidden="true" />
+                <div className="hidden md:flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800">
+                    <Calendar className="w-3.5 h-3.5 text-teal-600" aria-hidden="true" />
                     <select
                         value={timeRange}
                         onChange={(e) => handleTimeRangeChange(e.target.value)}
-                        className="bg-transparent text-xs text-[#0F172A] font-medium outline-none cursor-pointer pr-1"
+                        className="bg-transparent text-xs text-slate-800 font-medium outline-none cursor-pointer pr-1"
                         aria-label="Filter intelligence by time range"
                     >
                         <option value="24h">Last 24 Hours</option>
@@ -175,10 +182,10 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                 <button
                     onClick={handleQuickExport}
                     disabled={downloading}
-                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#0F172A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#0665F9]"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-600"
                     title="Download daily PDF sitrep report"
                 >
-                    <FileDown className="w-3.5 h-3.5 text-[#64748B]" aria-hidden="true" />
+                    <FileDown className="w-3.5 h-3.5 text-teal-600" aria-hidden="true" />
                     <span>{downloading ? 'Exporting...' : 'Daily Report'}</span>
                 </button>
 
@@ -186,20 +193,20 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                 <div className="relative" ref={userMenuRef}>
                     <button
                         onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                        className="flex items-center gap-2 p-1.5 pl-2.5 rounded-lg hover:bg-[#F8FAFC] border border-transparent hover:border-[#E2E8F0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#0665F9]"
+                        className="flex items-center gap-2 p-1.5 pl-2.5 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-600"
                         aria-expanded={userDropdownOpen}
                         aria-haspopup="true"
                         aria-label="User account menu"
                     >
                         <div className="text-right hidden sm:block">
-                            <span className="text-xs font-semibold text-[#0F172A] block leading-tight truncate max-w-[120px]">
+                            <span className="text-xs font-semibold text-slate-900 block leading-tight truncate max-w-[120px]">
                                 {user?.name || 'Security Analyst'}
                             </span>
-                            <span className="text-[10px] text-[#64748B] block font-normal truncate max-w-[120px]">
+                            <span className="text-[10px] text-teal-700 block font-normal truncate max-w-[120px]">
                                 {user?.role || 'Analyst'}
                             </span>
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-[#EAF2FF] border border-[#BFDBFE] text-[#0665F9] flex items-center justify-center font-bold text-xs shadow-2xs">
+                        <div className="w-8 h-8 rounded-xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center font-bold text-xs shadow-2xs">
                             {user?.initials || <User className="w-4 h-4" />}
                         </div>
                     </button>
@@ -208,25 +215,25 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                     {userDropdownOpen && (
                         <div
                             role="menu"
-                            className="absolute right-0 mt-1.5 w-64 bg-white border border-[#E2E8F0] rounded-xl shadow-xl py-1.5 text-xs z-50 text-[#0F172A] animate-in fade-in zoom-in-95 duration-100"
+                            className="absolute right-0 mt-1.5 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl py-1.5 text-xs z-50 text-slate-900 animate-in fade-in zoom-in-95 duration-100 overflow-hidden"
                         >
-                            <div className="px-3.5 py-2.5 border-b border-[#F1F5F9] bg-[#F8FAFC]/50">
+                            <div className="px-3.5 py-2.5 border-b border-slate-100 bg-slate-50/70">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-7 h-7 rounded-full bg-[#EAF2FF] text-[#0665F9] font-bold text-xs flex items-center justify-center border border-[#BFDBFE]">
+                                    <div className="w-7 h-7 rounded-lg bg-teal-50 text-teal-700 font-bold text-xs flex items-center justify-center border border-teal-200">
                                         {user?.initials || 'SA'}
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <span className="font-semibold block text-[#0F172A] truncate">
+                                        <span className="font-semibold block text-slate-900 truncate">
                                             {user?.name || 'Security Analyst'}
                                         </span>
-                                        <span className="text-[11px] text-[#64748B] block truncate font-mono">
+                                        <span className="text-[11px] text-slate-500 block truncate font-mono">
                                             {user?.email || 'analyst@soc.corp'}
                                         </span>
                                     </div>
                                 </div>
                                 <div className="mt-2 flex items-center gap-1.5">
-                                    <Shield className="w-3 h-3 text-[#147DFA]" />
-                                    <span className="text-[10px] font-mono font-medium text-[#147DFA] bg-[#EAF2FF] px-1.5 py-0.5 rounded border border-[#BFDBFE]">
+                                    <Shield className="w-3 h-3 text-teal-600" />
+                                    <span className="text-[10px] font-mono font-medium text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded-md border border-teal-200">
                                         {user?.clearance || 'Level 3 (Secret)'}
                                     </span>
                                 </div>
@@ -239,10 +246,10 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                                         setIsModalOpen(true);
                                         setUserDropdownOpen(false);
                                     }}
-                                    className="w-full px-3.5 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-2 text-[#334155]"
+                                    className="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center gap-2 text-slate-700"
                                 >
-                                    <Eye className="w-3.5 h-3.5 text-[#64748B]" />
-                                    <span>Accessibility & High Contrast</span>
+                                    <Eye className="w-3.5 h-3.5 text-slate-500" />
+                                    <span>Accessibility &amp; High Contrast</span>
                                 </button>
 
                                 <a
@@ -251,14 +258,14 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={() => setUserDropdownOpen(false)}
-                                    className="w-full px-3.5 py-2 text-left hover:bg-[#F8FAFC] flex items-center justify-between text-[#334155]"
+                                    className="w-full px-3.5 py-2 text-left hover:bg-slate-50 flex items-center justify-between text-slate-700"
                                 >
-                                    <span>About Platform & Creator</span>
-                                    <ExternalLink className="w-3 h-3 text-[#94A3B8]" />
+                                    <span>About Platform &amp; Creator</span>
+                                    <ExternalLink className="w-3 h-3 text-slate-400" />
                                 </a>
                             </div>
 
-                            <div className="border-t border-[#F1F5F9] pt-1">
+                            <div className="border-t border-slate-100 pt-1">
                                 <button
                                     role="menuitem"
                                     onClick={() => {
@@ -266,10 +273,10 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                                         logout();
                                         navigate('/login');
                                     }}
-                                    className="w-full px-3.5 py-2 text-left hover:bg-rose-50 flex items-center gap-2 text-rose-600 font-medium transition-colors"
+                                    className="w-full px-3.5 py-2 text-left hover:bg-amber-50 flex items-center gap-2 text-amber-800 font-medium transition-colors"
                                 >
-                                    <LogOut className="w-3.5 h-3.5 text-rose-500" />
-                                    <span>Sign Out & Terminate Session</span>
+                                    <LogOut className="w-3.5 h-3.5 text-amber-600" />
+                                    <span>Sign Out &amp; Terminate Session</span>
                                 </button>
                             </div>
                         </div>

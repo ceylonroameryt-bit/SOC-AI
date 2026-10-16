@@ -63,7 +63,7 @@ const PlatformCard = ({
             )}
 
             {testResult && (
-                <div className={`rounded-lg px-3 py-2 text-xs font-medium border ${testResult.success ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-800 border-red-200'}`}>
+                <div className={`rounded-lg px-3 py-2 text-xs font-medium border ${testResult.success ? 'bg-teal-50 text-teal-800 border-teal-200' : 'bg-amber-50 text-amber-800 border-amber-200'}`}>
                     {testResult.success ? '✓ Test alert sent successfully!' : `✗ ${testResult.reason || testResult.error || 'Failed'}`}
                 </div>
             )}
@@ -229,7 +229,7 @@ INGEST_API_KEY=${ingestKey}`;
                 )}
 
                 {testResult && (
-                    <div className={`rounded-xl p-4 border text-sm font-medium ${testResult.success ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                    <div className={`rounded-xl p-4 border text-sm font-medium ${testResult.success ? 'bg-teal-50 border-teal-200 text-teal-800' : 'bg-amber-50 border-amber-200 text-amber-800'}`}>
                         {testResult.success ? '✅' : '⚠️'} {testResult.message}
                     </div>
                 )}

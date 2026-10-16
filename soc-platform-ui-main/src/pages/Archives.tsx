@@ -86,10 +86,10 @@ const Archives = () => {
 
     const getSeverityColor = (severity?: string) => {
         switch (severity) {
-            case 'Critical': return 'text-red-700 border-red-200 bg-red-50';
-            case 'High': return 'text-orange-700 border-orange-200 bg-orange-50';
-            case 'Medium': return 'text-yellow-800 border-yellow-200 bg-yellow-50';
-            case 'Low': return 'text-blue-700 border-blue-200 bg-blue-50';
+            case 'Critical': return 'text-amber-800 border-amber-200 bg-amber-50';
+            case 'High': return 'text-amber-700 border-amber-200 bg-amber-50/70';
+            case 'Medium': return 'text-teal-800 border-teal-200 bg-teal-50';
+            case 'Low': return 'text-slate-700 border-slate-200 bg-slate-50';
             default: return 'text-slate-700 border-slate-200 bg-slate-100';
         }
     };

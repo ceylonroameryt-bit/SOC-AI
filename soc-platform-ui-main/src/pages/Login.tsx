@@ -11,7 +11,7 @@ import {
     UserCheck,
     Cpu,
     Radio,
-    Flame,
+    ShieldCheck,
     ArrowRight
 } from 'lucide-react';
 
@@ -47,7 +47,7 @@ const DEMO_ROLES: DemoRoleOption[] = [
         role: 'Senior Threat Analyst',
         clearance: 'Level 3 (Secret)',
         badge: 'Threat Intel & MITRE',
-        badgeColor: 'text-[#147DFA] border-[#147DFA]/30 bg-[#147DFA]/10',
+        badgeColor: 'text-teal-300 border-teal-500/30 bg-teal-500/10',
         description: 'Threat hunting, IOC enrichment, MITRE ATT&CK mapping & analysis.'
     },
     {
@@ -58,7 +58,7 @@ const DEMO_ROLES: DemoRoleOption[] = [
         role: 'Incident Responder',
         clearance: 'Level 2 (Confidential)',
         badge: 'Triage & Containment',
-        badgeColor: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10',
+        badgeColor: 'text-emerald-300 border-emerald-500/30 bg-emerald-500/10',
         description: 'Real-time alert triage, containment verification & reporting.'
     }
 ];
@@ -114,16 +114,16 @@ export const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#070D17] text-slate-100 flex flex-col justify-between relative selection:bg-[#147DFA]/30 selection:text-white overflow-x-hidden font-sans">
-            {/* Background High-Tech Cyber Grid & Radial Glows */}
-            <div className="fixed inset-0 bg-[radial-gradient(#147DFA_1px,transparent_1px)] [background-size:28px_28px] opacity-10 pointer-events-none" />
-            <div className="fixed -top-40 -left-40 w-96 h-96 bg-[#147DFA]/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="fixed -bottom-40 -right-40 w-96 h-96 bg-[#0665F9]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="min-h-screen bg-[#0F172A] text-slate-100 flex flex-col justify-between relative selection:bg-teal-500/30 selection:text-white overflow-x-hidden font-sans">
+            {/* Background Calm Under Fire Ambient Grid & Teal Radial Glows */}
+            <div className="fixed inset-0 bg-[radial-gradient(#0D9488_1px,transparent_1px)] [background-size:28px_28px] opacity-10 pointer-events-none" />
+            <div className="fixed -top-40 -left-40 w-96 h-96 bg-teal-600/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="fixed -bottom-40 -right-40 w-96 h-96 bg-teal-800/15 rounded-full blur-3xl pointer-events-none" />
 
             {/* Top Operations Header */}
-            <header className="relative z-10 w-full px-6 py-4 flex items-center justify-between border-b border-slate-800/80 bg-[#0A121E]/80 backdrop-blur-md">
+            <header className="relative z-10 w-full px-6 py-4 flex items-center justify-between border-b border-slate-800 bg-[#0B132B]/80 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-linear-to-br from-[#147DFA] to-[#0A4BB5] p-0.5 flex items-center justify-center shadow-[0_0_15px_rgba(20,125,250,0.4)]">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 p-0.5 flex items-center justify-center shadow-[0_0_15px_rgba(13,148,136,0.35)]">
                         <Shield className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -131,69 +131,74 @@ export const Login: React.FC = () => {
                             <span className="font-black text-sm tracking-widest text-white uppercase font-mono">
                                 NO ENTRY
                             </span>
-                            <span className="text-[10px] px-1.5 py-0.2 font-mono bg-slate-800 text-[#147DFA] border border-[#147DFA]/30 rounded font-semibold">
-                                SOC AI v2.4
+                            <span className="text-[10px] px-1.5 py-0.2 font-mono bg-slate-800 text-teal-400 border border-teal-500/30 rounded font-semibold">
+                                CALM RESILIENCE v2.4
                             </span>
                         </div>
                         <p className="text-[11px] text-slate-400 font-sans">
-                            Enterprise Cyber Defense & Threat Intelligence Platform
+                            Calm Under Fire · Enterprise Cyber Defense &amp; Intelligence Grid
                         </p>
                     </div>
                 </div>
 
                 <div className="hidden sm:flex items-center gap-4 text-xs font-mono">
-                    <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-slate-300">GRID: ONLINE</span>
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800">
+                        <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+                        <span className="text-slate-300">GRID: NOMINAL (100% OPERATIONAL)</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-amber-400 font-semibold px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/30">
-                        <Flame className="w-3.5 h-3.5" />
-                        <span>DEFCON 3</span>
+                    <div className="flex items-center gap-1.5 text-teal-300 font-semibold px-2.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/30">
+                        <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+                        <span>DEFENSE PERIMETER STABLE</span>
                     </div>
                 </div>
             </header>
 
             {/* Main Center Content Box */}
             <main className="relative z-10 flex-1 flex items-center justify-center p-4 sm:p-6 my-auto">
-                <div className="w-full max-w-xl bg-[#0D1624] border border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden">
+                <div className="w-full max-w-xl bg-slate-900/85 border border-slate-700/60 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl overflow-hidden">
                     
-                    {/* Header Accent Bar */}
-                    <div className="h-1 bg-linear-to-r from-[#147DFA] via-[#0665F9] to-cyan-400" />
+                    {/* Header Accent Bar - Soothing Teal-to-Emerald Gradient */}
+                    <div className="h-1 bg-gradient-to-r from-teal-600 via-teal-400 to-emerald-400" />
 
                     <div className="p-6 sm:p-8">
-                        {/* Title & Terminal Subtitle */}
+                        {/* Title & Reassuring Tagline */}
                         <div className="mb-6 text-center">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#147DFA]/10 border border-[#147DFA]/30 text-[#147DFA] text-xs font-mono font-medium mb-3">
-                                <Radio className="w-3.5 h-3.5 animate-pulse" />
-                                <span>SECURE TERMINAL ACCESS PORTAL</span>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-mono font-medium mb-3">
+                                <Radio className="w-3.5 h-3.5 text-teal-400 animate-pulse" />
+                                <span>CALM UNDER FIRE OPERATIONAL GATEWAY</span>
                             </div>
                             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                                 Analyst Clearance Authentication
                             </h1>
-                            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-md mx-auto">
-                                Sign in to access real-time cyber threat feeds, MITRE ATT&CK telemetry, IOC enrichment, and automated incident triage.
+                            <div className="mt-2 py-1 px-3.5 rounded-lg bg-teal-950/40 border border-teal-700/40 inline-block">
+                                <p className="text-xs sm:text-sm font-medium text-teal-200">
+                                    🛡️ You are protected. System status optimal.
+                                </p>
+                            </div>
+                            <p className="text-xs text-slate-400 mt-2 max-w-md mx-auto">
+                                Continuous threat monitoring, IOC enrichment, and automated triage active across all feeds.
                             </p>
                         </div>
 
-                        {/* Error Alert Display */}
+                        {/* Error Alert Display - Warm Amber (NO Panic Red) */}
                         {error && (
-                            <div className="mb-6 p-3.5 rounded-lg bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-start gap-2.5 animate-shake">
-                                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                            <div className="mb-6 p-3.5 rounded-xl bg-amber-950/60 border border-amber-500/40 text-amber-200 text-xs flex items-start gap-2.5">
+                                <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
                                 <div className="flex-1">
-                                    <span className="font-semibold block text-red-300">Access Denied</span>
+                                    <span className="font-semibold block text-amber-300">Access Attention</span>
                                     <span>{error}</span>
                                 </div>
                             </div>
                         )}
 
                         {/* Access Mode Selector Tabs */}
-                        <div className="grid grid-cols-2 gap-2 p-1 bg-slate-900/90 border border-slate-800 rounded-xl mb-6">
+                        <div className="grid grid-cols-2 gap-2 p-1 bg-slate-950/70 border border-slate-800 rounded-xl mb-6">
                             <button
                                 type="button"
                                 onClick={() => setActiveTab('quick')}
                                 className={`py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-2 ${
                                     activeTab === 'quick'
-                                        ? 'bg-[#147DFA] text-white shadow-md font-semibold'
+                                        ? 'bg-teal-600 text-white shadow-md shadow-teal-600/30 font-semibold'
                                         : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                                 }`}
                             >
@@ -206,7 +211,7 @@ export const Login: React.FC = () => {
                                 onClick={() => setActiveTab('manual')}
                                 className={`py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-2 ${
                                     activeTab === 'manual'
-                                        ? 'bg-[#147DFA] text-white shadow-md font-semibold'
+                                        ? 'bg-teal-600 text-white shadow-md shadow-teal-600/30 font-semibold'
                                         : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                                 }`}
                             >
@@ -220,22 +225,22 @@ export const Login: React.FC = () => {
                             <div className="space-y-3">
                                 <div className="text-[11px] font-mono uppercase text-slate-400 flex items-center justify-between px-1">
                                     <span>Select Operational Role to Authorize</span>
-                                    <span className="text-emerald-400">Instant Verification</span>
+                                    <span className="text-teal-400 font-semibold">Instant Verification</span>
                                 </div>
 
                                 {DEMO_ROLES.map((r) => (
                                     <div
                                         key={r.roleId}
                                         onClick={() => handleQuickLoginClick(r)}
-                                        className="group relative p-3.5 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-[#147DFA]/60 hover:bg-[#0F1E33] transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-[0_0_20px_rgba(20,125,250,0.15)]"
+                                        className="group relative p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 hover:border-teal-500/60 hover:bg-slate-800/60 transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs hover:shadow-[0_0_20px_rgba(13,148,136,0.18)]"
                                     >
                                         <div className="flex items-center gap-3.5 min-w-0">
-                                            <div className="w-10 h-10 rounded-xl bg-[#142338] border border-slate-700 flex items-center justify-center text-[#147DFA] font-bold text-sm group-hover:scale-105 group-hover:border-[#147DFA] transition-all flex-shrink-0">
+                                            <div className="w-10 h-10 rounded-xl bg-teal-950/60 border border-teal-700/50 flex items-center justify-center text-teal-300 font-bold text-sm group-hover:scale-105 group-hover:border-teal-400 transition-all flex-shrink-0">
                                                 {r.name.split(' ').map(n => n[0]).join('')}
                                             </div>
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-2 flex-wrap">
-                                                    <span className="text-sm font-bold text-white group-hover:text-[#147DFA] transition-colors truncate">
+                                                    <span className="text-sm font-bold text-white group-hover:text-teal-300 transition-colors truncate">
                                                         {r.name}
                                                     </span>
                                                     <span className={`text-[10px] px-2 py-0.5 rounded-full border font-mono font-semibold ${r.badgeColor}`}>
@@ -256,7 +261,7 @@ export const Login: React.FC = () => {
                                         <button
                                             type="button"
                                             disabled={isLoading}
-                                            className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-[#147DFA]/15 border border-[#147DFA]/40 text-[#147DFA] group-hover:bg-[#147DFA] group-hover:text-white transition-all text-xs font-semibold flex items-center gap-1.5"
+                                            className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-teal-600/15 border border-teal-500/40 text-teal-300 group-hover:bg-teal-600 group-hover:text-white transition-all text-xs font-semibold flex items-center gap-1.5"
                                         >
                                             <span>Authorize</span>
                                             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -270,7 +275,7 @@ export const Login: React.FC = () => {
                                         <button
                                             type="button"
                                             onClick={() => setActiveTab('manual')}
-                                            className="text-[#147DFA] hover:underline font-semibold"
+                                            className="text-teal-400 hover:underline font-semibold"
                                         >
                                             Use Manual Entry
                                         </button>
@@ -290,10 +295,10 @@ export const Login: React.FC = () => {
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="e.g. admin@soc.corp or analyst@soc.corp"
                                         required
-                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-[#147DFA] focus:ring-1 focus:ring-[#147DFA] text-sm text-white placeholder-slate-500 outline-none transition-colors font-mono"
+                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 text-sm text-white placeholder-slate-500 outline-none transition-colors font-mono"
                                     />
                                     <p className="text-[11px] text-slate-400 mt-1">
-                                        Demo defaults: <code className="text-[#147DFA]">admin@soc.corp</code> or <code className="text-[#147DFA]">analyst@soc.corp</code>
+                                        Demo defaults: <code className="text-teal-400">admin@soc.corp</code> or <code className="text-teal-400">analyst@soc.corp</code>
                                     </p>
                                 </div>
 
@@ -303,7 +308,7 @@ export const Login: React.FC = () => {
                                             SECURITY PASSKEY
                                         </label>
                                         <span className="text-[11px] text-slate-400 font-mono">
-                                            Default: <code className="text-[#147DFA]">admin123</code>
+                                            Default: <code className="text-teal-400">admin123</code>
                                         </span>
                                     </div>
                                     <div className="relative">
@@ -313,7 +318,7 @@ export const Login: React.FC = () => {
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="••••••••••••"
                                             required
-                                            className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-900 border border-slate-700 focus:border-[#147DFA] focus:ring-1 focus:ring-[#147DFA] text-sm text-white placeholder-slate-500 outline-none transition-colors font-mono"
+                                            className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-slate-950 border border-slate-700 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 text-sm text-white placeholder-slate-500 outline-none transition-colors font-mono"
                                         />
                                         <button
                                             type="button"
@@ -332,7 +337,7 @@ export const Login: React.FC = () => {
                                             type="checkbox"
                                             checked={rememberMe}
                                             onChange={(e) => setRememberMe(e.target.checked)}
-                                            className="rounded border-slate-700 bg-slate-900 text-[#147DFA] focus:ring-[#147DFA]"
+                                            className="rounded border-slate-700 bg-slate-900 text-teal-600 focus:ring-teal-500"
                                         />
                                         <span>Persist terminal session</span>
                                     </label>
@@ -344,17 +349,17 @@ export const Login: React.FC = () => {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full py-3 px-4 rounded-xl bg-linear-to-r from-[#147DFA] to-[#0665F9] hover:from-[#1E88FF] hover:to-[#0A73FF] text-white font-bold text-sm tracking-wide shadow-lg shadow-[#147DFA]/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-500 hover:to-teal-600 text-white font-bold text-sm tracking-wide shadow-lg shadow-teal-600/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                                 >
                                     {isLoading ? (
                                         <div className="flex items-center gap-2">
                                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                            <span>Validating Biometrics & Clearance...</span>
+                                            <span>Validating Biometrics &amp; Clearance...</span>
                                         </div>
                                     ) : (
                                         <>
                                             <Shield className="w-4 h-4" />
-                                            <span>Authenticate & Access Workspace</span>
+                                            <span>Authenticate &amp; Access Workspace</span>
                                         </>
                                     )}
                                 </button>
@@ -363,16 +368,16 @@ export const Login: React.FC = () => {
                     </div>
 
                     {/* Security Clearance Compliance Footer */}
-                    <div className="px-6 py-4 bg-[#09101C] border-t border-slate-800 text-center">
+                    <div className="px-6 py-4 bg-slate-950/80 border-t border-slate-800 text-center">
                         <div className="flex items-center justify-center gap-4 text-[11px] text-slate-400 flex-wrap">
                             <span className="flex items-center gap-1">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
                                 <span>NIST SP 800-61 Audited</span>
                             </span>
                             <span>•</span>
                             <span className="flex items-center gap-1">
-                                <Cpu className="w-3.5 h-3.5 text-[#147DFA]" />
-                                <span>MITRE ATT&CK v15 Matrix</span>
+                                <Cpu className="w-3.5 h-3.5 text-teal-400" />
+                                <span>MITRE ATT&amp;CK v15 Matrix</span>
                             </span>
                             <span>•</span>
                             <span>AES-256 GCM</span>
@@ -382,9 +387,9 @@ export const Login: React.FC = () => {
             </main>
 
             {/* Bottom Compliance & Security Notice */}
-            <footer className="relative z-10 w-full px-6 py-3 text-center border-t border-slate-800/80 bg-[#0A121E]/60 text-[11px] text-slate-400">
+            <footer className="relative z-10 w-full px-6 py-3 text-center border-t border-slate-800/80 bg-[#0B132B]/60 text-[11px] text-slate-400">
                 <p>
-                    RESTRICTED GOVERNMENT & ENTERPRISE SECURITY SYSTEM. ALL QUERIES, TELEMETRY EXPORTS, AND IOC ACTIONS ARE MONITORED AND AUDITED.
+                    RESTRICTED GOVERNMENT &amp; ENTERPRISE SECURITY SYSTEM. SYSTEM STATUS OPTIMAL. ALL TELEMETRY EXPORTS ARE AUDITED.
                 </p>
             </footer>
         </div>

@@ -54,9 +54,9 @@ const Threats = () => {
     );
 
     if (error) return (
-        <div className="p-10 text-center border border-red-200 bg-red-50/50 rounded-2xl m-6">
-            <ShieldAlert className="w-12 h-12 text-red-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold font-display text-red-900 mb-2">Connection Error</h3>
+        <div className="p-10 text-center border border-amber-200 bg-amber-50/50 rounded-2xl m-6">
+            <ShieldAlert className="w-12 h-12 text-amber-600 mx-auto mb-4" />
+            <h3 className="text-xl font-bold font-display text-amber-900 mb-2">Connection Notice</h3>
             <p className="text-slate-600">{error}</p>
             <button
                 onClick={() => window.location.reload()}
@@ -178,10 +178,10 @@ const Threats = () => {
 
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase border ${
                                     threat.severity === 'Critical'
-                                        ? 'bg-red-50 text-red-700 border-red-200'
+                                        ? 'bg-amber-50 text-amber-800 border-amber-200'
                                         : threat.severity === 'High'
-                                            ? 'bg-orange-50 text-orange-700 border-orange-200'
-                                            : 'bg-yellow-50 text-yellow-800 border-yellow-200'
+                                            ? 'bg-amber-50/70 text-amber-700 border-amber-200'
+                                            : 'bg-teal-50 text-teal-800 border-teal-200'
                                 }`}>
                                     {threat.severity}
                                 </span>
@@ -192,7 +192,7 @@ const Threats = () => {
                                 <h3 className="text-xl font-bold font-display text-slate-900 mb-2">
                                     {threat.type}
                                 </h3>
-                                <p className="text-slate-700 text-base leading-relaxed border-l-3 border-[#1E3A8A] pl-4 bg-slate-50/70 py-2 rounded-r-lg">
+                                <p className="text-slate-700 text-base leading-relaxed border-l-3 border-teal-600 pl-4 bg-slate-50/70 py-2 rounded-r-lg">
                                     {threat.description}
                                 </p>
                                 <div className="text-xs text-slate-400 mt-3 font-mono">

@@ -30,10 +30,10 @@ interface ClustersData {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-    Critical: 'text-red-700 bg-red-50 border-red-200',
-    High:     'text-orange-700 bg-orange-50 border-orange-200',
-    Medium:   'text-yellow-800 bg-yellow-50 border-yellow-200',
-    Low:      'text-emerald-700 bg-emerald-50 border-emerald-200',
+    Critical: 'text-amber-800 bg-amber-50 border-amber-200',
+    High:     'text-amber-700 bg-amber-50/70 border-amber-200',
+    Medium:   'text-teal-800 bg-teal-50 border-teal-200',
+    Low:      'text-slate-700 bg-slate-50 border-slate-200',
 };
 
 // Markdown-ish renderer for LLM output
@@ -233,9 +233,9 @@ export default function AIBrief() {
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1E3A8A]"></div>
                     </div>
                 ) : clustersError ? (
-                    <div className="text-center py-10 bg-red-50 rounded-2xl border border-red-200 space-y-3">
-                        <p className="text-4xl">⚠️</p>
-                        <p className="text-red-800 font-bold">Failed to load incident clusters</p>
+                    <div className="text-center py-10 bg-amber-50 rounded-2xl border border-amber-200 space-y-3">
+                        <p className="text-4xl">🛡️</p>
+                        <p className="text-amber-800 font-bold">Incident clusters sync notice</p>
                         <p className="text-slate-500 text-sm">{clustersError}</p>
                         <button onClick={loadClusters} className="btn-accent px-4 py-2 text-xs font-medium">
                             ↺ Retry
@@ -259,7 +259,7 @@ export default function AIBrief() {
                                                     {cluster.category}
                                                 </span>
                                                 {cluster.itemCount > 1 && (
-                                                    <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold text-purple-800 bg-purple-50 border border-purple-200">
+                                                    <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold text-teal-800 bg-teal-50 border border-teal-200">
                                                         {cluster.itemCount} related articles
                                                     </span>
                                                 )}
@@ -285,12 +285,12 @@ export default function AIBrief() {
                                                 rel="noopener noreferrer"
                                                 className="flex items-start gap-3 px-5 py-3.5 hover:bg-slate-100/80 transition-colors group"
                                             >
-                                                <span className={`mt-1.5 flex-shrink-0 w-2 h-2 rounded-full ${item.severity === 'Critical' ? 'bg-red-500' : item.severity === 'High' ? 'bg-orange-500' : 'bg-yellow-500'}`}></span>
+                                                <span className={`mt-1.5 flex-shrink-0 w-2 h-2 rounded-full ${item.severity === 'Critical' ? 'bg-amber-500' : item.severity === 'High' ? 'bg-amber-400' : 'bg-teal-500'}`}></span>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-slate-800 text-sm font-medium group-hover:text-[#1E3A8A] transition-colors line-clamp-2">{item.title}</p>
+                                                    <p className="text-slate-800 text-sm font-medium group-hover:text-teal-700 transition-colors line-clamp-2">{item.title}</p>
                                                     <p className="text-slate-400 text-xs mt-1">{item.source} · {new Date(item.pubDate).toLocaleDateString()}</p>
                                                 </div>
-                                                <span className="text-slate-400 group-hover:text-[#1E3A8A] text-sm transition-colors flex-shrink-0">↗</span>
+                                                <span className="text-slate-400 group-hover:text-teal-700 text-sm transition-colors flex-shrink-0">↗</span>
                                             </a>
                                         ))}
                                     </div>

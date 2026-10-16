@@ -105,10 +105,10 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
             sub: stats.highCount !== null ? `${stats.highCount} High Priority Alerts` : 'Telemetry pending',
             icon: AlertTriangle,
             tag: `${timeWindowLabel}`,
-            color: 'from-rose-500/10 to-red-500/5',
-            border: 'border-red-200/80',
-            badgeBg: 'bg-red-50 text-red-700 border-red-200',
-            accent: 'text-red-600',
+            color: 'from-amber-500/10 to-amber-600/5',
+            border: 'border-amber-200/80',
+            badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
+            accent: 'text-amber-600',
             ping: (stats.criticalCount ?? 0) > 0,
         },
         {
@@ -117,10 +117,10 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
             sub: stats.sourcesConfigured !== null ? `Across ${stats.sourcesConfigured} Enabled Feeds` : 'Verifying sources...',
             icon: Activity,
             tag: stats.isStale ? 'Stale Snapshot' : `${timeWindowLabel}`,
-            color: 'from-blue-500/10 to-indigo-500/5',
-            border: 'border-blue-200/80',
-            badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
-            accent: 'text-blue-600',
+            color: 'from-teal-500/10 to-teal-600/5',
+            border: 'border-teal-200/80',
+            badgeBg: 'bg-teal-50 text-teal-800 border-teal-200',
+            accent: 'text-teal-600',
             ping: false,
         },
         {
@@ -191,12 +191,12 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
                         <span className={`chip-dot ${
                             stats.pipelineColor === 'emerald' ? 'bg-emerald-500' :
                             stats.pipelineColor === 'amber' ? 'bg-amber-500' :
-                            stats.pipelineColor === 'rose' ? 'bg-rose-500' : 'bg-slate-400'
+                            stats.pipelineColor === 'rose' ? 'bg-amber-500' : 'bg-slate-400'
                         }`}></span>
                         <span className={`font-semibold ${
                             stats.pipelineColor === 'emerald' ? 'text-emerald-800' :
                             stats.pipelineColor === 'amber' ? 'text-amber-800' :
-                            stats.pipelineColor === 'rose' ? 'text-rose-800' : 'text-slate-700'
+                            stats.pipelineColor === 'rose' ? 'text-amber-800' : 'text-slate-700'
                         }`}>
                             {stats.pipelineLabel}
                         </span>
@@ -213,7 +213,7 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
                         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-sans font-medium transition-all text-xs"
                         title="Reload dashboard telemetry"
                     >
-                        <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-blue-600' : ''}`} />
+                        <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin text-teal-600' : ''}`} />
                         <span>Reload</span>
                     </button>
                 </div>
@@ -235,8 +235,8 @@ const TelemetryCards = ({ timeRange = '24h', onRefresh, isRefreshing }: Telemetr
                                 <div className="flex items-center gap-1.5">
                                     {card.ping && (
                                         <span className="relative flex h-2 w-2">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                                         </span>
                                     )}
                                     <div className={`p-1.5 rounded-lg bg-white/80 border border-slate-200/60 shadow-2xs ${card.accent}`}>

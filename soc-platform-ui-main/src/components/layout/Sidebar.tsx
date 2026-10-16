@@ -162,21 +162,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
     return (
         <aside
             aria-label="Primary Navigation Sidebar"
-            className="w-[216px] h-full bg-[#142A43] text-slate-300 flex flex-col justify-between flex-shrink-0 select-none z-30 shadow-md border-r border-[#1B3655]"
+            className="w-[216px] h-full bg-[#0B132B] text-slate-300 flex flex-col justify-between flex-shrink-0 select-none z-30 shadow-md border-r border-slate-800/80"
         >
             {/* Top Brand Header */}
             <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
-                <div className="h-16 px-4 flex items-center justify-between border-b border-[#1B3655] flex-shrink-0">
+                <div className="h-16 px-4 flex items-center justify-between border-b border-slate-800/80 flex-shrink-0">
                     <Link to="/intelligence" onClick={onClose} className="flex items-center gap-2.5 group">
-                        <div className="w-8 h-8 rounded-lg bg-[#147DFA] flex items-center justify-center text-white font-bold shadow-xs">
+                        <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold shadow-sm shadow-teal-600/30">
                             <Shield className="w-4 h-4 text-white" aria-hidden="true" />
                         </div>
                         <div className="leading-tight">
                             <span className="font-bold text-white text-sm tracking-tight block">
                                 NO ENTRY
                             </span>
-                            <span className="text-[10px] text-slate-300 block font-normal tracking-wide">
-                                Threat Intelligence Platform
+                            <span className="text-[10px] text-teal-400 block font-normal tracking-wide">
+                                Calm Resilience Grid
                             </span>
                         </div>
                     </Link>
@@ -207,10 +207,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                         return (
                             <div key={section.path} className="space-y-0.5">
                                 <div
-                                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                                    className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                                         active
-                                            ? 'bg-[#147DFA] text-white shadow-xs font-semibold'
-                                            : 'text-slate-300 hover:text-white hover:bg-[#1B3655]'
+                                            ? 'bg-teal-600 text-white shadow-xs font-semibold'
+                                            : 'text-slate-300 hover:text-teal-200 hover:bg-slate-800/60'
                                     }`}
                                     role="button"
                                     tabIndex={0}
@@ -263,10 +263,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                                     key={sub.path}
                                                     to={sub.path}
                                                     onClick={onClose}
-                                                    className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-colors ${
+                                                    className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
                                                         subActive
-                                                            ? 'bg-[#1B3655] text-white font-semibold'
-                                                            : 'text-slate-400 hover:text-slate-200 hover:bg-[#1B3655]/60'
+                                                            ? 'bg-teal-950/70 text-teal-300 font-semibold border-l-2 border-teal-500'
+                                                            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
                                                     }`}
                                                     aria-current={subActive ? 'page' : undefined}
                                                 >
@@ -295,10 +295,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                         key={item.path}
                                         to={item.path}
                                         onClick={onClose}
-                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors ${
+                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-medium transition-colors ${
                                             active
-                                                ? 'bg-[#147DFA] text-white font-semibold'
-                                                : 'text-slate-400 hover:text-white hover:bg-[#1B3655]'
+                                                ? 'bg-teal-600 text-white font-semibold shadow-xs'
+                                                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                                         }`}
                                     >
                                         <SubIcon className="w-3.5 h-3.5 text-slate-400" />
@@ -312,18 +312,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
             </div>
 
             {/* Bottom Brand / Version Status */}
-            <div className="p-3 border-t border-[#1B3655] bg-[#102236] text-[11px] text-slate-400 space-y-2">
+            <div className="p-3 border-t border-slate-800/80 bg-[#070D18] text-[11px] text-slate-400 space-y-2">
                 {user && (
-                    <div className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-[#142338] border border-slate-700/60">
+                    <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-slate-900 border border-slate-800">
                         <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-6 h-6 rounded-full bg-[#147DFA]/20 text-[#147DFA] border border-[#147DFA]/40 flex items-center justify-center font-bold text-[10px]">
+                            <div className="w-6 h-6 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center font-bold text-[10px]">
                                 {user.initials || 'SA'}
                             </div>
                             <div className="min-w-0">
                                 <span className="block text-[11px] font-semibold text-slate-200 truncate">
                                     {user.name}
                                 </span>
-                                <span className="block text-[9px] text-[#147DFA] font-mono truncate">
+                                <span className="block text-[9px] text-teal-400 font-mono truncate">
                                     {user.role}
                                 </span>
                             </div>
@@ -332,23 +332,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                             type="button"
                             onClick={() => logout()}
                             title="Sign out & terminate session"
-                            className="p-1 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors"
+                            className="p-1 text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 rounded transition-colors"
                         >
                             <LogOut className="w-3.5 h-3.5" />
                         </button>
                     </div>
                 )}
                 {isDemoEnabled && (
-                    <div className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-semibold text-center mb-1">
+                    <div className="px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-semibold text-center mb-1">
                         DEMO MODE ACTIVE
                     </div>
                 )}
                 <div className="flex items-center justify-between text-[11px] px-1">
                     <span className="font-medium text-slate-300">NO ENTRY SOC</span>
-                    <span className="text-[10px] text-slate-400 font-mono">v2.4.0</span>
+                    <span className="text-[10px] text-teal-400 font-mono">v2.4.0</span>
                 </div>
                 <div className="text-[10px] text-slate-400 px-1 truncate">
-                    Enterprise Intelligence Grid
+                    Calm Resilience Defense Grid
                 </div>
             </div>
         </aside>

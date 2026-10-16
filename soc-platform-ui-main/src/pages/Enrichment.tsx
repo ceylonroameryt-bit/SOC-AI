@@ -251,7 +251,7 @@ export default function Enrichment() {
                     {result && (
                         <div className="space-y-4">
                             {result.error && (
-                                <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-800 text-sm font-medium">
+                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-800 text-sm font-medium">
                                     ⚠️ {result.error}
                                 </div>
                             )}
@@ -268,14 +268,14 @@ export default function Enrichment() {
                                             <div>
                                                 <div className="flex justify-between text-sm mb-1.5">
                                                     <span className="text-slate-500 font-medium">Maliciousness Score</span>
-                                                    <span className={`font-bold ${result.virustotal.maliciousEngines > 5 ? 'text-red-600' : result.virustotal.maliciousEngines > 0 ? 'text-orange-600' : 'text-emerald-600'}`}>
+                                                    <span className={`font-bold ${result.virustotal.maliciousEngines > 5 ? 'text-amber-700' : result.virustotal.maliciousEngines > 0 ? 'text-amber-600' : 'text-teal-600'}`}>
                                                         {result.virustotal.maliciousEngines}/{result.virustotal.totalEngines} engines
                                                     </span>
                                                 </div>
                                                 <ScoreBar
                                                     value={result.virustotal.maliciousEngines}
                                                     max={result.virustotal.totalEngines || 70}
-                                                    color={result.virustotal.maliciousEngines > 10 ? 'bg-red-500' : result.virustotal.maliciousEngines > 0 ? 'bg-orange-500' : 'bg-emerald-500'}
+                                                    color={result.virustotal.maliciousEngines > 10 ? 'bg-amber-600' : result.virustotal.maliciousEngines > 0 ? 'bg-amber-400' : 'bg-teal-500'}
                                                 />
                                             </div>
                                             <div className="grid grid-cols-2 gap-3 text-sm pt-2 border-t border-[#E2E8F0]">
@@ -290,7 +290,7 @@ export default function Enrichment() {
                                         href={result.virustotal.vtLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-[#1E3A8A] font-semibold hover:underline text-xs"
+                                        className="inline-flex items-center gap-1 text-teal-700 font-semibold hover:underline text-xs"
                                     >
                                         View full analysis on VirusTotal →
                                     </a>
@@ -301,7 +301,7 @@ export default function Enrichment() {
                             {result.abuseipdb && (
                                 <div className="metric-card space-y-3">
                                     <h3 className="text-slate-900 font-bold font-display flex items-center gap-2 text-base">
-                                        <span className="text-lg">🚨</span> AbuseIPDB Confidence
+                                        <span className="text-lg">🛡️</span> AbuseIPDB Confidence
                                         {result.abuseipdb.error && <span className="text-xs text-amber-700 ml-2 font-medium">(API key needed)</span>}
                                     </h3>
                                     {!result.abuseipdb.error ? (
@@ -309,14 +309,14 @@ export default function Enrichment() {
                                             <div>
                                                 <div className="flex justify-between text-sm mb-1.5">
                                                     <span className="text-slate-500 font-medium">Abuse Confidence</span>
-                                                    <span className={`font-bold ${result.abuseipdb.abuseConfidenceScore > 50 ? 'text-red-600' : result.abuseipdb.abuseConfidenceScore > 20 ? 'text-orange-600' : 'text-emerald-600'}`}>
+                                                    <span className={`font-bold ${result.abuseipdb.abuseConfidenceScore > 50 ? 'text-amber-700' : result.abuseipdb.abuseConfidenceScore > 20 ? 'text-amber-600' : 'text-teal-600'}`}>
                                                         {result.abuseipdb.abuseConfidenceScore}%
                                                     </span>
                                                 </div>
                                                 <ScoreBar
                                                     value={result.abuseipdb.abuseConfidenceScore}
                                                     max={100}
-                                                    color={result.abuseipdb.abuseConfidenceScore > 50 ? 'bg-red-500' : result.abuseipdb.abuseConfidenceScore > 20 ? 'bg-orange-500' : 'bg-emerald-500'}
+                                                    color={result.abuseipdb.abuseConfidenceScore > 50 ? 'bg-amber-600' : result.abuseipdb.abuseConfidenceScore > 20 ? 'bg-amber-400' : 'bg-teal-500'}
                                                 />
                                             </div>
                                             <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t border-[#E2E8F0]">
@@ -331,7 +331,7 @@ export default function Enrichment() {
                                         href={result.abuseipdb.abuseLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-[#1E3A8A] font-semibold hover:underline text-xs"
+                                        className="inline-flex items-center gap-1 text-teal-700 font-semibold hover:underline text-xs"
                                     >
                                         Check reports on AbuseIPDB →
                                     </a>
@@ -346,8 +346,8 @@ export default function Enrichment() {
                                             <span className="text-lg">📋</span> CVE Exploitation Metrics
                                         </h3>
                                         {result.enrichment.isKEV && (
-                                            <span className="px-2.5 py-0.5 bg-red-100 text-red-800 border border-red-200 text-xs font-bold rounded-full">
-                                                🔴 CISA KEV — ACTIVELY EXPLOITED
+                                            <span className="px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold rounded-full">
+                                                🔶 CISA KEV — CATALOGED EXPLOIT
                                             </span>
                                         )}
                                     </div>

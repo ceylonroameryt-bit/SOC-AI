@@ -80,19 +80,19 @@ export const CollectionStatusBar: React.FC = () => {
 
                 <Link
                     to="/sources"
-                    className="flex items-center gap-1.5 text-[#64748B] hover:text-[#0665F9] transition-colors group"
+                    className="flex items-center gap-1.5 text-slate-500 hover:text-teal-600 transition-colors group"
                     title="View detailed Feed Health metrics"
                 >
-                    <Radio className="w-3 h-3 text-[#0665F9]" aria-hidden="true" />
+                    <Radio className="w-3 h-3 text-teal-600" aria-hidden="true" />
                     <span>
                         Feeds:{' '}
-                        <span className="font-semibold text-[#0F172A]">
+                        <span className="font-semibold text-slate-900">
                             {statusData.healthyCount}/{statusData.totalConfigured} Healthy
                         </span>
                     </span>
 
                     {warningCount > 0 && (
-                        <span className="ml-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-[#FEF3F2] text-[#B42318] border border-[#FECDCA]">
+                        <span className="ml-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                             {warningCount} attention
                         </span>
                     )}

@@ -19,11 +19,11 @@ interface Rule {
 }
 
 const LEVEL_COLORS: Record<string, string> = {
-    critical: 'bg-red-600/20 text-red-300 border-red-600/40',
-    high:     'bg-orange-600/20 text-orange-300 border-orange-600/40',
-    medium:   'bg-yellow-600/20 text-yellow-300 border-yellow-600/40',
-    low:      'bg-green-600/20 text-green-300 border-green-600/40',
-    stable:   'bg-blue-600/20 text-blue-300 border-blue-600/40',
+    critical: 'bg-amber-600/20 text-amber-300 border-amber-600/40',
+    high:     'bg-amber-500/20 text-amber-200 border-amber-500/40',
+    medium:   'bg-teal-600/20 text-teal-300 border-teal-600/40',
+    low:      'bg-slate-600/20 text-slate-300 border-slate-600/40',
+    stable:   'bg-teal-600/20 text-teal-300 border-teal-600/40',
     experimental: 'bg-purple-600/20 text-purple-300 border-purple-600/40',
 };
 

@@ -7,24 +7,25 @@
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Analyst Workspace Design Tokens */
-  --sidebar: #101F35;
-  --bg-main: #F7F9FC;
-  --panel: #FFFFFF;
-  --primary: #0665F9;
-  --row-selected: #EAF2FF;
+  /* Calm Under Fire - Design Tokens */
+  --sidebar: #0B132B;
+  --bg-main: #0F172A;
+  --panel: #1E293B;
+  --primary: #0D9488;
+  --primary-hover: #0F766E;
+  --row-selected: rgba(13, 148, 136, 0.12);
 
   --ink: #0F172A;
   --ink-light: #334155;
   --ink-muted: #64748B;
   --ink-subtle: #94A3B8;
 
-  --border: #E2E8F0;
-  --border-dark: #CBD5E1;
+  --border: rgba(148, 163, 184, 0.18);
+  --border-dark: rgba(148, 163, 184, 0.32);
 
-  --success: #138A68;
-  --warning: #B96B00;
-  --critical: #B42318;
+  --success: #10B981;
+  --warning: #D97706;
+  --critical: #D97706; /* Non-panic amber for critical issues */
 
   font-family: var(--font-sans);
   line-height: 1.5;
@@ -37,12 +38,12 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #F7F9FC;
+  background-color: #F8FAFC;
   color: #0F172A;
   font-family: var(--font-sans);
 }
 
-/* Headings use the Syne display font */
+/* Headings */
 h1, h2, h3, h4, h5, h6,
 .font-display,
 .section-title,
@@ -53,7 +54,7 @@ h1, h2, h3, h4, h5, h6,
   color: #0F172A;
 }
 
-/* Portfolio Section Label */
+/* Calm Under Fire Section Label */
 .section-label {
   display: inline-flex;
   align-items: center;
@@ -63,9 +64,9 @@ h1, h2, h3, h4, h5, h6,
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #1E3A8A;
-  background: rgba(30, 58, 138, 0.06);
-  border: 1px solid rgba(30, 58, 138, 0.18);
+  color: #0D9488;
+  background: rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(13, 148, 136, 0.22);
   padding: 0.25rem 0.625rem;
   border-radius: 9999px;
 }
@@ -75,9 +76,9 @@ h1, h2, h3, h4, h5, h6,
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #ECFDF5;
-  border: 1px solid #A7F3D0;
-  color: #065F46;
+  background: #F0FDFA;
+  border: 1px solid #99F6E4;
+  color: #0F766E;
   padding: 0.35rem 0.85rem;
   border-radius: 9999px;
   font-size: 0.75rem;
@@ -88,24 +89,24 @@ h1, h2, h3, h4, h5, h6,
 .chip-dot {
   width: 7px;
   height: 7px;
-  background-color: #10B981;
+  background-color: #0D9488;
   border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.7);
   animation: pulse-dot 2s infinite;
 }
 
 @keyframes pulse-dot {
   0% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.7);
   }
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 6px rgba(13, 148, 136, 0);
   }
   100% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0);
   }
 }
 
@@ -113,8 +114,8 @@ h1, h2, h3, h4, h5, h6,
 .stats-strip {
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
-  border-radius: 14px;
-  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  padding: 1.1rem 1.5rem;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
 }
 
@@ -139,7 +140,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .strip-sup {
-  color: #2563EB;
+  color: #0D9488;
   font-size: 1.1rem;
   font-weight: 700;
   margin-left: 2px;
@@ -169,34 +170,34 @@ h1, h2, h3, h4, h5, h6,
 .metric-card {
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 1.25rem;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 .metric-card:hover {
-  border-color: rgba(30, 58, 138, 0.25);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  border-color: rgba(13, 148, 136, 0.28);
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.08);
   transform: translateY(-2px);
 }
 
 /* Action Buttons */
 .btn-accent {
-  background: #1E3A8A;
+  background: #0D9488;
   color: #FFFFFF;
-  border: 1px solid #1E3A8A;
-  box-shadow: 0 4px 14px rgba(30, 58, 138, 0.25);
+  border: 1px solid #0D9488;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 12px;
   transition: all 0.2s ease;
 }
 
 .btn-accent:hover {
-  background: #1E40AF;
-  border-color: #1E40AF;
+  background: #0F766E;
+  border-color: #0F766E;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(30, 58, 138, 0.35);
+  box-shadow: 0 6px 20px rgba(13, 148, 136, 0.35);
 }
 
 .btn-secondary {
@@ -266,27 +267,27 @@ h1, h2, h3, h4, h5, h6,
 @keyframes pulse-radar {
   0% {
     transform: scale(0.9);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.6);
   }
   70% {
     transform: scale(1.1);
-    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 8px rgba(217, 119, 6, 0);
   }
   100% {
     transform: scale(0.9);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0);
   }
 }
 
 .radar-ping {
-  animation: pulse-radar 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  animation: pulse-radar 2.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
 }
 
 .ioc-code {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   padding: 0.15rem 0.45rem;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #F1F5F9;
   border: 1px solid #E2E8F0;
   color: #0F172A;
@@ -294,15 +295,15 @@ h1, h2, h3, h4, h5, h6,
 
 .glass-card {
   background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05), 0 10px 25px -5px rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 18px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 10px 25px -5px rgba(13, 148, 136, 0.03);
   transition: all 0.2s ease;
 }
 
 .glass-card:hover {
-  border-color: #CBD5E1;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.07), 0 20px 30px -10px rgba(15, 23, 42, 0.04);
+  border-color: rgba(13, 148, 136, 0.35);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06), 0 20px 30px -10px rgba(13, 148, 136, 0.06);
 }
 
 /* ==========================================================================
@@ -311,9 +312,9 @@ h1, h2, h3, h4, h5, h6,
 
 /* Universal Accessible Focus Ring for Keyboard Users */
 :focus-visible {
-  outline: 2.5px solid #1D4ED8 !important;
+  outline: 2.5px solid #0D9488 !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25) !important;
 }
 
 /* Ensure mouse clicks don't show focus rings if not keyboard initiated */

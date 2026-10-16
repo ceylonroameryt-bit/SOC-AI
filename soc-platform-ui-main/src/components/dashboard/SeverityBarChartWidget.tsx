@@ -14,10 +14,10 @@ interface SeverityBarChartWidgetProps {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-    Critical: '#dc2626', // Red-600
-    High: '#ea580c',     // Orange-600
-    Medium: '#d97706',   // Amber-600
-    Low: '#2563eb',      // Blue-600
+    Critical: '#D97706', // Warm Amber (no panic red)
+    High: '#F59E0B',     // Amber-500
+    Medium: '#0D9488',   // Soothing Teal
+    Low: '#64748B',      // Slate-500
 };
 
 const DEFAULT_STATS: SeverityStat[] = [
@@ -77,13 +77,13 @@ const SeverityBarChartWidget = ({
         }
         switch (name) {
             case 'Critical':
-                return 'bg-red-700 text-white border-red-700 shadow-sm shadow-red-500/20';
-            case 'High':
-                return 'bg-orange-700 text-white border-orange-700 shadow-sm shadow-orange-500/20';
-            case 'Medium':
                 return 'bg-amber-600 text-white border-amber-600 shadow-sm shadow-amber-500/20';
+            case 'High':
+                return 'bg-amber-500 text-white border-amber-500 shadow-sm shadow-amber-500/20';
+            case 'Medium':
+                return 'bg-teal-600 text-white border-teal-600 shadow-sm shadow-teal-500/20';
             case 'Low':
-                return 'bg-blue-700 text-white border-blue-700 shadow-sm shadow-blue-500/20';
+                return 'bg-slate-600 text-white border-slate-600 shadow-sm shadow-slate-500/20';
             default:
                 return 'bg-slate-900 text-white border-slate-900';
         }

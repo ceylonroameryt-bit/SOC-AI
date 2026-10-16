@@ -76,27 +76,27 @@ interface NewsApiResponse {
 
 const SEVERITY_STYLES: Record<string, { bg: string; text: string; border: string; glow: string }> = {
     Critical: {
-        bg: 'bg-red-50',
-        text: 'text-red-700',
-        border: 'border-red-200',
+        bg: 'bg-amber-50',
+        text: 'text-amber-800',
+        border: 'border-amber-200',
         glow: 'shadow-xs'
     },
     High: {
-        bg: 'bg-orange-50',
-        text: 'text-orange-700',
-        border: 'border-orange-200',
+        bg: 'bg-amber-50/70',
+        text: 'text-amber-700',
+        border: 'border-amber-200',
         glow: 'shadow-xs'
     },
     Medium: {
-        bg: 'bg-yellow-50',
-        text: 'text-yellow-800',
-        border: 'border-yellow-200',
+        bg: 'bg-teal-50',
+        text: 'text-teal-800',
+        border: 'border-teal-200',
         glow: 'shadow-xs'
     },
     Low: {
-        bg: 'bg-emerald-50',
-        text: 'text-emerald-700',
-        border: 'border-emerald-200',
+        bg: 'bg-slate-50',
+        text: 'text-slate-700',
+        border: 'border-slate-200',
         glow: 'shadow-xs'
     },
 };
