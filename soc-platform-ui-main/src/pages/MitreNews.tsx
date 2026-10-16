@@ -174,9 +174,9 @@ export default function MitreNews() {
     const activeTacticObj = data?.tacticsSummary.find(t => t.id === selectedTacticParam || t.shortName === selectedTacticParam);
 
     return (
-        <div className="p-6 space-y-6 min-h-full max-w-7xl mx-auto bg-white">
+        <div className="p-6 space-y-6 min-h-full max-w-7xl mx-auto bg-[#050608]">
             {/* Header section */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2 mb-1">
                         <span className="section-label">ATT&CK News Matrix</span>
@@ -186,14 +186,14 @@ export default function MitreNews() {
                         </span>
                     </div>
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-[#1E3A8A]">
+                        <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400">
                             <Target className="w-7 h-7" />
                         </div>
                         <div>
-                            <h1 className="text-2xl lg:text-3xl font-extrabold font-display text-slate-900 flex items-center gap-2">
-                                MITRE ATT&CK <span className="text-[#1E3A8A]">News Matrix</span>
+                            <h1 className="text-2xl lg:text-3xl font-extrabold font-display text-white flex items-center gap-2">
+                                MITRE ATT&CK <span className="text-amber-400">News Matrix</span>
                             </h1>
-                            <p className="text-slate-500 text-sm">
+                            <p className="text-slate-400 text-sm">
                                 Live threat intelligence categorized across 14 MITRE ATT&CK Enterprise Tactics &amp; Techniques
                             </p>
                         </div>
@@ -205,14 +205,14 @@ export default function MitreNews() {
                         onClick={() => navigate('/mitre')}
                         className="btn-secondary px-3.5 py-2 text-xs font-semibold flex items-center gap-2"
                     >
-                        <Layers className="w-4 h-4 text-[#1E3A8A]" />
+                        <Layers className="w-4 h-4 text-amber-400" />
                         Heatmap View
                     </button>
                     <button
                         onClick={() => navigate('/enrich')}
                         className="btn-secondary px-3.5 py-2 text-xs font-semibold flex items-center gap-2"
                     >
-                        <Zap className="w-4 h-4 text-amber-600" />
+                        <Zap className="w-4 h-4 text-amber-400" />
                         IOC Enrichment
                     </button>
                     <button
@@ -235,7 +235,7 @@ export default function MitreNews() {
                         </div>
                         <div className="strip-divider hidden md:block" />
                         <div className="strip-stat">
-                            <div className="strip-num text-[#1E3A8A]">
+                            <div className="strip-num text-amber-400">
                                 {data.coverageStats.activeTactics} <span className="text-xs font-semibold text-slate-400">/ 14</span>
                             </div>
                             <div className="strip-label">Active Tactics</div>
@@ -243,13 +243,13 @@ export default function MitreNews() {
                         </div>
                         <div className="strip-divider hidden md:block" />
                         <div className="strip-stat">
-                            <div className="strip-num text-emerald-600">{data.coverageStats.coveragePercent}%</div>
+                            <div className="strip-num text-emerald-400">{data.coverageStats.coveragePercent}%</div>
                             <div className="strip-label">Matrix Coverage</div>
                             <div className="strip-sub">Threat landscape distribution</div>
                         </div>
                         <div className="strip-divider hidden md:block" />
                         <div className="strip-stat">
-                            <div className="strip-num text-slate-700">{data.totalArticles}</div>
+                            <div className="strip-num text-slate-200">{data.totalArticles}</div>
                             <div className="strip-label">Total Articles</div>
                             <div className="strip-sub">Aggregated in pipeline</div>
                         </div>
@@ -258,15 +258,15 @@ export default function MitreNews() {
             )}
 
             {/* 14 MITRE Tactics Navigation Ribbon */}
-            <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 space-y-3 shadow-xs">
+            <div className="bg-[#0C0E14] border border-white/10 rounded-2xl p-4 space-y-3 shadow-xs">
                 <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
                         <span>🛡️</span> Filter by MITRE Tactic
                     </span>
                     {selectedTacticParam !== 'all' && (
                         <button
                             onClick={() => updateFilter('tactic', 'all')}
-                            className="text-xs text-[#1E3A8A] hover:underline font-bold transition-colors"
+                            className="text-xs text-amber-400 hover:underline font-bold transition-colors"
                         >
                             ✕ Reset Tactic Filter
                         </button>
@@ -278,18 +278,18 @@ export default function MitreNews() {
                         onClick={() => updateFilter('tactic', 'all')}
                         className={`p-2.5 rounded-xl border text-left transition-all ${
                             selectedTacticParam === 'all'
-                                ? 'bg-blue-50 border-[#1E3A8A] shadow-xs'
-                                : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                                ? 'bg-amber-500/10 border-amber-500/40 shadow-xs ring-1 ring-amber-500'
+                                : 'bg-[#07090E] border-white/10 hover:bg-white/5'
                         }`}
                     >
                         <div className="flex items-center justify-between">
                             <span className="text-sm">🌐</span>
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700">
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-300">
                                 {data?.totalCategorized ?? 0}
                             </span>
                         </div>
-                        <p className="text-xs font-bold text-slate-900 mt-1.5 truncate">All Tactics</p>
-                        <p className="text-[10px] text-slate-500 truncate">Entire Feed</p>
+                        <p className="text-xs font-bold text-white mt-1.5 truncate">All Tactics</p>
+                        <p className="text-[10px] text-slate-400 truncate">Entire Feed</p>
                     </button>
 
                     {data?.tacticsSummary.map(tactic => {

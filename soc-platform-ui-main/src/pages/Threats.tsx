@@ -47,20 +47,20 @@ const Threats = () => {
     }, []);
 
     if (loading) return (
-        <div className="flex items-center justify-center p-20 text-slate-500 animate-pulse bg-white h-full">
-            <ShieldAlert className="w-6 h-6 mr-3 text-blue-700 opacity-70" />
-            <span className="font-medium text-slate-700">Initializing Secure Intelligence Feed...</span>
+        <div className="flex items-center justify-center p-20 text-slate-500 animate-pulse bg-[#050608] h-full">
+            <ShieldAlert className="w-6 h-6 mr-3 text-amber-400 opacity-70" />
+            <span className="font-medium text-slate-300">Initializing Secure Intelligence Feed...</span>
         </div>
     );
 
     if (error) return (
-        <div className="p-10 text-center border border-amber-200 bg-amber-50/50 rounded-2xl m-6">
-            <ShieldAlert className="w-12 h-12 text-amber-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold font-display text-amber-900 mb-2">Connection Notice</h3>
-            <p className="text-slate-600">{error}</p>
+        <div className="p-10 text-center border border-amber-500/30 bg-[#0C0E14] rounded-2xl m-6">
+            <ShieldAlert className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+            <h3 className="text-xl font-bold font-display text-white mb-2">Connection Notice</h3>
+            <p className="text-slate-400">{error}</p>
             <button
                 onClick={() => window.location.reload()}
-                className="mt-4 px-5 py-2.5 btn-accent text-sm"
+                className="mt-4 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl text-sm transition-all"
             >
                 Retry Connection
             </button>
@@ -68,18 +68,18 @@ const Threats = () => {
     );
 
     if (threats.length === 0) return (
-        <div className="p-12 text-center border border-slate-200 rounded-2xl bg-white m-6">
-            <Globe className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-            <h3 className="text-lg font-bold font-display text-slate-800">No Active Threats Detected</h3>
-            <p className="text-slate-500 mt-2">Global threat landscape appears stable.</p>
+        <div className="p-12 text-center border border-white/10 rounded-2xl bg-[#0C0E14] m-6">
+            <Globe className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+            <h3 className="text-lg font-bold font-display text-white">No Active Threats Detected</h3>
+            <p className="text-slate-400 mt-2">Global threat landscape appears stable.</p>
         </div>
     );
 
     return (
-        <div className="h-full overflow-y-auto px-6 py-6 custom-scrollbar bg-white">
+        <div className="h-full overflow-y-auto px-6 py-6 custom-scrollbar bg-[#050608]">
             <div className="space-y-6 pb-12 max-w-7xl mx-auto">
                 {/* Header Strip */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#E2E8F0]">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <span className="section-label">Active Surveillance</span>
@@ -88,11 +88,11 @@ const Threats = () => {
                                 Live Feed Connected
                             </span>
                         </div>
-                        <h1 className="text-3xl font-extrabold font-display text-slate-900 flex items-center tracking-tight gap-3">
-                            <ShieldAlert className="w-8 h-8 text-red-600" />
+                        <h1 className="text-3xl font-extrabold font-display text-white flex items-center tracking-tight gap-3">
+                            <ShieldAlert className="w-8 h-8 text-amber-400" />
                             Active Threat Intelligence
                         </h1>
-                        <p className="text-slate-500 mt-1 text-sm">
+                        <p className="text-slate-400 mt-1 text-sm">
                             Daily SITREP for {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </p>
                     </div>
@@ -102,15 +102,15 @@ const Threats = () => {
                             href={`${API_BASE}/api/reports/export/threats`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn-secondary px-3.5 py-2 text-xs font-semibold flex items-center gap-2 shadow-sm"
+                            className="bg-[#0C0E14] hover:bg-white/5 border border-white/10 text-white px-3.5 py-2 text-xs font-semibold rounded-xl flex items-center gap-2 shadow-xs transition-colors"
                         >
-                            <ShieldAlert className="w-3.5 h-3.5 text-blue-700" /> Export Threats
+                            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" /> Export Threats
                         </a>
                         <a
                             href={`${API_BASE}/api/reports/export/news`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn-accent px-3.5 py-2 text-xs font-semibold flex items-center gap-2"
+                            className="bg-amber-500 hover:bg-amber-600 text-black px-3.5 py-2 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors shadow-xs"
                         >
                             <Globe className="w-3.5 h-3.5" /> Export News
                         </a>
@@ -118,38 +118,38 @@ const Threats = () => {
                 </div>
 
                 {/* Editorial Stats Strip */}
-                <div className="stats-strip">
-                    <div className="stats-strip-inner">
-                        <div className="strip-stat">
-                            <div className="strip-num">{threats.length}<span className="strip-sup">ACT</span></div>
-                            <div className="strip-label">Active Threats</div>
-                            <div className="strip-sub">Monitored in current cycle</div>
+                <div className="bg-[#0C0E14] border border-white/10 rounded-2xl p-5 shadow-xs">
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                        <div className="flex flex-col">
+                            <div className="text-2xl font-bold font-display text-white">{threats.length}<span className="text-amber-400 text-sm ml-1">ACT</span></div>
+                            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-1">Active Threats</div>
+                            <div className="text-[11px] text-slate-500">Monitored in current cycle</div>
                         </div>
-                        <div className="strip-divider hidden md:block" />
-                        <div className="strip-stat">
-                            <div className="strip-num text-red-600">
+                        <div className="w-[1px] h-9 bg-white/10 hidden md:block" />
+                        <div className="flex flex-col">
+                            <div className="text-2xl font-bold font-display text-amber-400">
                                 {threats.filter(t => t.severity === 'Critical').length}
-                                <span className="strip-sup text-red-600">CRIT</span>
+                                <span className="text-amber-400/80 text-sm ml-1">CRIT</span>
                             </div>
-                            <div className="strip-label">Critical Tier</div>
-                            <div className="strip-sub">Immediate response required</div>
+                            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-1">Critical Tier</div>
+                            <div className="text-[11px] text-slate-500">Immediate response required</div>
                         </div>
-                        <div className="strip-divider hidden md:block" />
-                        <div className="strip-stat">
-                            <div className="strip-num text-orange-600">
+                        <div className="w-[1px] h-9 bg-white/10 hidden md:block" />
+                        <div className="flex flex-col">
+                            <div className="text-2xl font-bold font-display text-amber-300">
                                 {threats.filter(t => t.severity === 'High').length}
-                                <span className="strip-sup text-orange-600">HIGH</span>
+                                <span className="text-amber-300/80 text-sm ml-1">HIGH</span>
                             </div>
-                            <div className="strip-label">High Priority</div>
-                            <div className="strip-sub">Targeted enterprise vectors</div>
+                            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-1">High Priority</div>
+                            <div className="text-[11px] text-slate-500">Targeted enterprise vectors</div>
                         </div>
-                        <div className="strip-divider hidden md:block" />
-                        <div className="strip-stat">
-                            <div className="strip-num text-emerald-600">
-                                99.9<span className="strip-sup text-emerald-600">%</span>
+                        <div className="w-[1px] h-9 bg-white/10 hidden md:block" />
+                        <div className="flex flex-col">
+                            <div className="text-2xl font-bold font-display text-emerald-400">
+                                99.9<span className="text-emerald-400 text-sm ml-1">%</span>
                             </div>
-                            <div className="strip-label">Feed Integrity</div>
-                            <div className="strip-sub">Real-time normalization</div>
+                            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-1">Feed Integrity</div>
+                            <div className="text-[11px] text-slate-500">Real-time normalization</div>
                         </div>
                     </div>
                 </div>
@@ -159,29 +159,25 @@ const Threats = () => {
                     {threats.map((threat) => (
                         <div
                             key={threat.id}
-                            className="metric-card relative overflow-hidden"
+                            className="bg-[#0C0E14] border border-white/10 rounded-2xl p-6 shadow-xs relative overflow-hidden"
                         >
                             {/* Top Status and Metadata */}
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-2.5 flex-wrap">
-                                    <span className="font-mono text-xs font-bold text-blue-900 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
+                                    <span className="font-mono text-xs font-bold text-amber-400 bg-white/5 px-2.5 py-1 rounded-md border border-white/10">
                                         {threat.id}
                                     </span>
-                                    <span className={`text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-md border ${
-                                        threat.type === 'Dark Web Leak'
-                                            ? 'bg-purple-50 text-purple-800 border-purple-200'
-                                            : 'bg-slate-100 text-slate-700 border-slate-200'
-                                    }`}>
+                                    <span className="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-md border bg-white/5 text-slate-300 border-white/10">
                                         {threat.source || 'Intelligence Feed'}
                                     </span>
                                 </div>
 
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase border ${
                                     threat.severity === 'Critical'
-                                        ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
                                         : threat.severity === 'High'
-                                            ? 'bg-amber-50/70 text-amber-700 border-amber-200'
-                                            : 'bg-teal-50 text-teal-800 border-teal-200'
+                                            ? 'bg-amber-500/10 text-amber-300 border-amber-500/20'
+                                            : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                                 }`}>
                                     {threat.severity}
                                 </span>
@@ -189,27 +185,27 @@ const Threats = () => {
 
                             {/* Threat Description */}
                             <div className="mb-6">
-                                <h3 className="text-xl font-bold font-display text-slate-900 mb-2">
+                                <h3 className="text-xl font-bold font-display text-white mb-2">
                                     {threat.type}
                                 </h3>
-                                <p className="text-slate-700 text-base leading-relaxed border-l-3 border-teal-600 pl-4 bg-slate-50/70 py-2 rounded-r-lg">
+                                <p className="text-slate-300 text-base leading-relaxed border-l-2 border-amber-500 pl-4 bg-white/5 py-2.5 rounded-r-lg">
                                     {threat.description}
                                 </p>
-                                <div className="text-xs text-slate-400 mt-3 font-mono">
+                                <div className="text-xs text-slate-500 mt-3 font-mono">
                                     Detected: {new Date(threat.timestamp).toLocaleString()}
                                 </div>
                             </div>
 
                             {/* IOC Grid */}
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-4 border-t border-[#E2E8F0] bg-slate-50/50 p-4 rounded-xl border">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-4 border-t border-white/10 bg-[#07090E] p-4 rounded-xl border border-white/5">
                                 {threat.ioc?.ip_addresses && threat.ioc.ip_addresses.length > 0 && (
                                     <div className="space-y-2">
-                                        <div className="flex items-center text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                            <Globe className="w-4 h-4 mr-1.5 text-blue-700" /> Malicious IPs
+                                        <div className="flex items-center text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                            <Globe className="w-4 h-4 mr-1.5 text-amber-400" /> Malicious IPs
                                         </div>
                                         <ul className="text-xs font-mono space-y-1.5">
                                             {threat.ioc.ip_addresses.map(ip => (
-                                                <li key={ip} className="bg-white px-2.5 py-1 rounded border border-slate-200 text-slate-800 w-fit">
+                                                <li key={ip} className="bg-[#0C0E14] px-2.5 py-1 rounded border border-white/10 text-slate-300 w-fit">
                                                     {ip}
                                                 </li>
                                             ))}
@@ -219,12 +215,12 @@ const Threats = () => {
 
                                 {threat.ioc?.domains && threat.ioc.domains.length > 0 && (
                                     <div className="space-y-2">
-                                        <div className="flex items-center text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                            <Globe className="w-4 h-4 mr-1.5 text-purple-700" /> C2 Domains
+                                        <div className="flex items-center text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                            <Globe className="w-4 h-4 mr-1.5 text-amber-400" /> C2 Domains
                                         </div>
                                         <ul className="text-xs font-mono space-y-1.5">
                                             {threat.ioc.domains.map(d => (
-                                                <li key={d} className="bg-white px-2.5 py-1 rounded border border-slate-200 text-slate-800 w-fit break-all">
+                                                <li key={d} className="bg-[#0C0E14] px-2.5 py-1 rounded border border-white/10 text-slate-300 w-fit break-all">
                                                     {d}
                                                 </li>
                                             ))}
@@ -234,14 +230,14 @@ const Threats = () => {
 
                                 {(threat.ioc?.md5 || threat.ioc?.sha256) && (
                                     <div className="space-y-2 col-span-1 lg:col-span-1">
-                                        <div className="flex items-center text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                            <Hash className="w-4 h-4 mr-1.5 text-emerald-700" /> File Hashes
+                                        <div className="flex items-center text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                            <Hash className="w-4 h-4 mr-1.5 text-amber-400" /> File Hashes
                                         </div>
                                         <div className="space-y-2 text-xs">
                                             {threat.ioc?.md5 && (
                                                 <div>
                                                     <span className="text-[10px] text-slate-500 font-bold block">MD5</span>
-                                                    <span className="text-xs text-slate-800 font-mono break-all bg-white px-2 py-1 rounded border border-slate-200 block">
+                                                    <span className="text-xs text-slate-300 font-mono break-all bg-[#0C0E14] px-2 py-1 rounded border border-white/10 block">
                                                         {threat.ioc.md5}
                                                     </span>
                                                 </div>
@@ -249,7 +245,7 @@ const Threats = () => {
                                             {threat.ioc?.sha256 && (
                                                 <div>
                                                     <span className="text-[10px] text-slate-500 font-bold block">SHA256</span>
-                                                    <span className="text-xs text-slate-800 font-mono break-all bg-white px-2 py-1 rounded border border-slate-200 block">
+                                                    <span className="text-xs text-slate-300 font-mono break-all bg-[#0C0E14] px-2 py-1 rounded border border-white/10 block">
                                                         {threat.ioc.sha256}
                                                     </span>
                                                 </div>

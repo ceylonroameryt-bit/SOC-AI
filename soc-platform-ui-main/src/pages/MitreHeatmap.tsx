@@ -76,9 +76,9 @@ export default function MitreHeatmap() {
     const totalActive = data?.activeTechniques ?? 0;
 
     return (
-        <div className="p-6 space-y-6 max-w-7xl mx-auto bg-white min-h-full">
+        <div className="p-6 space-y-6 max-w-7xl mx-auto bg-[#050608] min-h-full">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/10">
                 <div>
                     <div className="flex items-center gap-2 mb-1.5">
                         <span className="section-label">ATT&CK Matrix</span>
@@ -87,11 +87,11 @@ export default function MitreHeatmap() {
                             14 Enterprise Tactics
                         </span>
                     </div>
-                    <h1 className="text-3xl font-extrabold font-display text-slate-900 flex items-center gap-3">
+                    <h1 className="text-3xl font-extrabold font-display text-white flex items-center gap-3">
                         <span className="text-2xl">🛡️</span>
                         MITRE ATT&amp;CK Heatmap
                     </h1>
-                    <p className="text-slate-500 mt-1 text-sm">
+                    <p className="text-slate-400 mt-1 text-sm">
                         Live adversary tactics and technique coverage mapped against threat disclosures
                     </p>
                 </div>
@@ -99,14 +99,14 @@ export default function MitreHeatmap() {
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     <button
                         onClick={() => navigate('/mitre-news')}
-                        className="btn-accent px-4 py-2 text-xs font-semibold flex items-center gap-1.5"
+                        className="bg-amber-500 hover:bg-amber-600 text-black font-bold px-4 py-2 text-xs rounded-xl flex items-center gap-1.5 transition-colors shadow-xs"
                     >
                         <span>📰</span> ATT&amp;CK News Matrix
                     </button>
                     <button
                         onClick={() => setFilter('all')}
                         className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
-                            filter === 'all' ? 'bg-[#1E3A8A] text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            filter === 'all' ? 'bg-amber-500 text-black font-bold' : 'bg-[#0C0E14] text-slate-300 border border-white/10 hover:bg-white/5'
                         }`}
                     >
                         All Techniques
@@ -114,7 +114,7 @@ export default function MitreHeatmap() {
                     <button
                         onClick={() => setFilter('active')}
                         className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
-                            filter === 'active' ? 'bg-[#1E3A8A] text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            filter === 'active' ? 'bg-amber-500 text-black font-bold' : 'bg-[#0C0E14] text-slate-300 border border-white/10 hover:bg-white/5'
                         }`}
                     >
                         Active Only ({totalActive})
@@ -140,19 +140,19 @@ export default function MitreHeatmap() {
                         </div>
                         <div className="strip-divider hidden md:block" />
                         <div className="strip-stat">
-                            <div className="strip-num text-orange-600">{data.activeTechniques}<span className="strip-sup text-orange-600">ACT</span></div>
+                            <div className="strip-num text-amber-400">{data.activeTechniques}<span className="strip-sup text-amber-400">ACT</span></div>
                             <div className="strip-label">Active Techniques</div>
                             <div className="strip-sub">Observed in active intelligence</div>
                         </div>
                         <div className="strip-divider hidden md:block" />
                         <div className="strip-stat">
-                            <div className="strip-num text-[#1E3A8A]">{data.tactics.length}<span className="strip-sup text-[#1E3A8A]">TAC</span></div>
+                            <div className="strip-num text-amber-300">{data.tactics.length}<span className="strip-sup text-amber-300">TAC</span></div>
                             <div className="strip-label">Tactics Covered</div>
                             <div className="strip-sub">Across full kill chain</div>
                         </div>
                         <div className="strip-divider hidden md:block" />
                         <div className="strip-stat">
-                            <div className="strip-num text-red-600">{maxHits}<span className="strip-sup text-red-600">MAX</span></div>
+                            <div className="strip-num text-amber-500">{maxHits}<span className="strip-sup text-amber-500">MAX</span></div>
                             <div className="strip-label">Max Technique Hits</div>
                             <div className="strip-sub">Single vector concentration</div>
                         </div>
@@ -161,14 +161,14 @@ export default function MitreHeatmap() {
             )}
 
             {/* Legend */}
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-slate-600 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                <span className="font-bold text-slate-800">Heat Intensity:</span>
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-slate-300 bg-[#0C0E14] p-3.5 rounded-xl border border-white/10 shadow-xs">
+                <span className="font-bold text-white">Heat Intensity:</span>
                 {[
-                    { label: 'None (0)', cls: 'bg-slate-200 border border-slate-300' },
-                    { label: 'Low', cls: 'bg-teal-200 border border-teal-300' },
-                    { label: 'Medium', cls: 'bg-teal-400 border border-teal-500' },
-                    { label: 'High', cls: 'bg-amber-300 border border-amber-400' },
-                    { label: 'Critical', cls: 'bg-amber-500 border border-amber-600' },
+                    { label: 'None (0)', cls: 'bg-white/10 border border-white/10 text-slate-400' },
+                    { label: 'Low', cls: 'bg-amber-500/20 border border-amber-500/30 text-amber-300' },
+                    { label: 'Medium', cls: 'bg-amber-500/40 border border-amber-500/50 text-amber-200' },
+                    { label: 'High', cls: 'bg-amber-500/70 border border-amber-500 text-black font-bold' },
+                    { label: 'Critical', cls: 'bg-amber-500 border border-amber-400 text-black font-extrabold' },
                 ].map(item => (
                     <div key={item.label} className="flex items-center gap-1.5">
                         <div className={`w-3.5 h-3.5 rounded-md ${item.cls}`}></div>
@@ -179,20 +179,20 @@ export default function MitreHeatmap() {
 
             {loading ? (
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600"></div>
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-500"></div>
                 </div>
             ) : error ? (
-                <div className="flex flex-col items-center justify-center h-64 gap-4 bg-amber-50 p-6 rounded-2xl border border-amber-200">
+                <div className="flex flex-col items-center justify-center h-64 gap-4 bg-[#0C0E14] p-6 rounded-2xl border border-amber-500/30">
                     <p className="text-4xl">🛡️</p>
-                    <p className="text-amber-800 font-bold font-display">Notice: MITRE heatmap feed pending</p>
-                    <p className="text-slate-600 text-sm text-center max-w-md">{error}</p>
+                    <p className="text-amber-400 font-bold font-display">Notice: MITRE heatmap feed pending</p>
+                    <p className="text-slate-400 text-sm text-center max-w-md">{error}</p>
                     <button onClick={fetchHeatmap} className="btn-accent px-4 py-2 text-xs font-medium">
                         ↺ Retry
                     </button>
                 </div>
             ) : (
                 /* Matrix Horizontal Scroll Container */
-                <div className="overflow-x-auto pb-4 custom-scrollbar rounded-2xl border border-slate-200 p-4 bg-slate-50/50">
+                <div className="overflow-x-auto pb-4 custom-scrollbar rounded-2xl border border-white/10 p-4 bg-[#0C0E14]">
                     <div className="flex gap-2.5 min-w-max">
                         {data?.tactics.map(tactic => {
                             const techniques = filter === 'active'
@@ -204,9 +204,9 @@ export default function MitreHeatmap() {
                             return (
                                 <div key={tactic.id} className="flex flex-col gap-1.5" style={{ minWidth: '140px', maxWidth: '160px' }}>
                                     {/* Tactic header */}
-                                    <div className="bg-white border border-[#CBD5E1] shadow-xs rounded-xl p-2.5 text-center mb-1">
-                                        <p className="text-slate-900 font-bold text-xs leading-tight truncate">{tactic.name}</p>
-                                        <p className="text-blue-900 text-[10px] mt-0.5 font-mono font-semibold">{tactic.id}</p>
+                                    <div className="bg-[#07090E] border border-white/10 shadow-xs rounded-xl p-2.5 text-center mb-1">
+                                        <p className="text-white font-bold text-xs leading-tight truncate">{tactic.name}</p>
+                                        <p className="text-amber-400 text-[10px] mt-0.5 font-mono font-semibold">{tactic.id}</p>
                                     </div>
 
                                     {/* Technique cells */}
@@ -215,7 +215,7 @@ export default function MitreHeatmap() {
                                             key={tech.techniqueId}
                                             onClick={() => setSelectedTechnique(selectedTechnique?.techniqueId === tech.techniqueId ? null : tech)}
                                             className={`rounded-xl border px-2.5 py-2 text-left transition-all hover:scale-[1.02] cursor-pointer ${getHeatColor(tech.hitCount, maxHits)} ${
-                                                selectedTechnique?.techniqueId === tech.techniqueId ? 'ring-2 ring-[#1E3A8A] shadow-md' : ''
+                                                selectedTechnique?.techniqueId === tech.techniqueId ? 'ring-2 ring-amber-500 shadow-md' : ''
                                             }`}
                                         >
                                             <p className="text-[10px] font-mono opacity-80">{tech.techniqueId}</p>
@@ -239,22 +239,22 @@ export default function MitreHeatmap() {
                 <>
                     {/* Backdrop */}
                     <div
-                        className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs z-40"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40"
                         onClick={() => setSelectedTechnique(null)}
                     />
-                    <div className="fixed inset-y-0 right-0 w-full sm:w-96 bg-white border-l border-slate-200 shadow-2xl z-50 overflow-y-auto animate-slide-in-right custom-scrollbar">
+                    <div className="fixed inset-y-0 right-0 w-full sm:w-96 bg-[#0C0E14] border-l border-white/10 shadow-2xl z-50 overflow-y-auto animate-slide-in-right custom-scrollbar">
                         <div className="p-6 space-y-4">
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <span className="text-xs font-mono text-blue-900 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md font-bold">
+                                    <span className="text-xs font-mono text-amber-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md font-bold">
                                         {selectedTechnique.techniqueId}
                                     </span>
-                                    <h2 className="text-xl font-bold font-display text-slate-900 mt-2 leading-snug">{selectedTechnique.name}</h2>
-                                    <p className="text-slate-500 text-xs mt-1">Tactic: {selectedTechnique.tacticName}</p>
+                                    <h2 className="text-xl font-bold font-display text-white mt-2 leading-snug">{selectedTechnique.name}</h2>
+                                    <p className="text-slate-400 text-xs mt-1">Tactic: {selectedTechnique.tacticName}</p>
                                 </div>
                                 <button
                                     onClick={() => setSelectedTechnique(null)}
-                                    className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors text-2xl leading-none"
+                                    className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors text-2xl leading-none"
                                 >×</button>
                             </div>
 

@@ -87,9 +87,9 @@ const Sources = () => {
     };
 
     return (
-        <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar bg-white">
+        <div className="h-full flex flex-col gap-6 p-6 overflow-y-auto custom-scrollbar bg-[#050608]">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-[#E2E8F0]">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-white/10">
                 <div>
                     <div className="flex items-center gap-2 mb-1.5">
                         <span className="section-label">Feed Ingestion</span>
@@ -98,11 +98,11 @@ const Sources = () => {
                             {sources.length} Registered Feeds
                         </span>
                     </div>
-                    <h1 className="text-3xl font-extrabold font-display text-slate-900 flex items-center gap-3">
-                        <Radio className="w-8 h-8 text-[#1E3A8A]" />
+                    <h1 className="text-3xl font-extrabold font-display text-white flex items-center gap-3">
+                        <Radio className="w-8 h-8 text-amber-400" />
                         Intelligence Sources
                     </h1>
-                    <p className="text-slate-500 text-sm mt-1">
+                    <p className="text-slate-400 text-sm mt-1">
                         Authoritative data collection registry with measured operational health and canonical content use governance
                     </p>
                 </div>
@@ -115,13 +115,13 @@ const Sources = () => {
                             placeholder="Search sources..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="bg-white border border-[#CBD5E1] text-slate-800 pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] w-full sm:w-56 shadow-sm"
+                            className="bg-[#0C0E14] border border-white/10 text-white placeholder-slate-500 pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 w-full sm:w-56 shadow-xs"
                         />
                     </div>
                     <select
                         value={selectedHealth || ''}
                         onChange={(e) => setSelectedHealth(e.target.value || null)}
-                        className="bg-white border border-[#CBD5E1] text-slate-800 px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] shadow-sm font-medium"
+                        className="bg-[#0C0E14] border border-white/10 text-white px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 shadow-xs font-medium"
                     >
                         <option value="">All Health States</option>
                         <option value="healthy">Healthy</option>
@@ -133,7 +133,7 @@ const Sources = () => {
                     <select
                         value={selectedCategory || ''}
                         onChange={(e) => setSelectedCategory(e.target.value || null)}
-                        className="bg-white border border-[#CBD5E1] text-slate-800 px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-[#1E3A8A] focus:ring-1 focus:ring-[#1E3A8A] shadow-sm font-medium"
+                        className="bg-[#0C0E14] border border-white/10 text-white px-3 py-2 rounded-xl text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 shadow-xs font-medium"
                     >
                         <option value="">All Categories</option>
                         {categories.map(cat => (
@@ -144,44 +144,44 @@ const Sources = () => {
             </div>
 
             {/* Dark Web Methodology Section */}
-            <div className="bg-slate-50 border border-[#E2E8F0] rounded-2xl p-5 shadow-sm">
+            <div className="bg-[#0C0E14] border border-white/10 rounded-2xl p-5 shadow-xs">
                 <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-blue-100/80 rounded-xl text-[#1E3A8A]">
+                    <div className="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
                         <Globe className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="text-base font-bold font-display text-slate-900">Dark Web &amp; Threat Intelligence Monitoring</h2>
-                        <p className="text-xs text-slate-500">Methodology used to ingest vulnerability disclosures and cyber threat reports</p>
+                        <h2 className="text-base font-bold font-display text-white">Dark Web &amp; Threat Intelligence Monitoring</h2>
+                        <p className="text-xs text-slate-400">Methodology used to ingest vulnerability disclosures and cyber threat reports</p>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-3">
-                    <div className="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-sm">
-                        <h3 className="font-bold text-slate-900 mb-1.5 flex items-center gap-2 text-xs">
-                            <span className="w-2 h-2 rounded-full bg-blue-700"></span>
+                    <div className="bg-[#07090E] p-4 rounded-xl border border-white/10 shadow-xs">
+                        <h3 className="font-bold text-white mb-1.5 flex items-center gap-2 text-xs">
+                            <span className="w-2 h-2 rounded-full bg-amber-400"></span>
                             Measured Source Health
                         </h3>
-                        <p className="text-xs text-slate-600 leading-relaxed">
+                        <p className="text-xs text-slate-300 leading-relaxed">
                             Sources are continuously evaluated for real HTTP response status, parsing fidelity, and timestamp freshness. No fake health ratings are assigned.
                         </p>
                     </div>
 
-                    <div className="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-sm">
-                        <h3 className="font-bold text-slate-900 mb-1.5 flex items-center gap-2 text-xs">
-                            <span className="w-2 h-2 rounded-full bg-blue-700"></span>
+                    <div className="bg-[#07090E] p-4 rounded-xl border border-white/10 shadow-xs">
+                        <h3 className="font-bold text-white mb-1.5 flex items-center gap-2 text-xs">
+                            <span className="w-2 h-2 rounded-full bg-amber-400"></span>
                             Content Permissions Contract
                         </h3>
-                        <p className="text-xs text-slate-600 leading-relaxed">
+                        <p className="text-xs text-slate-300 leading-relaxed">
                             Sources require explicit governance review for storing, summarizing, and AI processing. Feeds without verifiable legal review are classified as Pending.
                         </p>
                     </div>
 
-                    <div className="bg-white p-4 rounded-xl border border-[#E2E8F0] shadow-sm">
-                        <h3 className="font-bold text-slate-900 mb-1.5 flex items-center gap-2 text-xs">
-                            <span className="w-2 h-2 rounded-full bg-blue-700"></span>
+                    <div className="bg-[#07090E] p-4 rounded-xl border border-white/10 shadow-xs">
+                        <h3 className="font-bold text-white mb-1.5 flex items-center gap-2 text-xs">
+                            <span className="w-2 h-2 rounded-full bg-amber-400"></span>
                             Deduplication &amp; Canonical URLs
                         </h3>
-                        <p className="text-xs text-slate-600 leading-relaxed">
+                        <p className="text-xs text-slate-300 leading-relaxed">
                             Ingested articles are deduplicated via cryptographic hashing and canonical URLs to prevent inflated threat counts.
                         </p>
                     </div>
