@@ -2,8 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Layout from './components/layout/Layout';
 import { AccessibilityProvider } from './context/AccessibilityContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Lazy Load Pages for Optimization
+const Login          = lazy(() => import('./pages/Login'));
 const IntelligenceWorkspace = lazy(() => import('./pages/IntelligenceWorkspace'));
 const Dashboard      = lazy(() => import('./pages/Dashboard'));
 const Sources        = lazy(() => import('./pages/Sources'));
@@ -34,11 +37,23 @@ const LoadingSpinner = () => (
 
 function App() {
   return (
-    <AccessibilityProvider>
-      <BrowserRouter>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            <Route path="/" element={<Layout />}>
+    <AuthProvider>
+      <AccessibilityProvider>
+        <BrowserRouter>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              {/* Public Login Route */}
+              <Route path="/login" element={<Login />} />
+
+              {/* Protected Workspace Layout */}
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
               {/* Primary Analyst Workspace */}
               <Route index element={<IntelligenceWorkspace />} />
               <Route path="intelligence" element={<IntelligenceWorkspace />} />
@@ -83,7 +98,8 @@ function App() {
         </Suspense>
       </BrowserRouter>
     </AccessibilityProvider>
-  );
+  </AuthProvider>
+);
 }
 
 export default App;

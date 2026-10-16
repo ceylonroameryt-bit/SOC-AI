@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Calendar, FileDown, User, Menu, ExternalLink, Eye, AlertOctagon } from 'lucide-react';
+import { Search, Calendar, FileDown, User, Menu, ExternalLink, Eye, AlertOctagon, LogOut, Shield } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_BASE } from '../../config/api';
 import { useAccessibility } from '../../context/AccessibilityContext';
+import { useAuth } from '../../context/AuthContext';
 
 interface TopBarProps {
     onMenuToggle?: () => void;
@@ -13,6 +14,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
     const navigate = useNavigate();
     const location = useLocation();
     const { setIsModalOpen } = useAccessibility();
+    const { user, logout } = useAuth();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [timeRange, setTimeRange] = useState('24h');
@@ -180,25 +182,25 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                     <span>{downloading ? 'Exporting...' : 'Daily Report'}</span>
                 </button>
 
-                {/* Authenticated / Guest User Menu */}
+                {/* Authenticated Analyst User Menu */}
                 <div className="relative" ref={userMenuRef}>
                     <button
                         onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                        className="flex items-center gap-2 p-1.5 pl-2.5 rounded-md hover:bg-[#F8FAFC] border border-transparent hover:border-[#E2E8F0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#0665F9]"
+                        className="flex items-center gap-2 p-1.5 pl-2.5 rounded-lg hover:bg-[#F8FAFC] border border-transparent hover:border-[#E2E8F0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#0665F9]"
                         aria-expanded={userDropdownOpen}
                         aria-haspopup="true"
                         aria-label="User account menu"
                     >
                         <div className="text-right hidden sm:block">
-                            <span className="text-xs font-semibold text-[#0F172A] block leading-tight">
-                                Guest
+                            <span className="text-xs font-semibold text-[#0F172A] block leading-tight truncate max-w-[120px]">
+                                {user?.name || 'Security Analyst'}
                             </span>
-                            <span className="text-[10px] text-[#64748B] block font-normal">
-                                Security Analyst
+                            <span className="text-[10px] text-[#64748B] block font-normal truncate max-w-[120px]">
+                                {user?.role || 'Analyst'}
                             </span>
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-[#EAF2FF] border border-[#BFDBFE] text-[#0665F9] flex items-center justify-center font-bold text-xs">
-                            <User className="w-4 h-4" />
+                        <div className="w-8 h-8 rounded-full bg-[#EAF2FF] border border-[#BFDBFE] text-[#0665F9] flex items-center justify-center font-bold text-xs shadow-2xs">
+                            {user?.initials || <User className="w-4 h-4" />}
                         </div>
                     </button>
 
@@ -206,36 +208,70 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                     {userDropdownOpen && (
                         <div
                             role="menu"
-                            className="absolute right-0 mt-1.5 w-56 bg-white border border-[#E2E8F0] rounded-md shadow-lg py-1.5 text-xs z-50 text-[#0F172A]"
+                            className="absolute right-0 mt-1.5 w-64 bg-white border border-[#E2E8F0] rounded-xl shadow-xl py-1.5 text-xs z-50 text-[#0F172A] animate-in fade-in zoom-in-95 duration-100"
                         >
-                            <div className="px-3 py-2 border-b border-[#F1F5F9]">
-                                <span className="font-semibold block text-[#0F172A]">Security Operations</span>
-                                <span className="text-[11px] text-[#64748B]">Session: Guest Analyst</span>
+                            <div className="px-3.5 py-2.5 border-b border-[#F1F5F9] bg-[#F8FAFC]/50">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-7 h-7 rounded-full bg-[#EAF2FF] text-[#0665F9] font-bold text-xs flex items-center justify-center border border-[#BFDBFE]">
+                                        {user?.initials || 'SA'}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <span className="font-semibold block text-[#0F172A] truncate">
+                                            {user?.name || 'Security Analyst'}
+                                        </span>
+                                        <span className="text-[11px] text-[#64748B] block truncate font-mono">
+                                            {user?.email || 'analyst@soc.corp'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="mt-2 flex items-center gap-1.5">
+                                    <Shield className="w-3 h-3 text-[#147DFA]" />
+                                    <span className="text-[10px] font-mono font-medium text-[#147DFA] bg-[#EAF2FF] px-1.5 py-0.5 rounded border border-[#BFDBFE]">
+                                        {user?.clearance || 'Level 3 (Secret)'}
+                                    </span>
+                                </div>
                             </div>
 
-                            <button
-                                role="menuitem"
-                                onClick={() => {
-                                    setIsModalOpen(true);
-                                    setUserDropdownOpen(false);
-                                }}
-                                className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-2 text-[#334155]"
-                            >
-                                <Eye className="w-3.5 h-3.5 text-[#64748B]" />
-                                <span>Accessibility & Contrast</span>
-                            </button>
+                            <div className="py-1">
+                                <button
+                                    role="menuitem"
+                                    onClick={() => {
+                                        setIsModalOpen(true);
+                                        setUserDropdownOpen(false);
+                                    }}
+                                    className="w-full px-3.5 py-2 text-left hover:bg-[#F8FAFC] flex items-center gap-2 text-[#334155]"
+                                >
+                                    <Eye className="w-3.5 h-3.5 text-[#64748B]" />
+                                    <span>Accessibility & High Contrast</span>
+                                </button>
 
-                            <a
-                                role="menuitem"
-                                href="https://sujampathirathnayaka.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={() => setUserDropdownOpen(false)}
-                                className="w-full px-3 py-2 text-left hover:bg-[#F8FAFC] flex items-center justify-between text-[#334155]"
-                            >
-                                <span>About Platform & Creator</span>
-                                <ExternalLink className="w-3 h-3 text-[#94A3B8]" />
-                            </a>
+                                <a
+                                    role="menuitem"
+                                    href="https://sujampathirathnayaka.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={() => setUserDropdownOpen(false)}
+                                    className="w-full px-3.5 py-2 text-left hover:bg-[#F8FAFC] flex items-center justify-between text-[#334155]"
+                                >
+                                    <span>About Platform & Creator</span>
+                                    <ExternalLink className="w-3 h-3 text-[#94A3B8]" />
+                                </a>
+                            </div>
+
+                            <div className="border-t border-[#F1F5F9] pt-1">
+                                <button
+                                    role="menuitem"
+                                    onClick={() => {
+                                        setUserDropdownOpen(false);
+                                        logout();
+                                        navigate('/login');
+                                    }}
+                                    className="w-full px-3.5 py-2 text-left hover:bg-rose-50 flex items-center gap-2 text-rose-600 font-medium transition-colors"
+                                >
+                                    <LogOut className="w-3.5 h-3.5 text-rose-500" />
+                                    <span>Sign Out & Terminate Session</span>
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>

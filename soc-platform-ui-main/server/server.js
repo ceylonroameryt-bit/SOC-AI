@@ -22,6 +22,7 @@ import rulesRouter    from './routes/rules.js';
 import dashboardRouter from './routes/dashboard.js';
 import categoriesRouter from './routes/categories.js';
 import analystRouter from './routes/analyst.js';
+import authRouter    from './routes/auth.js';
 
 // Service imports
 import { fetchAndProcessNews, getNews, backfillClassification } from './services/newsService.js';
@@ -87,6 +88,7 @@ const allowedOrigins = [
     'http://localhost:5176',   // Vite dev server (fallback)
     'http://localhost:4173',   // Vite preview
     'http://localhost:3000',   // Server itself
+    'http://localhost:3001',   // Server secondary port
     process.env.ALLOWED_ORIGIN, // Production domain from .env
     process.env.WEBSITE_HOSTNAME ? `https://${process.env.WEBSITE_HOSTNAME}` : null // Azure specific hostname
 ].filter(Boolean);
@@ -96,16 +98,22 @@ app.use(cors({
         // Allow requests with no origin (server-to-server, curl, mobile apps, standard browser navigation)
         if (!origin) return callback(null, true);
         
-        // Dynamically allow Railway domains to prevent production lockouts
-        if (allowedOrigins.includes(origin) || origin.endsWith('.up.railway.app')) {
+        // Dynamically allow Vercel, Railway, and Render domains to prevent production lockouts
+        const isAllowedCloud =
+            origin.endsWith('.vercel.app') ||
+            origin.endsWith('.up.railway.app') ||
+            origin.endsWith('.render.com') ||
+            origin.endsWith('.onrender.com');
+
+        if (allowedOrigins.includes(origin) || isAllowedCloud) {
             callback(null, true);
         } else {
             console.warn(`⚠️  CORS blocked request from: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Requested-With', 'Accept', 'X-CSRF-Token'],
     credentials: true,
     maxAge: 86400 // Cache preflight for 24 hours
 }));
@@ -148,17 +156,18 @@ app.use((req, res, next) => {
 // ==========================================
 // API ROUTES (Must come before static/SPA catch-all)
 // ==========================================
-app.use('/api/news',      newsRouter);
-app.use('/api/explore',   newsRouter);
-app.use('/api/threats',   threatsRouter);
-app.use('/api/reports',   reportsRouter);
-app.use('/api/sources',   sourcesRouter);
-app.use('/api/enrich',    enrichRouter);
-app.use('/api/mitre',     mitreRouter);
-app.use('/api/webhooks',  webhooksRouter);
-app.use('/api/ai',        aiRouter);
-app.use('/api/rules',     rulesRouter);
-app.use('/api/dashboard', dashboardRouter);
+app.use('/api/auth',       authRouter);
+app.use('/api/news',       newsRouter);
+app.use('/api/explore',    newsRouter);
+app.use('/api/threats',    threatsRouter);
+app.use('/api/reports',    reportsRouter);
+app.use('/api/sources',    sourcesRouter);
+app.use('/api/enrich',     enrichRouter);
+app.use('/api/mitre',      mitreRouter);
+app.use('/api/webhooks',   webhooksRouter);
+app.use('/api/ai',         aiRouter);
+app.use('/api/rules',      rulesRouter);
+app.use('/api/dashboard',  dashboardRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/analyst',    analystRouter);
 

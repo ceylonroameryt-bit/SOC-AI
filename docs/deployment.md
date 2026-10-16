@@ -19,6 +19,7 @@ Set these variables in Vercel Project Settings or your `.env` container environm
 | Variable | Required | Description | Example / Recommended Value |
 |---|---|---|---|
 | `DATABASE_URL` | **Yes (Prod)** | PostgreSQL/Supabase Pooler URI | `postgresql://postgres.[REF]:[PASS]@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require` |
+| `AUTH_SECRET` | **Yes** | Secret key for signing analyst session tokens | Strong 32+ character random string |
 | `NODE_ENV` | **Yes** | Node environment | `production` |
 | `APP_MODE` | **Yes** | Operational mode | `production` |
 | `ENABLE_DEMO_DATA` | **Yes** | Strictly controls demo simulation fallback | `false` |

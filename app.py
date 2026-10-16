@@ -8,7 +8,7 @@ import os
 import re
 import math
 from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,7 +40,7 @@ class ThreatArticle(BaseModel):
     severity: Optional[str] = "Medium"
     category: Optional[str] = "General"
     link: Optional[str] = "#"
-    pubDate: Optional[str] = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    pubDate: Optional[str] = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class BriefingRequest(BaseModel):
     articles: List[ThreatArticle]
@@ -140,7 +140,7 @@ def generate_briefing(payload: BriefingRequest):
         critical_vulnerabilities=critical_vulns,
         recommended_actions=actions,
         executive_summary=summary_text,
-        generated_at=datetime.utcnow().isoformat()
+        generated_at=datetime.now(timezone.utc).isoformat()
     )
 
 # ── Incident Clustering & Deduplication (TF-IDF & Cosine Sim) ─────────────────
@@ -211,11 +211,13 @@ def cluster_articles(payload: ClusterRequest):
                 break
 
         if matched_cluster:
-            matched_cluster['items'].append(article.dict())
+            article_dict = article.model_dump() if hasattr(article, 'model_dump') else article.dict()
+            matched_cluster['items'].append(article_dict)
             matched_cluster['item_count'] += 1
             if article.source and article.source not in matched_cluster['sources']:
                 matched_cluster['sources'].append(article.source)
         else:
+            article_dict = article.model_dump() if hasattr(article, 'model_dump') else article.dict()
             clusters.append({
                 'id': f"cluster-{len(clusters) + 1}",
                 'headline': article.title,
@@ -224,7 +226,7 @@ def cluster_articles(payload: ClusterRequest):
                 'sources': [article.source] if article.source else [],
                 'item_count': 1,
                 'centroid': vec,
-                'items': [article.dict()]
+                'items': [article_dict]
             })
 
     # Strip centroid before returning
@@ -289,7 +291,7 @@ id: {os.urandom(8).hex()}-{os.urandom(4).hex()}
 status: experimental
 description: {payload.description or f"Detects malicious activity involving {ioc}"}
 author: NO ENTRY SOC Automated Engine
-date: {datetime.utcnow().strftime('%Y-%m-%d')}
+date: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
 tags:
     - attack.execution
     - attack.command_and_control

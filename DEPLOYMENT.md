@@ -61,17 +61,47 @@ This guide details the step-by-step instructions for deploying the **NO ENTRY SO
 
 ---
 
-## Step 3: Frontend Deployment (Vercel)
+## Step 3: Frontend & Serverless Hosting on Vercel
 
-1. Go to [vercel.com](https://vercel.com) and import your Git repository.
-2. Set the **Root Directory** to `soc-platform-ui-main`.
-3. In **Build & Development Settings**:
+The platform is fully optimized for **Vercel** with full SPA client-side routing, automated Serverless Function execution (`/api/*`), and built-in analyst authentication.
+
+### Option A: Standard Deployment (Recommended)
+1. Go to [vercel.com](https://vercel.com) and click **"Add New... ➔ Project"**.
+2. Import your GitHub / GitLab repository.
+3. In the project configuration:
+   - **Root Directory**: `soc-platform-ui-main` (or leave default if deploying from monorepo root)
    - **Framework Preset**: `Vite`
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
-4. Add the Environment Variable:
-   - `VITE_API_URL`: The URL of your Render backend (e.g. `https://no-entry-soc-backend.onrender.com`).
-5. Click **Deploy**. Vercel will use [`vercel.json`](./soc-platform-ui-main/vercel.json) to handle Single-Page Application (SPA) routing automatically.
+4. Configure Environment Variables in Vercel Dashboard (Project Settings ➔ Environment Variables):
+   - `AUTH_SECRET`: A secure random string used to sign analyst session tokens (e.g. `soc-super-secret-key-2026`).
+   - `DATABASE_URL`: (Optional) Your Supabase / PostgreSQL database URI. If omitted, the platform runs in high-speed in-memory store.
+   - `ALLOWED_ORIGIN`: (Optional) Your custom domain if applicable (all `*.vercel.app` domains are automatically whitelisted).
+5. Click **Deploy**. Vercel will build the frontend assets and automatically deploy the Express API as a serverless function (`/api`).
+
+### Option B: Monorepo Root Deployment
+- If you import from the repository root without changing the Root Directory, Vercel will use [`vercel.json`](./vercel.json) at the root level which automatically runs `cd soc-platform-ui-main && npm install && npm run build` and serves static files from `soc-platform-ui-main/dist`.
+
+---
+
+## 🔐 Authentication & Analyst Login Process
+
+The platform features an integrated Cyber Operations Center authentication gateway protecting all workspace and intelligence views.
+
+### Default Operational Analysts:
+| Role | Callsign / Email | Password | Clearance Level | Permissions |
+|---|---|---|---|---|
+| **Lead SecOps Commander** | `admin@soc.corp` | `admin123` | **Level 5 (Top Secret // SCI)** | Full administrative command, pipeline controls & alert dispatch |
+| **Threat Intel Analyst** | `analyst@soc.corp` | `analyst123` | **Level 3 (Secret)** | Threat hunting, IOC enrichment, MITRE ATT&CK analysis |
+| **Incident Responder** | `responder@soc.corp` | `responder123` | **Level 2 (Confidential)** | Triage, containment verification & reporting |
+
+### Authentication Features:
+- **1-Click Demo Access**: Fast role selection cards allow instant one-click login for evaluators, recruiters, and demo viewers without manual typing.
+- **Manual Authentication**: Supports email/callsign and password authentication with security passkey reveal and validation.
+- **Auto-Provisioning**: Any operational analyst identifier can register or sign in dynamically.
+- **Cryptographic Session Tokens**: HMAC-SHA256 authenticated sessions persisted to local storage for 7 days.
+- **Route Guarding**: All operational views (`/intelligence`, `/overview`, `/threats`, `/investigate`, etc.) are protected behind `<ProtectedRoute />`. Unauthenticated visitors are automatically routed to `/login`.
+- **TopBar & Sidebar Integration**: Real-time display of active analyst name, role, clearance badge, and a one-click **"Sign Out & Terminate Session"** action.
 
 ---
 

@@ -42,7 +42,11 @@ const SeverityBarChartWidget = ({
                 if (Array.isArray(stats) && stats.length > 0) {
                     // Ensure standard order: Critical, High, Medium, Low
                     const order = ['Critical', 'High', 'Medium', 'Low'];
-                    const sorted = [...stats].sort((a, b) => {
+                    const normalized: SeverityStat[] = stats.map((s: { name: string; count?: number; value?: number }) => ({
+                        name: s.name,
+                        count: typeof s.count === 'number' ? s.count : (typeof s.value === 'number' ? s.value : 0),
+                    }));
+                    const sorted = normalized.sort((a, b) => {
                         const idxA = order.indexOf(a.name);
                         const idxB = order.indexOf(b.name);
                         return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
@@ -146,7 +150,7 @@ const SeverityBarChartWidget = ({
                                             : 'bg-slate-200/80 text-slate-700'
                                     }`}
                                 >
-                                    {item.count.toLocaleString()}
+                                    {(item.count ?? 0).toLocaleString()}
                                 </span>
                             </button>
                         );
@@ -222,7 +226,7 @@ const SeverityBarChartWidget = ({
                                                 </span>
                                             </div>
                                             <div className="font-mono text-slate-600 text-[11px]">
-                                                <span>{stat.count.toLocaleString()} detections</span>
+                                                <span>{(stat.count ?? 0).toLocaleString()} detections</span>
                                                 <span className="text-slate-400"> ({percent}% of total)</span>
                                             </div>
                                             <div className="mt-1 text-[10px] text-blue-600 font-medium">

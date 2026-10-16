@@ -20,8 +20,10 @@ import {
     Layers,
     Globe,
     Bookmark,
+    LogOut,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
     onClose?: () => void;
@@ -132,6 +134,7 @@ function isActiveSection(section: NavSection, path: string): boolean {
 export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false }) => {
     const location = useLocation();
     const currentPath = location.pathname;
+    const { user, logout } = useAuth();
 
     const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
         const initial = new Set<string>();
@@ -309,7 +312,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
             </div>
 
             {/* Bottom Brand / Version Status */}
-            <div className="p-3 border-t border-[#1B3655] bg-[#102236] text-[11px] text-slate-400 space-y-1">
+            <div className="p-3 border-t border-[#1B3655] bg-[#102236] text-[11px] text-slate-400 space-y-2">
+                {user && (
+                    <div className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-[#142338] border border-slate-700/60">
+                        <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-6 h-6 rounded-full bg-[#147DFA]/20 text-[#147DFA] border border-[#147DFA]/40 flex items-center justify-center font-bold text-[10px]">
+                                {user.initials || 'SA'}
+                            </div>
+                            <div className="min-w-0">
+                                <span className="block text-[11px] font-semibold text-slate-200 truncate">
+                                    {user.name}
+                                </span>
+                                <span className="block text-[9px] text-[#147DFA] font-mono truncate">
+                                    {user.role}
+                                </span>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => logout()}
+                            title="Sign out & terminate session"
+                            className="p-1 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors"
+                        >
+                            <LogOut className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                )}
                 {isDemoEnabled && (
                     <div className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-semibold text-center mb-1">
                         DEMO MODE ACTIVE

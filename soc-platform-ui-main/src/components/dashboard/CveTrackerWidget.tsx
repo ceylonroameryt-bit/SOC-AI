@@ -132,7 +132,7 @@ const CveTrackerWidget = () => {
                             </span>
                         </div>
                         <p className="text-[11px] text-slate-500">
-                            {kevInfo.count ? `${kevInfo.count.toLocaleString()} Cataloged Exploits` : 'Actively exploited vulnerabilities under radar'} · {formatTimestamp(kevInfo.lastUpdated)}
+                            {typeof kevInfo.count === 'number' ? `${kevInfo.count.toLocaleString()} Cataloged Exploits` : 'Actively exploited vulnerabilities under radar'} · {formatTimestamp(kevInfo.lastUpdated)}
                         </p>
                     </div>
                 </div>

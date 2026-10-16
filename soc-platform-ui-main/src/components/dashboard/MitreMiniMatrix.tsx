@@ -246,7 +246,7 @@ const MitreMiniMatrix = () => {
                                     ? 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20 shadow-xs'
                                     : 'border-slate-200/80 bg-slate-50/50 hover:bg-slate-100/70 hover:border-slate-300'
                             }`}
-                            title={`${t.name} (${t.id}): ${t.hitCount.toLocaleString()} detections, ${t.techniques.length} mapped techniques`}
+                            title={`${t.name} (${t.id}): ${(t.hitCount ?? 0).toLocaleString()} detections, ${t.techniques.length} mapped techniques`}
                         >
                             <span className="text-base mb-1" aria-hidden="true">{t.icon}</span>
                             <span className={`text-[11px] font-bold line-clamp-1 leading-tight ${
@@ -258,7 +258,7 @@ const MitreMiniMatrix = () => {
                                 <span
                                     className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md border ${getHitBadgeClass(t.hitCount)}`}
                                 >
-                                    {t.hitCount.toLocaleString()} hits
+                                    {(t.hitCount ?? 0).toLocaleString()} hits
                                 </span>
                             </div>
                         </button>
@@ -289,7 +289,7 @@ const MitreMiniMatrix = () => {
 
                         <div className="flex items-center gap-2 text-xs">
                             <span className="text-slate-500 font-mono text-[11px]">
-                                Phase Total: <strong className="text-slate-900 font-semibold">{selectedTactic.hitCount.toLocaleString()}</strong> hits
+                                Phase Total: <strong className="text-slate-900 font-semibold">{(selectedTactic.hitCount ?? 0).toLocaleString()}</strong> hits
                             </span>
                             <Link
                                 to={`/mitre`}
@@ -316,7 +316,7 @@ const MitreMiniMatrix = () => {
                                                     {tech.techniqueId}
                                                 </span>
                                                 <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${getHitBadgeClass(tech.hitCount)}`}>
-                                                    {tech.hitCount.toLocaleString()} hits
+                                                    {(tech.hitCount ?? 0).toLocaleString()} hits
                                                 </span>
                                             </div>
                                             <h5 className="text-xs font-bold text-slate-900 leading-snug line-clamp-2" title={tech.name}>

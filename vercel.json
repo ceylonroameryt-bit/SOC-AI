@@ -3,6 +3,13 @@
   "framework": "vite",
   "buildCommand": "cd soc-platform-ui-main && npm install && npm run build",
   "outputDirectory": "soc-platform-ui-main/dist",
+  "cleanUrls": false,
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 15,
+      "memory": 1024
+    }
+  },
   "headers": [
     {
       "source": "/api/(.*)",
