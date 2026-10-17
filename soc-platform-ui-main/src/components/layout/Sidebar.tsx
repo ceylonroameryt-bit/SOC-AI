@@ -162,21 +162,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
     return (
         <aside
             aria-label="Primary Navigation Sidebar"
-            className="w-[216px] h-full bg-[#07090E] text-slate-300 flex flex-col justify-between flex-shrink-0 select-none z-30 shadow-md border-r border-white/5"
+            className="w-[216px] h-full bg-[#070A12] text-slate-300 flex flex-col justify-between flex-shrink-0 select-none z-30 shadow-md border-r border-emerald-500/10"
         >
             {/* Top Brand Header */}
             <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
-                <div className="h-16 px-4 flex items-center justify-between border-b border-white/5 flex-shrink-0">
+                <div className="h-16 px-4 flex items-center justify-between border-b border-emerald-500/10 flex-shrink-0">
                     <Link to="/intelligence" onClick={onClose} className="flex items-center gap-2.5 group">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-black font-bold shadow-sm shadow-amber-500/30">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-black font-bold shadow-sm shadow-emerald-500/30">
                             <Shield className="w-4 h-4 text-black" aria-hidden="true" />
                         </div>
                         <div className="leading-tight">
                             <span className="font-bold text-white text-sm tracking-tight block">
-                                NO ENTRY
+                                TacticLens
                             </span>
-                            <span className="text-[10px] text-amber-400 block font-normal tracking-wide">
-                                Obsidian AI Grid
+                            <span className="text-[10px] text-emerald-400 block font-semibold tracking-wide">
+                                Threat Intel &amp; Triage
                             </span>
                         </div>
                     </Link>
@@ -209,8 +209,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                 <div
                                     className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                                         active
-                                            ? 'bg-amber-500 text-black shadow-xs font-bold'
-                                            : 'text-slate-300 hover:text-amber-300 hover:bg-white/5'
+                                            ? 'bg-emerald-500 text-black shadow-xs font-bold'
+                                            : 'text-slate-300 hover:text-emerald-300 hover:bg-white/5'
                                     }`}
                                     role="button"
                                     tabIndex={0}
@@ -265,7 +265,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                                     onClick={onClose}
                                                     className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
                                                         subActive
-                                                            ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-500'
+                                                            ? 'bg-emerald-500/15 text-emerald-300 font-semibold border-l-2 border-emerald-500'
                                                             : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
                                                     }`}
                                                     aria-current={subActive ? 'page' : undefined}
@@ -297,7 +297,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                                         onClick={onClose}
                                         className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[11px] font-medium transition-colors ${
                                             active
-                                                ? 'bg-amber-500 text-black font-bold shadow-xs'
+                                                ? 'bg-emerald-500 text-black font-bold shadow-xs'
                                                 : 'text-slate-400 hover:text-white hover:bg-white/5'
                                         }`}
                                     >
@@ -312,18 +312,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
             </div>
 
             {/* Bottom Brand / Version Status */}
-            <div className="p-3 border-t border-white/5 bg-[#050608] text-[11px] text-slate-400 space-y-2">
+            <div className="p-3 border-t border-emerald-500/10 bg-[#070A12] text-[11px] text-slate-400 space-y-2">
                 {user && (
-                    <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-[#0C0E14] border border-white/10">
+                    <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-[#0D1527] border border-emerald-500/15">
                         <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center font-bold text-[10px]">
-                                {user.initials || 'SA'}
+                            <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center justify-center font-bold text-[10px]">
+                                {user.initials || 'CR'}
                             </div>
                             <div className="min-w-0">
                                 <span className="block text-[11px] font-semibold text-white truncate">
                                     {user.name}
                                 </span>
-                                <span className="block text-[9px] text-amber-400 font-mono truncate">
+                                <span className="block text-[9px] text-emerald-400 font-mono truncate">
                                     {user.role}
                                 </span>
                             </div>
@@ -332,23 +332,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, isDemoEnabled = false
                             type="button"
                             onClick={() => logout()}
                             title="Sign out & terminate session"
-                            className="p-1 text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 rounded transition-colors"
+                            className="p-1 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded transition-colors"
                         >
                             <LogOut className="w-3.5 h-3.5" />
                         </button>
                     </div>
                 )}
                 {isDemoEnabled && (
-                    <div className="px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-semibold text-center mb-1">
+                    <div className="px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-semibold text-center mb-1">
                         DEMO MODE ACTIVE
                     </div>
                 )}
                 <div className="flex items-center justify-between text-[11px] px-1">
-                    <span className="font-medium text-slate-300">NO ENTRY SOC</span>
-                    <span className="text-[10px] text-amber-400 font-mono">v4.2.0</span>
+                    <span className="font-medium text-slate-300">TacticLens SOC</span>
+                    <span className="text-[10px] text-emerald-400 font-mono">v1.0.0</span>
                 </div>
                 <div className="text-[10px] text-slate-500 px-1 truncate">
-                    Radial Obsidian Neural Grid
+                    UK SOC &amp; MSSP Platform
                 </div>
             </div>
         </aside>

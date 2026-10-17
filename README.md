@@ -1,180 +1,163 @@
-# 🛡️ NO ENTRY — Next-Gen AI Threat Intelligence & SOC Triage Platform
+# 🎯 TacticLens — Subscription Threat Intelligence & SOC Triage Platform
 
 <div align="center">
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-soc--ai--six.vercel.app-00dfa2?style=for-the-badge&logo=vercel&logoColor=white)](https://soc-ai-six.vercel.app/)
-[![GitHub Repo](https://img.shields.io/badge/GitHub-ceylonroameryt--bit%2FSOC--AI-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ceylonroameryt-bit/SOC-AI)
 [![React 19](https://img.shields.io/badge/React-19.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://supabase.com/)
+[![Node/Express 5](https://img.shields.io/badge/Node%2FExpress-5.2-026E00?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase%20%2F%20Neon%20(UK%2FEU)-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://supabase.com/)
 [![Python FastAPI](https://img.shields.io/badge/Python-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![MITRE ATT&CK](https://img.shields.io/badge/MITRE-ATT%26CK_v14-FF6B6B?style=for-the-badge)](https://attack.mitre.org/)
+[![MITRE ATT&CK](https://img.shields.io/badge/MITRE-ATT%26CK_v16.1-FF6B6B?style=for-the-badge)](https://attack.mitre.org/)
+[![License](https://img.shields.io/badge/License-Proprietary-darkred?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  <b>Transforming high-volume cyber threat intelligence into automated, prioritized, and enriched defense workflows for Security Operations Centers (SOCs).</b>
+  <b>Actionable threat intelligence and high-fidelity SOC triage designed for UK small/medium SOC teams and Managed Security Service Providers (MSSPs).</b>
 </p>
 
 </div>
 
 ---
 
-## 🌟 Key Capabilities & Features
+## 🛡️ Ground Rules & Data Integrity Contract
 
-### 🔍 1. Smart Triage & Indicator of Compromise (IOC) Enrichment
-- **Automated Reputation Checks**: Direct live queries against **VirusTotal** and **AbuseIPDB** with inline Maliciousness Confidence Scores.
-- **Exploit Likelihood & Zero-Days**: Maps detected CVEs against the **FIRST EPSS** (Exploit Prediction Scoring System) and cross-references **CISA's Known Exploited Vulnerabilities (KEV)** catalog.
-- **1-Click SIEM Query Generation**: Instantly generates copy-paste threat hunting queries:
-  - **Splunk**: `index=* src_ip="192.0.2.1" OR dest_ip="192.0.2.1" | stats count by src_ip, sourcetype`
-  - **Microsoft Sentinel (KQL)**: `DeviceNetworkEvents | where RemoteIP == "192.0.2.1"`
-  - **Sigma Rules**: Auto-generates structured YAML detection rules for any IP, hash, CVE, or domain.
+TacticLens is built on strict data fidelity and auditability principles:
+1. **Never Invent Data**: CVSS scores originate authoritatively from **NVD**, KEV status comes directly from the **CISA Known Exploited Vulnerabilities (KEV) catalog**, and EPSS percentiles/scores come directly from **FIRST**. When data is missing, TacticLens displays `"—"` or `"stale"` — never an estimated or fabricated score.
+2. **AI Integrity & Human Control**: Artificial Intelligence summarises articles and assists ATT&CK mapping verification with required evidence citations. **AI never sets severity or risk scores.** Every AI-generated output carries an explicit `"AI"` badge alongside direct source citations.
+3. **Respectful Feed Collection**: Feeds are polled respecting publisher `robots.txt`, caching headers (`ETag` / `If-Modified-Since`), with an explicit User-Agent: `TacticLensBot/1.0 (+https://tacticlens.co.uk/bot)`.
+4. **UK/EU Data Residency**: Authoritative operational storage resides in UK/EU cloud regions with full data sovereignty and Row-Level Security (RLS).
+5. **Fail-Closed Security**: Ingestion and synchronization triggers require a non-empty `CRON_SECRET`. If `CRON_SECRET` is unset or empty, all collection endpoints immediately fail closed with HTTP `401 Unauthorized`.
 
-### 🗺️ 2. MITRE ATT&CK News Matrix & Heatmap
-- **100% Framework Coverage**: Categorizes thousands of daily threat intelligence articles across all **14 MITRE Tactics** (from *Reconnaissance* and *Initial Access* to *Exfiltration* and *Impact*) and **52 ATT&CK Techniques**.
-- **Interactive Technique Heatmap**: Visual frequency matrix revealing attack pattern concentrations with an on-demand inspector drawer.
-- **Multi-Tactic Ribbon & Filtering**: Filter by tactic, technique ID (e.g. `T1486`, `T1059`), severity level, and search keywords.
+---
 
-### 🤖 3. AI Threat Briefings & Incident Clustering
-- **Executive CISO Briefings**: High-level daily cybersecurity intelligence briefs summarizing critical threat vectors, active CVEs under exploitation, and immediate tactical remediations.
-- **TF-IDF Incident Deduplication**: Machine-learning pipeline using TF-IDF vectorization and cosine similarity to cluster redundant news by **70%+**, preventing alert fatigue.
-- **Automated Remediation Playbooks**: Generates structured 4-phase incident response plans (*Identification*, *Containment*, *Eradication*, *Recovery*).
+## 🌟 Core Platform Capabilities
 
-### 📜 4. Detection Engineering Rule Library
-- **Curated Rule Catalog**: Searchable repository of production **Sigma YAML** and **YARA** detection rules covering ransomware artifacts, LSASS credential dumps, and Cobalt Strike beacons.
-- **Syntax Highlighting & Export**: Responsive split-panel code viewer with 1-click clipboard copy and raw file download.
+### 🔍 1. High-Fidelity Triage & IOC Enrichment
+- **Authoritative Vulnerability Telemetry**: Real-time cross-referencing of CVEs against CISA KEV and FIRST EPSS exploit likelihood models.
+- **Defanged IOC Extraction**: Ingests, normalizes, and extracts defanged IP addresses (`192[.]168[.]1[.]1`), domains (`hxxp[s]://`), and cryptographic hashes.
+- **On-Demand Reputation Intelligence**: Direct BYOK (Bring Your Own Key) integration with **VirusTotal** and **AbuseIPDB**.
+- **Instant Threat Hunting Query Generation**:
+  - **Microsoft Sentinel (KQL)**: Copy-paste hunting queries for network, process, and device telemetry.
+  - **Splunk (SPL)**: Tuned index search queries with field extraction.
+  - **Sigma Rules**: Detection queries mapped to verified community signatures from [SigmaHQ](https://github.com/SigmaHQ/sigma).
 
-### 📱 5. Multi-Platform & Responsive SOC Console
-- Fully optimized responsive UI with touch-friendly mobile navigation drawers, horizontal matrix scrolling, and clean dark-mode aesthetics.
+### 🗺️ 2. Verified MITRE ATT&CK® Mapping
+- **14 Tactics, 52 Techniques Mapped**: Authoritative mapping across all 14 Enterprise tactics and 52 core techniques from **MITRE ATT&CK® Enterprise v16.1**.
+- **Interactive Tactic Heatmap**: Operational frequency matrix showing attack concentrations across ingested feeds.
+- **Evidence-Grounded Mapping**: Heuristic keyword pass paired with citation quotes from source text.
+
+### 🤖 3. Incident Clustering & AI Executive Briefing
+- **TF-IDF Incident Deduplication**: Groups redundant intelligence reports by 70%+ across feeds to eliminate alert fatigue.
+- **CISO & Management Briefings**: Evidence-cited briefings synthesizing critical campaigns, targeted CVEs, and high-priority action items.
 
 ---
 
 ## 🏛️ System Architecture
 
 ```
-                           ┌───────────────────────────┐
-                           │    Frontend (Vite React)  │
-                           │   Deployed on Vercel CDN  │
-                           └─────────────┬─────────────┘
-                                         │ REST API / CORS
-                                         ▼
-                           ┌───────────────────────────┐
-                           │   Backend Server (Node)   │
-                           │   Express 5 / Serverless  │
-                           └──────┬─────────────┬──────┘
-                                  │             │
-                    HTTP Request  │             │ Connection Pool
-                    for Briefings │             │ (pg Pool / SSL)
-                                  ▼             ▼
-  ┌──────────────────────────────────┐       ┌──────────────────────────────────┐
-  │   AI Microservice (Python app.py)│       │     PostgreSQL Database          │
-  │    FastAPI / TF-IDF Clustering   │       │     Supabase / Neon (with RLS)   │
-  └──────────────────────────────────┘       └──────────────────────────────────┘
+                            ┌────────────────────────────────────────┐
+                            │    Frontend UI (Vite / React 19)       │
+                            │    Dark Global Shell / Light Console   │
+                            └───────────────────┬────────────────────┘
+                                                │ REST API / CORS
+                                                ▼
+                            ┌────────────────────────────────────────┐
+                            │      Backend Core (Node / Express 5)   │
+                            │      Unified Serverless / Container    │
+                            └─────────┬────────────────────┬─────────┘
+                                      │                    │
+                    Intelligence Read │                    │ Pool / RLS
+                    & Shared Snapshot │                    │ (SSL Mode)
+                                      ▼                    ▼
+        ┌───────────────────────────────────┐    ┌───────────────────────────────────┐
+        │  Scheduled Worker / Collector CLI │    │   PostgreSQL Authoritative DB     │
+        │  SSRF Guard / Worker Concurrency  │    │   Supabase / Neon (UK/EU Region)  │
+        └─────────────────┬─────────────────┘    └───────────────────────────────────┘
+                          │ HTTP Fetch
+                          ▼
+        ┌───────────────────────────────────┐
+        │ 1,000+ Public Security Sources    │
+        │ NCSC, CISA, Vendor PSIRTs, CERTs  │
+        └───────────────────────────────────┘
 ```
 
 ---
 
 ## 🧰 Technology Stack
 
-| Layer | Technology | Description |
+| Component | Technology | Role |
 | :--- | :--- | :--- |
-| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS | High-performance SPA with custom dark theme & Lucide icons |
-| **Backend** | Node.js, Express 5, Axios, RSS-Parser | Feed aggregation, IOC extraction engine & REST API |
-| **AI Engine** | Python 3.11, FastAPI, Pydantic, Scikit-Learn | Natural language threat briefing & TF-IDF clustering |
-| **Database** | PostgreSQL (via Supabase / Neon) | Full-text indexed schema with Row-Level Security (RLS) |
-| **Detection** | MITRE ATT&CK v14, Sigma YAML, YARA | Industry-standard classification and detection formats |
-| **Cloud Hosting**| Vercel & Render / Railway | Serverless frontend deployment & microservice hosting |
+| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS | High-density SOC console with IBM Plex typography |
+| **Backend** | Node.js, Express 5, RSS-Parser | Shared core API, rate limiting, and snapshot middleware |
+| **Database** | PostgreSQL (Supabase / Neon UK/EU) | Authoritative storage, RLS multi-tenant policies |
+| **Collector** | Node.js Worker Pool, SSRF Guard | Bounded concurrency (10 workers), 5MB cap, tracking stripper |
+| **AI Engine** | Python 3.11, FastAPI, Scikit-Learn | ATT&CK verification & incident clustering |
+| **Framework** | MITRE ATT&CK® Enterprise v16.1 | 14 tactics, 52 techniques catalogue |
 
 ---
 
-## 🗄️ Database Schema (`schema.sql`)
-
-The database uses PostgreSQL with `uuid-ossp` and `pg_trgm` extensions:
-
-- **`threats`**: Ingested articles with unique URL constraints, severity checks, and trigram search indexes.
-- **`iocs`**: Extracted indicators (IPv4, Domain, CVE, SHA256, MD5) linked via foreign keys with deduplication constraints.
-- **`threat_mitre_mapping`**: Relational junction table mapping articles to MITRE tactic and technique IDs.
-- **`incident_clusters`**: AI-clustered incident groups with deduplicated headline summaries.
-- **`alert_logs`**: External SIEM webhook and alert ingestion audit log.
-
----
-
-## 🚀 Quickstart & Local Installation
+## 🚀 Quickstart & Local Setup
 
 ### Prerequisites
 - Node.js (v18 or higher)
-- Python (v3.9 or higher, optional for local AI microservice)
-- Git
+- npm (v9 or higher)
+- PostgreSQL database (or runs with in-memory authoritative fallback store)
 
-### 1. Clone the Repository
+### 1. Installation
 ```bash
-git clone https://github.com/ceylonroameryt-bit/SOC-AI.git
-cd SOC-AI
+git clone https://github.com/ceylonroameryt-bit/SOC-AI.git tacticlens
+cd tacticlens
+npm run install:all
 ```
 
-### 2. Frontend & Backend Setup
+### 2. Environment Configuration
+Copy `.env.example` in `soc-platform-ui-main`:
 ```bash
-cd soc-platform-ui-main
-npm install
+cp soc-platform-ui-main/.env.example soc-platform-ui-main/.env
 ```
 
-### 3. Environment Variables
-Copy `.env.example` to `.env` and fill in your keys:
-```bash
-cp .env.example .env
-```
-
+Ensure `CRON_SECRET` is set for ingestion operations:
 ```env
 PORT=3000
+CRON_SECRET=your_secure_random_cron_secret
 DATABASE_URL=postgresql://postgres:[password]@db.supabase.co:5432/postgres
-VIRUSTOTAL_API_KEY=your_virustotal_key
-ABUSEIPDB_API_KEY=your_abuseipdb_key
+FETCH_CONCURRENCY=10
 ```
 
-### 4. Run Development Servers
-
-**Terminal 1 — Node.js Backend:**
+### 3. Run Development Servers
 ```bash
-cd soc-platform-ui-main
+# Start backend server
 npm run server
-# Running at http://localhost:3000
-```
 
-**Terminal 2 — React Frontend:**
-```bash
-cd soc-platform-ui-main
+# In a separate terminal, start frontend console
 npm run dev
-# Running at http://localhost:5174
 ```
 
-**Terminal 3 (Optional) — Python AI Microservice:**
+### 4. Run Test Suite
 ```bash
-pip install -r requirements.txt
-python app.py
-# Running at http://localhost:8000 (Swagger docs at /docs)
+npm run test
 ```
 
 ---
 
-## 📡 REST API Reference
+## 📡 Key API Routes
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/api/news` | Fetches aggregated cyber news with severity & categories |
-| `GET` | `/api/mitre/news` | Returns categorized intelligence mapped to 14 MITRE tactics |
-| `GET` | `/api/mitre/heatmap` | Aggregated technique hit counts for ATT&CK heatmap |
-| `GET` | `/api/enrich/ip/:ip` | VirusTotal & AbuseIPDB reputation lookup for an IP |
-| `GET` | `/api/enrich/cve/:cveId` | EPSS score and CISA KEV exploitation status for a CVE |
-| `GET` | `/api/enrich/queries/:ioc` | Generates Splunk, Sentinel KQL, and Sigma hunting rules |
-| `GET` | `/api/rules/sigma` | Fetches curated Sigma detection rules |
-| `GET` | `/api/rules/yara` | Fetches curated YARA signature rules |
-| `GET` | `/api/ai/brief` | Executive CISO security intelligence brief |
-| `GET` | `/api/ai/clusters` | Clustered and deduplicated threat incidents |
-| `POST` | `/api/v1/alerts` | Authenticated external SIEM alert ingestion endpoint |
+| `GET` | `/api/news` | Aggregated, deduplicated threat intelligence feed |
+| `POST` | `/api/news/refresh` | Protected feed collection (`CRON_SECRET` required) |
+| `GET` | `/api/explore` | Server-side archive search with date range & MITRE filters |
+| `GET` | `/api/explore/article/:id` | Full article detail with mapping provenance |
+| `GET` | `/api/mitre/heatmap` | ATT&CK technique hit matrix across 14 tactics |
+| `GET` | `/api/enrich/cve/:cveId` | NVD CVSS, CISA KEV status, and FIRST EPSS score |
+| `GET` | `/api/enrich/queries/:ioc` | Generates Sentinel KQL and Splunk queries |
+| `GET` | `/api/sources` | Measured feed health telemetry and permissions |
+| `POST` | `/api/sources/refresh` | Trigger source ingestion cycle (`CRON_SECRET` required) |
+| `GET` | `/api/ai/brief` | Executive threat briefing with source citations |
 
 ---
 
-## 📄 License
-This project is open-source and available under the [MIT License](LICENSE).
+## ⚖️ Legal & Attributions
 
-<div align="center">
-  <b>Built with ❤️ for the Cybersecurity and Blue Team Community</b>
-</div>
+* **License**: Proprietary commercial software. Copyright © 2026 TacticLens Limited. All rights reserved. See [LICENSE](LICENSE).
+* **MITRE ATT&CK®**: MITRE ATT&CK and ATT&CK are registered trademarks of The MITRE Corporation. Content is utilized under the terms of the MITRE ATT&CK terms of use.
+* **Sigma Rules**: Sigma detection logic links to the community-maintained [SigmaHQ](https://github.com/SigmaHQ/sigma) repository.

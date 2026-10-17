@@ -31,7 +31,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
                     </div>
 
                     <h2 className="text-lg font-bold text-slate-100 font-sans tracking-tight mb-2">
-                        NO ENTRY Defense Grid
+                        TacticLens Defense Grid
                     </h2>
 
                     <p className="text-xs text-slate-400 font-mono">

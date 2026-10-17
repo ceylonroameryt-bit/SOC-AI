@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="8" fill="#0F1720"/>
+  <!-- Outer Target Ring -->
+  <circle cx="16" cy="16" r="10" stroke="#0B776C" stroke-width="2" stroke-linecap="round" stroke-dasharray="12 4"/>
+  <!-- Inner Lens Reticle -->
+  <circle cx="16" cy="16" r="4.5" stroke="#FFFFFF" stroke-width="1.8"/>
+  <!-- Tactical Reticle Crosshairs -->
+  <line x1="16" y1="3" x2="16" y2="7.5" stroke="#0B776C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="16" y1="24.5" x2="16" y2="29" stroke="#0B776C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="3" y1="16" x2="7.5" y2="16" stroke="#0B776C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="24.5" y1="16" x2="29" y2="16" stroke="#0B776C" stroke-width="2" stroke-linecap="round"/>
+  <!-- Focus Point -->
+  <circle cx="16" cy="16" r="1.5" fill="#34D399"/>
+</svg>

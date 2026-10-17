@@ -7,6 +7,8 @@
 import express from 'express';
 import { getNews, fetchAndProcessNews, getSeverityStats } from '../services/newsService.js';
 
+import { requireCronAuth } from '../utils/auth.js';
+
 const router = express.Router();
 
 /**
@@ -48,19 +50,7 @@ router.get('/', async (req, res) => {
  * Protected feed collection trigger.
  * Rejects unauthenticated requests to prevent anonymous denial-of-service on external feeds.
  */
-router.post('/refresh', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const apiKey = req.headers['x-api-key'] || (authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null);
-    const validKey = process.env.INGEST_API_KEY;
-
-    if (!validKey || apiKey !== validKey) {
-        return res.status(401).json({
-            success: false,
-            code: 'UNAUTHORIZED',
-            error: 'Authentication required. Administrative API key required to trigger external source collection.'
-        });
-    }
-
+router.post('/refresh', requireCronAuth, async (req, res) => {
     try {
         const news = await fetchAndProcessNews();
         res.json({ success: true, count: news.length, message: 'Feeds successfully collected and indexed.' });

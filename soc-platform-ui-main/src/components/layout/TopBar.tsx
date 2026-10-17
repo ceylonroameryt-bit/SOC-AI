@@ -105,7 +105,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
     };
 
     return (
-        <header className="h-16 bg-[#07090E] border-b border-white/5 px-4 lg:px-6 flex items-center justify-between gap-4 sticky top-0 z-20 shadow-xs">
+        <header className="h-16 bg-[#070A12] border-b border-emerald-500/10 px-4 lg:px-6 flex items-center justify-between gap-4 sticky top-0 z-20 shadow-xs">
             {/* Mobile Hamburger & Global Search */}
             <div className="flex items-center gap-3 flex-1 max-w-xl">
                 {onMenuToggle && (
@@ -119,14 +119,14 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                 )}
 
                 <form onSubmit={handleSearchSubmit} className="relative w-full">
-                    <Search className="w-4 h-4 text-amber-400 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
+                    <Search className="w-4 h-4 text-emerald-400 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
                     <input
                         ref={searchInputRef}
                         type="text"
                         placeholder="Ask AI Copilot or search reports, actors, indicators, or CVEs…"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-14 py-2 bg-[#0C0E14] border border-white/10 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 rounded-xl text-xs text-white placeholder-slate-500 outline-none transition-all"
+                        className="w-full pl-9 pr-14 py-2 bg-[#0D1527] border border-emerald-500/15 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl text-xs text-white placeholder-slate-400 outline-none transition-all"
                         aria-label="Search reports, actors, indicators, or keywords"
                     />
                     {searchQuery ? (
@@ -148,33 +148,33 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
             </div>
 
             {/* Positive Reinforcement Indicator - Stress Reduction Cue */}
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="font-semibold text-white">System Protected</span>
-                <span className="text-amber-300/80">· 47 threats mitigated today</span>
+                <span className="text-emerald-300/80">· 47 threats mitigated today</span>
             </div>
 
             {/* Right Controls: Time Range, Quick Export & User Menu */}
             <div className="flex items-center gap-2.5">
                 {isDemoEnabled && (
-                    <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-amber-300 bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 rounded">
-                        <AlertOctagon className="w-3 h-3 text-amber-400" />
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 rounded">
+                        <AlertOctagon className="w-3 h-3 text-emerald-400" />
                         <span>DEMO DATA</span>
                     </span>
                 )}
                 {/* Time Range Selector */}
-                <div className="hidden md:flex items-center gap-1.5 bg-[#0C0E14] border border-white/10 rounded-xl px-2.5 py-1.5 text-xs text-white">
-                    <Calendar className="w-3.5 h-3.5 text-amber-400" aria-hidden="true" />
+                <div className="hidden md:flex items-center gap-1.5 bg-[#0D1527] border border-emerald-500/15 rounded-xl px-2.5 py-1.5 text-xs text-white">
+                    <Calendar className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
                     <select
                         value={timeRange}
                         onChange={(e) => handleTimeRangeChange(e.target.value)}
                         className="bg-transparent text-xs text-white font-medium outline-none cursor-pointer pr-1"
                         aria-label="Filter intelligence by time range"
                     >
-                        <option value="24h" className="bg-[#0C0E14] text-white">Last 24 Hours</option>
-                        <option value="7d" className="bg-[#0C0E14] text-white">Last 7 Days</option>
-                        <option value="30d" className="bg-[#0C0E14] text-white">Last 30 Days</option>
-                        <option value="all" className="bg-[#0C0E14] text-white">All Time</option>
+                        <option value="24h" className="bg-[#0D1527] text-white">Last 24 Hours</option>
+                        <option value="7d" className="bg-[#0D1527] text-white">Last 7 Days</option>
+                        <option value="30d" className="bg-[#0D1527] text-white">Last 30 Days</option>
+                        <option value="all" className="bg-[#0D1527] text-white">All Time</option>
                     </select>
                 </div>
 
@@ -182,10 +182,10 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                 <button
                     onClick={handleQuickExport}
                     disabled={downloading}
-                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl border border-white/10 bg-[#0C0E14] hover:bg-[#12151E] hover:border-amber-500/40 text-white transition-colors focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-emerald-500/20 bg-[#0D1527] hover:bg-[#131F38] hover:border-emerald-500/40 text-white transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500"
                     title="Download daily PDF sitrep report"
                 >
-                    <FileDown className="w-3.5 h-3.5 text-amber-400" aria-hidden="true" />
+                    <FileDown className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
                     <span>{downloading ? 'Exporting...' : 'Daily Report'}</span>
                 </button>
 
@@ -193,7 +193,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                 <div className="relative" ref={userMenuRef}>
                     <button
                         onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                        className="flex items-center gap-2 p-1.5 pl-2.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors focus:outline-none focus:ring-1 focus:ring-amber-500"
+                        className="flex items-center gap-2 p-1.5 pl-2.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-emerald-500/20 transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500"
                         aria-expanded={userDropdownOpen}
                         aria-haspopup="true"
                         aria-label="User account menu"
@@ -202,11 +202,11 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                             <span className="text-xs font-semibold text-white block leading-tight truncate max-w-[120px]">
                                 {user?.name || 'Security Analyst'}
                             </span>
-                            <span className="text-[10px] text-amber-400 block font-normal truncate max-w-[120px]">
+                            <span className="text-[10px] text-emerald-400 block font-normal truncate max-w-[120px]">
                                 {user?.role || 'Analyst'}
                             </span>
                         </div>
-                        <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center justify-center font-bold text-xs shadow-2xs">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 flex items-center justify-center font-bold text-xs shadow-2xs">
                             {user?.initials || <User className="w-4 h-4" />}
                         </div>
                     </button>
@@ -215,9 +215,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenuToggle, isDemoEnabled }) =
                     {userDropdownOpen && (
                         <div
                             role="menu"
-                            className="absolute right-0 mt-1.5 w-64 bg-[#0C0E14] border border-white/10 rounded-2xl shadow-2xl py-1.5 text-xs z-50 text-white animate-in fade-in zoom-in-95 duration-100 overflow-hidden"
+                            className="absolute right-0 mt-1.5 w-64 bg-[#0D1527] border border-emerald-500/20 rounded-2xl shadow-2xl py-1.5 text-xs z-50 text-white animate-in fade-in zoom-in-95 duration-100 overflow-hidden"
                         >
-                            <div className="px-3.5 py-2.5 border-b border-white/5 bg-[#07090E]">
+                            <div className="px-3.5 py-2.5 border-b border-white/5 bg-[#070A12]">
                                 <div className="flex items-center gap-2">
                                     <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 font-bold text-xs flex items-center justify-center border border-amber-500/40">
                                         {user?.initials || 'SA'}

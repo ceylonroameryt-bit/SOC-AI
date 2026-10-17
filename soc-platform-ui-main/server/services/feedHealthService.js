@@ -313,3 +313,9 @@ export function getFeedHealthStats() {
 
     return stats;
 }
+
+export function exportFeedHealth() { return Array.from(healthMap.values()); }
+export function replaceFeedHealth(records) {
+    healthMap.clear();
+    for (const record of records) if (record?.sourceId || record?.id) healthMap.set(record.sourceId || record.id, record);
+}

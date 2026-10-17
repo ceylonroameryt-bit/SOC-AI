@@ -11,6 +11,7 @@ import {
     getUniqueSources
 } from '../services/feedHealthService.js';
 import { getCollectionRuns, getLatestCollectionRun } from '../db/db.js';
+import { requireCronAuth } from '../utils/auth.js';
 
 const router = express.Router();
 
@@ -101,18 +102,7 @@ router.get('/runs', async (req, res) => {
  * Protected collection refresh trigger.
  * Rejects unauthenticated requests to prevent anonymous denial-of-service against third-party feeds.
  */
-router.post('/refresh', (req, res) => {
-    const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace(/^Bearer\s+/, '');
-    const validKey = process.env.INGEST_API_KEY;
-
-    if (!validKey || apiKey !== validKey) {
-        return res.status(401).json({
-            success: false,
-            code: 'UNAUTHORIZED',
-            error: 'Authentication required. Administrative API key required to trigger external source collection.'
-        });
-    }
-
+router.post('/refresh', requireCronAuth, (req, res) => {
     res.json({
         success: true,
         message: 'Collection job queued successfully. Ingestion executes asynchronously in background worker.'

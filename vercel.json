@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
-  "buildCommand": "cd soc-platform-ui-main && npm install && npm run build",
+  "buildCommand": "cd soc-platform-ui-main && npm run build",
   "outputDirectory": "soc-platform-ui-main/dist",
   "cleanUrls": false,
   "functions": {
@@ -15,7 +15,7 @@
       "source": "/api/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
-        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, X-API-Key" }
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, X-API-Key, X-Cron-Secret" }
       ]
     }
   ],
@@ -25,7 +25,7 @@
       "destination": "/api"
     },
     {
-      "source": "/((?!api|assets|soc-intel-.*|.*\\..*).*)",
+      "source": "/((?!api|assets|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]

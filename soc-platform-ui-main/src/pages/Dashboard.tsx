@@ -67,18 +67,18 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* Header & Radial Obsidian Switcher */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-white/10">
+            {/* Header & Calm Resilience Switcher */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-emerald-500/10">
                 <div>
                     <div className="flex items-center gap-2 mb-1.5">
-                        <span className="section-label">Obsidian AI · Autonomous Mission Control</span>
+                        <span className="section-label">Calm Resilience · Autonomous Mission Control</span>
                         <div
                             className="availability-chip text-[10px] py-0.5 px-2"
                             role="status"
                             aria-label="Threat Radar status: Active"
                         >
                             <span className="chip-dot" aria-hidden="true"></span>
-                            <span className="font-semibold text-amber-400">AI Perimeter Optimal</span>
+                            <span className="font-semibold text-emerald-400">99.2% Core Stability</span>
                         </div>
                     </div>
                     <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
@@ -93,7 +93,7 @@ const Dashboard = () => {
                 <div
                     role="tablist"
                     aria-label="Dashboard views"
-                    className="flex flex-wrap items-center gap-1.5 bg-[#0C0E14] p-1 rounded-xl border border-white/10"
+                    className="flex flex-wrap items-center gap-1.5 bg-[#070A12] p-1 rounded-xl border border-emerald-500/15"
                 >
                     <button
                         id="tab-overview"
@@ -102,9 +102,9 @@ const Dashboard = () => {
                         aria-controls="panel-overview"
                         tabIndex={activeTab === 'overview' ? 0 : -1}
                         onClick={() => handleTabChange('overview', 'Mission Control')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-amber-500 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
                             activeTab === 'overview'
-                                ? 'bg-amber-500 text-black shadow-sm font-extrabold'
+                                ? 'bg-emerald-500 text-slate-950 shadow-sm font-extrabold'
                                 : 'text-slate-400 hover:text-white'
                         }`}
                     >
@@ -119,9 +119,9 @@ const Dashboard = () => {
                         aria-controls="panel-news"
                         tabIndex={activeTab === 'news' ? 0 : -1}
                         onClick={() => handleTabChange('news', 'Global Stream')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-amber-500 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
                             activeTab === 'news'
-                                ? 'bg-amber-500 text-black shadow-sm font-extrabold'
+                                ? 'bg-emerald-500 text-slate-950 shadow-sm font-extrabold'
                                 : 'text-slate-400 hover:text-white'
                         }`}
                     >
@@ -136,10 +136,10 @@ const Dashboard = () => {
                         aria-controls="panel-critical"
                         tabIndex={activeTab === 'critical' ? 0 : -1}
                         onClick={() => handleTabChange('critical', 'Guarded Radar')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-amber-500 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
                             activeTab === 'critical'
-                                ? 'bg-amber-500 text-black shadow-sm font-extrabold'
-                                : 'text-amber-400 hover:text-amber-300 hover:bg-amber-500/10'
+                                ? 'bg-emerald-500 text-slate-950 shadow-sm font-extrabold'
+                                : 'text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10'
                         }`}
                     >
                         <ShieldAlert className="w-3.5 h-3.5" aria-hidden="true" />
@@ -153,9 +153,9 @@ const Dashboard = () => {
                         aria-controls="panel-metrics"
                         tabIndex={activeTab === 'metrics' ? 0 : -1}
                         onClick={() => handleTabChange('metrics', 'Analytics')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-amber-500 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
                             activeTab === 'metrics'
-                                ? 'bg-amber-500 text-black shadow-sm font-extrabold'
+                                ? 'bg-emerald-500 text-slate-950 shadow-sm font-extrabold'
                                 : 'text-slate-400 hover:text-white'
                         }`}
                     >
@@ -198,11 +198,11 @@ const Dashboard = () => {
                     <MitreMiniMatrix />
 
                     {/* Bottom Tier: Live Intel Feed with Severity Bar Chart */}
-                    <div className="rounded-2xl border border-white/10 bg-[#0C0E14] p-4 sm:p-5 shadow-xl space-y-4">
+                    <div className="rounded-2xl border border-emerald-500/15 bg-[#0D1527] p-4 sm:p-5 shadow-xl space-y-4">
                         {/* Header */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/5">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-emerald-500/10">
                             <div className="flex items-center gap-2">
-                                <div className="p-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                                <div className="p-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                                     <Radio className="w-4 h-4 animate-pulse" aria-hidden="true" />
                                 </div>
                                 <div>
@@ -235,7 +235,7 @@ const Dashboard = () => {
                     id="panel-news"
                     role="tabpanel"
                     aria-labelledby="tab-news"
-                    className="rounded-2xl border border-white/10 bg-[#0C0E14] p-4 sm:p-5 shadow-xl focus:outline-none"
+                    className="rounded-2xl border border-emerald-500/15 bg-[#0D1527] p-4 sm:p-5 shadow-xl focus:outline-none"
                     tabIndex={0}
                 >
                     <NewsFeed mode="timeline" isEmbedded={true} timeRange={timeRange} />
@@ -247,11 +247,11 @@ const Dashboard = () => {
                     id="panel-critical"
                     role="tabpanel"
                     aria-labelledby="tab-critical"
-                    className="rounded-2xl border border-white/10 bg-[#0C0E14] p-4 sm:p-5 shadow-xl focus:outline-none"
+                    className="rounded-2xl border border-emerald-500/15 bg-[#0D1527] p-4 sm:p-5 shadow-xl focus:outline-none"
                     tabIndex={0}
                 >
-                    <div className="mb-4 pb-3 border-b border-white/5 flex items-center gap-2">
-                        <div className="p-1.5 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/40">
+                    <div className="mb-4 pb-3 border-b border-emerald-500/10 flex items-center gap-2">
+                        <div className="p-1.5 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                             <ShieldAlert className="w-4 h-4" aria-hidden="true" />
                         </div>
                         <div>
@@ -272,7 +272,7 @@ const Dashboard = () => {
                     id="panel-metrics"
                     role="tabpanel"
                     aria-labelledby="tab-metrics"
-                    className="rounded-2xl border border-white/10 bg-[#0C0E14] p-4 sm:p-5 shadow-xl min-h-[500px] focus:outline-none"
+                    className="rounded-2xl border border-emerald-500/15 bg-[#0D1527] p-4 sm:p-5 shadow-xl min-h-[500px] focus:outline-none"
                     tabIndex={0}
                 >
                     <SeverityChart />

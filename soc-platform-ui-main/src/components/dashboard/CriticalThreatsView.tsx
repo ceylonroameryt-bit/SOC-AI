@@ -61,9 +61,9 @@ const CriticalThreatsView = () => {
     let threatLevel = "LOW";
     let threatColor = "text-blue-700 border-blue-300 bg-blue-50";
 
-    if (threatScore > 5) { threatLevel = "ELEVATED"; threatColor = "text-amber-700 border-amber-300 bg-amber-50"; }
-    if (threatScore > 10) { threatLevel = "HIGH"; threatColor = "text-orange-700 border-orange-300 bg-orange-50"; }
-    if (threatScore > 20) { threatLevel = "CRITICAL"; threatColor = "text-red-700 border-red-300 bg-red-50"; }
+    if (threatScore > 5) { threatLevel = "ELEVATED"; threatColor = "text-sky-400 border-sky-500/30 bg-sky-500/10"; }
+    if (threatScore > 10) { threatLevel = "HIGH"; threatColor = "text-amber-300 border-amber-500/30 bg-amber-500/10"; }
+    if (threatScore > 20) { threatLevel = "GUARDED CRITICAL"; threatColor = "text-amber-400 border-amber-500/40 bg-amber-500/20"; }
 
     if (loading) return (
         <div className="flex items-center justify-center h-64">

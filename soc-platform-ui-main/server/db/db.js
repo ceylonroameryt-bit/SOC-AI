@@ -1211,3 +1211,11 @@ export async function setSystemState(key, value) {
     memStore.systemState.set(key, value);
     return value;
 }
+
+// Await cold-start initialization before shared-state reads or collector writes.
+export const hasDatabase = () => Boolean(pool && isConnected);
+export async function queryDatabase(text, values = []) {
+    if (!pool) throw new Error('Shared database is not configured');
+    return pool.query({ text, values, query_timeout: 8000 });
+}
+

@@ -290,6 +290,40 @@ export const processNewsForMitre = (newsItems) => {
     }
 };
 
+export const enrichArticleWithMitre = (item) => {
+    const text = `${item.title || ''} ${item.contentSnippet || ''}`;
+    const matchedIds = mapTextToTechniques(text, item.link || item.id, false);
+
+    const matchedTechniques = matchedIds.map(techId => {
+        const tech = techniqueCatalogue.find(t => t.id === techId);
+        const tactic = MITRE_TACTICS.find(t => t.id === tech?.tactic);
+        return {
+            id: techId,
+            name: tech?.name || techId,
+            tacticId: tech?.tactic || 'Unknown',
+            tacticName: tactic?.name || 'Unknown',
+            tacticColor: tactic?.color || '#38bdf8',
+            tacticIcon: tactic?.icon || '🛡️',
+            mitreUrl: `https://attack.mitre.org/techniques/${techId}/`
+        };
+    });
+
+    const matchedTacticIds = new Set(matchedTechniques.map(t => t.tacticId));
+    const matchedTactics = Array.from(matchedTacticIds).map(id => {
+        const found = MITRE_TACTICS.find(t => t.id === id);
+        return found || { id, name: id, shortName: id, icon: '🛡️', color: '#38bdf8' };
+    });
+
+    return {
+        ...item,
+        mitreTechniques: matchedTechniques,
+        mitreTactics: matchedTactics,
+        isMitreCategorized: matchedTechniques.length > 0,
+        mappingMethod: matchedTechniques.length > 0 ? 'keyword-heuristic' : 'none',
+        mappingTimestamp: new Date().toISOString()
+    };
+};
+
 /**
  * Get all news articles categorized by MITRE Framework (Tactics & Techniques).
  * Filters supported: tacticId, techniqueId, severity, search, page, limit
@@ -317,36 +351,10 @@ export const getCategorizedNews = async (options = {}) => {
     }
 
     // Process and enrich each article with MITRE details & IOCs
-    // Reuses mapTextToTechniques() to avoid duplicating keyword-matching logic
     const categorizedArticles = allNews.map((item, idx) => {
+
+        const enriched = enrichArticleWithMitre({ ...item });
         const text = `${item.title || ''} ${item.contentSnippet || ''}`;
-
-        // Use the single source-of-truth matching function (read-only, don't increment counter on GET)
-        const matchedIds = mapTextToTechniques(text, item.link || item.id, false);
-
-        // Resolve full technique details from matched IDs
-        const matchedTechniques = matchedIds.map(techId => {
-            const tech = techniqueCatalogue.find(t => t.id === techId);
-            const tactic = MITRE_TACTICS.find(t => t.id === tech?.tactic);
-            return {
-                id: techId,
-                name: tech?.name || techId,
-                tacticId: tech?.tactic || 'Unknown',
-                tacticName: tactic?.name || 'Unknown',
-                tacticColor: tactic?.color || '#38bdf8',
-                tacticIcon: tactic?.icon || '🛡️',
-                mitreUrl: `https://attack.mitre.org/techniques/${techId}/`
-            };
-        });
-
-        // Unique tactic objects
-        const matchedTacticIds = new Set(matchedTechniques.map(t => t.tacticId));
-        const matchedTactics = Array.from(matchedTacticIds).map(id => {
-            const found = MITRE_TACTICS.find(t => t.id === id);
-            return found || { id, name: id, shortName: id, icon: '🛡️', color: '#38bdf8' };
-        });
-
-        // Fast extraction of IOCs
         const extracted = extractIOCs(text);
 
         return {
@@ -358,12 +366,13 @@ export const getCategorizedNews = async (options = {}) => {
             source: item.source || 'Threat Intelligence Feed',
             severity: item.severity || 'Medium',
             category: item.category || 'General Info',
-            mitreTechniques: matchedTechniques,
-            mitreTactics: matchedTactics,
-            isMitreCategorized: matchedTechniques.length > 0,
+            mitreTechniques: enriched.mitreTechniques,
+            mitreTactics: enriched.mitreTactics,
+            isMitreCategorized: enriched.isMitreCategorized,
             extractedIOCs: extracted,
         };
     });
+
 
     // Compute tactic summaries across ALL news
     const tacticCounts = new Map();

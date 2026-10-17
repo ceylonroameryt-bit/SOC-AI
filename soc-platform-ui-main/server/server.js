@@ -8,9 +8,11 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 import cron from 'node-cron';
+import { sharedSnapshotMiddleware, sharedStorageRequired } from './services/sharedSnapshotService.js';
 
 // Route imports
 import newsRouter     from './routes/news.js';
+import exploreRouter  from './routes/explore.js';
 import threatsRouter  from './routes/threats.js';
 import reportsRouter  from './routes/reports.js';
 import sourcesRouter  from './routes/sources.js';
@@ -156,9 +158,10 @@ app.use((req, res, next) => {
 // ==========================================
 // API ROUTES (Must come before static/SPA catch-all)
 // ==========================================
+app.use('/api',            sharedSnapshotMiddleware);
 app.use('/api/auth',       authRouter);
 app.use('/api/news',       newsRouter);
-app.use('/api/explore',    newsRouter);
+app.use('/api/explore',    exploreRouter);
 app.use('/api/threats',    threatsRouter);
 app.use('/api/reports',    reportsRouter);
 app.use('/api/sources',    sourcesRouter);
@@ -213,57 +216,6 @@ app.use(express.static(resolvedDistPath, {
     }
 }));
 
-// ==========================================
-// SIEM INGESTION ENDPOINT — POST /api/v1/alerts
-// Accepts alerts from Wazuh, Snort, Suricata, etc.
-// Authentication: X-API-Key header
-// ==========================================
-app.post('/api/v1/alerts', async (req, res) => {
-    const apiKey = req.headers['x-api-key'];
-    const expectedKey = process.env.INGEST_API_KEY;
-
-    // Require key if configured
-    if (expectedKey && apiKey !== expectedKey) {
-        console.warn(`[INGEST] Unauthorized alert push attempt from ${req.ip}`);
-        return res.status(401).json({ error: 'Unauthorized. Provide a valid X-API-Key header.' });
-    }
-
-    const { type, severity, description, source, ioc } = req.body;
-    if (!type || !severity) {
-        return res.status(400).json({ error: '"type" and "severity" are required fields.' });
-    }
-    const allowedSeverities = ['Critical', 'High', 'Medium', 'Low'];
-    if (!allowedSeverities.includes(severity)) {
-        return res.status(400).json({ error: `Invalid severity. Must be one of: ${allowedSeverities.join(', ')}` });
-    }
-
-    const newAlert = {
-        id: `EXT-${Date.now()}-${Math.floor(Math.random() * 9999)}`,
-        type,
-        severity,
-        source: source || 'External SIEM',
-        description: description || `External ${severity} alert: ${type}`,
-        ioc: ioc || {},
-        timestamp: new Date().toISOString(),
-        externalIngestion: true,
-    };
-
-    // Persist to authoritative database
-    try {
-        await insertThreatAlert(newAlert);
-        console.log(`[INGEST] New external alert ingested: ${newAlert.id} (${severity} ${type})`);
-
-        // Broadcast to ChatOps if Critical or High
-        if (severity === 'Critical' || severity === 'High') {
-            broadcastAlert(newAlert).catch(err => console.error('[INGEST] Webhook broadcast failed:', err.message));
-        }
-
-        res.status(201).json({ success: true, alertId: newAlert.id, message: 'Alert ingested successfully.' });
-    } catch (err) {
-        console.error('[INGEST] Failed to save alert:', err.message);
-        res.status(500).json({ error: 'Failed to persist alert.' });
-    }
-});
 
 // Debug endpoint - shows file paths (DEVELOPMENT ONLY — never expose in production)
 if (isDev) {
@@ -429,14 +381,17 @@ if (!isTestMode) {
             console.warn('[CRON] DEFAULT_EMAIL not set — periodic email reports disabled.');
         }
 
-        // Refresh news every 30 minutes + update MITRE heatmap
-        setInterval(async () => {
-            const news = await fetchAndProcessNews();
-            if (news?.length) processNewsForMitre(news);
-        }, 30 * 60 * 1000);
+        // Refresh news every 30 minutes + update MITRE heatmap (standalone mode only)
+        if (!sharedStorageRequired()) {
+            setInterval(async () => {
+                const news = await fetchAndProcessNews();
+                if (news?.length) processNewsForMitre(news);
+            }, 30 * 60 * 1000);
+        }
 
-        console.log('   New APIs: /api/enrich, /api/mitre, /api/ai, /api/rules, /api/webhooks, /api/v1/alerts, /api/dashboard/snapshot\n');
+        console.log('   APIs: /api/enrich, /api/mitre, /api/ai, /api/rules, /api/webhooks, /api/dashboard/snapshot\n');
     });
+
 }
 
 export default app;

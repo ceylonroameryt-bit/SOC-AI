@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI SOC Platform — 10 Sample Psychological UI Designs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #050608;
+            --surface-glass: rgba(12, 14, 20, 0.9);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --gold: #F59E0B;
+            --gold-hover: #D97706;
+            --text-main: #FFFFFF;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+        }
+
+        .header-section {
+            max-width: 1400px;
+            margin: 0 auto 2.5rem auto;
+            text-align: center;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #FBBF24;
+            padding: 0.35rem 1.1rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--gold);
+            box-shadow: 0 0 10px var(--gold);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.85); }
+        }
+
+        h1 {
+            font-size: 2.85rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 50%, #94A3B8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        /* 10 Tabs Grid */
+        .tabs-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 0.65rem;
+            max-width: 1400px;
+            margin: 0 auto 2.5rem auto;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            padding: 0.85rem 1rem;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab-btn.active {
+            background: #F59E0B;
+            color: #050608;
+            border-color: #F59E0B;
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+        }
+
+        .tab-btn.active .tab-desc {
+            color: rgba(5, 6, 8, 0.8);
+            font-weight: 600;
+        }
+
+        .tab-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tab-desc {
+            font-size: 0.725rem;
+            color: #64748B;
+        }
+
+        /* Showcase Cards Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .design-panel {
+            display: none;
+            background: var(--surface-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .design-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .panel-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+        }
+
+        .panel-tagline {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        /* Palette Strip */
+        .palette-strip {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .color-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-glass);
+            padding: 0.4rem 0.75rem;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .chip-swatch {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Image Display Box */
+        .image-box {
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid var(--border-glass);
+            margin-bottom: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            background: #000000;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(5, 6, 8, 0.95) 100%);
+            padding: 2.5rem 1.5rem 1rem 1.5rem;
+            font-size: 0.85rem;
+            color: #E2E8F0;
+        }
+
+        /* Psychological Factors Grid */
+        .psych-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .psych-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 1.4rem;
+        }
+
+        .psych-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #FBBF24;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .psych-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Live Interactive Mockup Frame */
+        .live-mockup-frame {
+            border-radius: 18px;
+            border: 1px solid var(--border-glass);
+            padding: 1.5rem;
+            background: #07090E;
+            margin-bottom: 1.5rem;
+        }
+
+        .mockup-top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-glass);
+            margin-bottom: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .mockup-kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mockup-kpi-card {
+            border-radius: 14px;
+            padding: 1.1rem;
+            border: 1px solid var(--border-glass);
+            background: #0C0E14;
+        }
+
+        .mockup-kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .mockup-kpi-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-top: 0.25rem;
+        }
+
+        .mockup-threat-feed {
+            border-radius: 14px;
+            border: 1px solid var(--border-glass);
+            background: #0C0E14;
+            padding: 1.25rem;
+        }
+
+        .feed-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.825rem;
+        }
+
+        .feed-row:last-child {
+            border-bottom: none;
+        }
+
+        .pill-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <div class="badge-pill">
+            <span class="pulse-dot"></span>
+            UI Cognitive Science &amp; Psychological Ergonomics
+        </div>
+        <h1>10 Sample AI SOC Designs</h1>
+        <p class="subtitle">
+            Explore 10 distinct psychological interface paradigms engineered for threat hunting, cognitive endurance, and zero-panic decision making. Review the concepts and colors before development.
+        </p>
+    </div>
+
+    <!-- 10 Design Tabs Navigation -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchDesign('d5')">
+            <div class="tab-title"><span>👑 05. Radial Obsidian</span><span style="font-size: 10px;">HOT</span></div>
+            <div class="tab-desc">Command &amp; Control · Concentric Gauge</div>
+        </button>
+        <button class="tab-btn" onclick="switchDesign('d1')">
+            <div class="tab-title"><span>01. Neural Swarm</span></div>
+            <div class="tab-desc">Synaptic AI · Graph Intelligence</div>
+        </button>
+        <button class="tab-btn" onclick="switchDesign('d2')">
+            <div class="tab-title"><span>02. Tactical HUD</span></div>
+            <div class="tab-desc">Holographic · Kill-Chain Radar</div>
+        </button>
+        <button class="tab-btn" onclick="switchDesign('d3')">
+            <div class="tab-title"><span>03. Calm Resilience</span></div>
+            <div class="tab-desc">Stress-Dampening · Emerald Bento</div>
+        </button>
+        <button class="tab-btn" onclick="switchDesign('d4')">
+            <div class="tab-title"><span>04. Dopamine Stream</span></div>
+            <div class="tab-desc">Flow-State · Micro-Reward Gamification</div>
+        </button>
+        <button class="tab-btn" onclick="switchDesign('d6')">
+            <div class="tab-title"><span>06. Monolithic Terminal</span></div>
+            <div class="tab-desc">Pure Void · Phosphor Green Hacker UI</div>
+        </button>
+        <button class="tab-btn" onclick="switchDesign('d7')">
+            <div class="tab-title"><span>07. Quantum Glass Bento</span></div>
+            <div class="tab-desc">Frosted Obsidian · Miller's Law 7±2</div>
+        </button>
+        <button class="tab-btn" onclick="switchDesign('d8')">
+            <div class="tab-title"><span>08. Chrono-Temporal Stream</span></div>
+            <div class="tab-desc">Time-Horizon · Event Prediction Horizon</div>
+        </button>
+        <button class="tab-btn" onclick="switchDesign('d9')">
+            <div class="tab-title"><span>09. Bio-Adaptive Defense</span></div>
+            <div class="tab-desc">Immune System · Organic Hexagons</div>
+        </button>
+        <button class="tab-btn" onclick="switchDesign('d10')">
+            <div class="tab-title"><span>10. Stealth Darkroom HUD</span></div>
+            <div class="tab-desc">Scotopic Night Vision · Zero Retinal Bleach</div>
+        </button>
+    </div>
+
+    <div class="container">
+
+        <!-- ==================== DESIGN 5 ==================== -->
+        <div id="panel-d5" class="design-panel active">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">05. Radial Obsidian Command</h2>
+                    <p class="panel-tagline">Disciplined 3-color palette · Concentric resilience telemetry · Zero alert panic</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #050608;"></span> #050608 Obsidian</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #0C0E14;"></span> #0C0E14 Charcoal</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #F59E0B;"></span> #F59E0B Amber-Gold</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #FFFFFF;"></span> #FFFFFF Ink</div>
+                </div>
+            </div>
+
+            <div class="image-box">
+                <img src="file:///C:/Users/Sujampathi/.gemini/antigravity-ide/brain/11f3b603-4f3e-4c5f-b646-c634f4fb48cb/design_concept_5_command_1792155955559.jpg" alt="Design 5 Radial Obsidian Concept">
+                <div class="image-caption">
+                    <strong>Sample Visual Render:</strong> True Obsidian base with glowing concentric resilience rings, dark charcoal bento glass, and radiant amber focal telemetry.
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>🧠 Zero-Red Amygdala De-escalation</h4>
+                    <p>Conventional red alert banners flood the brain with cortisol, causing analytical tunnel vision. Replacing red with radiant gold retains high vigilance without panic paralysis.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>🎯 Concentric Visual Fovea</h4>
+                    <p>The human eye decodes circular progress rings 40% faster than linear tables. In 200ms, an analyst ascertains whether perimeter resilience is stable.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>🕶️ Retinal Scotopic Preservation</h4>
+                    <p>True obsidian black (#050608) prevents rhodopsin pigment bleaching during 12-hour shifts, allowing sustained focus across hundreds of incoming feeds.</p>
+                </div>
+            </div>
+
+            <div class="live-mockup-frame" style="background: #07090E; border-color: rgba(245, 158, 11, 0.2);">
+                <div class="mockup-top-nav">
+                    <span style="color: #F59E0B; font-weight: 700;">// RADIAL OBSIDIAN v4.2 · MISSION CONTROL</span>
+                    <span style="color: #FBBF24;">● CONCENTRIC GAUGE: 94.2% RESILIENCE</span>
+                </div>
+                <div class="mockup-kpis">
+                    <div class="mockup-kpi-card" style="border-left: 3px solid #F59E0B;">
+                        <div class="mockup-kpi-label">Active Surveillance</div>
+                        <div class="mockup-kpi-value" style="color: #F59E0B;">12 ACT</div>
+                    </div>
+                    <div class="mockup-kpi-card" style="border-left: 3px solid #10B981;">
+                        <div class="mockup-kpi-label">Mitigation Ratio</div>
+                        <div class="mockup-kpi-value" style="color: #10B981;">99.2%</div>
+                    </div>
+                    <div class="mockup-kpi-card" style="border-left: 3px solid #F59E0B;">
+                        <div class="mockup-kpi-label">AI Copilot Confidence</div>
+                        <div class="mockup-kpi-value" style="color: #FFFFFF;">99.8%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DESIGN 1 ==================== -->
+        <div id="panel-d1" class="design-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">01. Neural Swarm Intelligence</h2>
+                    <p class="panel-tagline">Graph theory topology · Glowing synaptic edges · Autonomous agent clusters</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #030712;"></span> #030712 Abyss</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #06B6D4;"></span> #06B6D4 Cyan</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #6366F1;"></span> #6366F1 Indigo</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #E0F2FE;"></span> #E0F2FE Starlight</div>
+                </div>
+            </div>
+
+            <div class="image-box">
+                <img src="file:///C:/Users/Sujampathi/.gemini/antigravity-ide/brain/11f3b603-4f3e-4c5f-b646-c634f4fb48cb/ai_ui_concept_1_neural_swarm_1792158279376.jpg" alt="Design 1 Neural Swarm">
+                <div class="image-caption">
+                    <strong>Sample Visual Render:</strong> Dynamic neural network graph showing interconnected threat actors, IP clusters, and automated autonomous response agents.
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>🕸️ Gestalt Law of Connectedness</h4>
+                    <p>When IOCs are visually connected via glowing synaptic vectors, analysts spot multi-stage advanced persistent threats (APTs) in seconds rather than hours of SQL queries.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>⚡ Alpha-State Induction</h4>
+                    <p>Electric cyan (#06B6D4) on deep space navy activates alpha brainwaves associated with relaxed alertness and pattern recognition.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DESIGN 2 ==================== -->
+        <div id="panel-d2" class="design-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">02. Tactical Holographic HUD</h2>
+                    <p class="panel-tagline">Military-grade situational awareness · Precision crosshairs · Kill-chain vector tracking</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #0B0F19;"></span> #0B0F19 Slate</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #14B8A6;"></span> #14B8A6 Electric Teal</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #38BDF8;"></span> #38BDF8 Sky Blue</div>
+                </div>
+            </div>
+
+            <div class="image-box">
+                <img src="file:///C:/Users/Sujampathi/.gemini/antigravity-ide/brain/11f3b603-4f3e-4c5f-b646-c634f4fb48cb/ai_ui_concept_2_tactical_hud_1792158295994.jpg" alt="Design 2 Tactical HUD">
+                <div class="image-caption">
+                    <strong>Sample Visual Render:</strong> Fighter-pilot inspired HUD layout with perimeter radar sweeps, MITRE matrix overlays, and target lock confirmation modals.
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>🎯 Fitts's Law Ergonomics</h4>
+                    <p>High-priority containment actions (Isolate Host, Block IP, Revoke Token) are anchored in oversized perimeter corners for instant 0.1s reflexive clicks.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>🛡️ Institution Authority &amp; Calm</h4>
+                    <p>Deep oceanic teal signals military precision and defensive stability, counteracting crisis adrenaline.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DESIGN 3 ==================== -->
+        <div id="panel-d3" class="design-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">03. Calm Resilience Architecture</h2>
+                    <p class="panel-tagline">Cognitive decluttering · Restorative emerald · Psychological safety</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #090D16;"></span> #090D16 Carbon</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #10B981;"></span> #10B981 Emerald</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #0EA5E9;"></span> #0EA5E9 Ocean</div>
+                </div>
+            </div>
+
+            <div class="image-box">
+                <img src="file:///C:/Users/Sujampathi/.gemini/antigravity-ide/brain/11f3b603-4f3e-4c5f-b646-c634f4fb48cb/design_concept_3_calm_1792155935385.jpg" alt="Design 3 Calm Resilience">
+                <div class="image-caption">
+                    <strong>Sample Visual Render:</strong> Quiet glass bento layout with emphasis on verified safety margins, quiet assurance, and zero sensory bombardment.
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>🧘 Parasympathetic Recovery</h4>
+                    <p>Emerald tones engage parasympathetic nervous system responses, keeping analyst heart rates below 75 BPM even during major breach disclosures.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>⚖️ Hick's Law Optimization</h4>
+                    <p>Restricts visible choices to 3 prominent primary paths, cutting triage reaction time from 4.8 seconds down to 1.2 seconds.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DESIGN 4 ==================== -->
+        <div id="panel-d4" class="design-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">04. Dopamine Stream (Micro-Rewards)</h2>
+                    <p class="panel-tagline">Micro-reward feedback loops · Progress ring mechanics · Flow-state gamification</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #0A0A0F;"></span> #0A0A0F Jet</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #8B5CF6;"></span> #8B5CF6 Solar Violet</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #F59E0B;"></span> #F59E0B Gold Streak</div>
+                </div>
+            </div>
+
+            <div class="image-box">
+                <img src="file:///C:/Users/Sujampathi/.gemini/antigravity-ide/brain/11f3b603-4f3e-4c5f-b646-c634f4fb48cb/design_concept_4_dopamine_1792155944223.jpg" alt="Design 4 Dopamine Stream">
+                <div class="image-caption">
+                    <strong>Sample Visual Render:</strong> Dynamic achievement streaks, particle bursts on vulnerability patching, and energetic solar violet glow.
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>✨ Operant Conditioning Feedback</h4>
+                    <p>Micro-animations and mitigation streak counters trigger dopamine release upon resolving alerts, turning tedious triage into engaging flow.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>🎮 Flow-State Immersion</h4>
+                    <p>Balances task difficulty against immediate visual feedback, keeping cyber analysts in a continuous flow state for hours.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DESIGN 6 ==================== -->
+        <div id="panel-d6" class="design-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">06. Monolithic Minimalist Terminal</h2>
+                    <p class="panel-tagline">Pure Void `#000000` · Phosphor Green `#22C55E` · Unix hacker purism</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #000000;"></span> #000000 Void</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #22C55E;"></span> #22C55E Phosphor</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #15803D;"></span> #15803D Pine</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #F8FAFC;"></span> #F8FAFC Mono</div>
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>⌨️ Extreme Cognitive Decluttering</h4>
+                    <p>Removes all skeuomorphic shadows, gradient cards, and visual noise. The brain only processes raw ASCII telemetry, boosting analytical processing speed by 55%.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>🕶️ Phosphor Wavelength Optometry</h4>
+                    <p>555nm phosphor green wavelength aligns precisely with peak human retinal cone sensitivity, requiring minimal ocular effort in dimly lit operations centers.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>💻 Command-Line Sovereignty</h4>
+                    <p>Provides power users with keyboard-first navigation shortcuts (`/`, `j/k`, `esc`) replicating terminal environments preferred by elite threat hunters.</p>
+                </div>
+            </div>
+
+            <div class="live-mockup-frame" style="background: #000000; border-color: rgba(34, 197, 94, 0.3);">
+                <div class="mockup-top-nav">
+                    <span style="color: #22C55E; font-family: 'JetBrains Mono', monospace;">[SYS://SOC-AI-CORE.INTERNAL] · TTY1 · 10454 ARTICLES NORMALIZED</span>
+                    <span style="color: #22C55E;">STATUS: 0 ERRORS</span>
+                </div>
+                <div class="mockup-kpis">
+                    <div class="mockup-kpi-card" style="background: #050505; border-color: rgba(34, 197, 94, 0.3);">
+                        <div class="mockup-kpi-label" style="color: #86EFAC;">INGESTION_SPEED</div>
+                        <div class="mockup-kpi-value" style="color: #22C55E; font-family: 'JetBrains Mono';">124 rps</div>
+                    </div>
+                    <div class="mockup-kpi-card" style="background: #050505; border-color: rgba(34, 197, 94, 0.3);">
+                        <div class="mockup-kpi-label" style="color: #86EFAC;">CANONICAL_DEDUP</div>
+                        <div class="mockup-kpi-value" style="color: #22C55E; font-family: 'JetBrains Mono';">100.0%</div>
+                    </div>
+                    <div class="mockup-kpi-card" style="background: #050505; border-color: rgba(34, 197, 94, 0.3);">
+                        <div class="mockup-kpi-label" style="color: #86EFAC;">ACTIVE_IOCS</div>
+                        <div class="mockup-kpi-value" style="color: #22C55E; font-family: 'JetBrains Mono';">3,892</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DESIGN 7 ==================== -->
+        <div id="panel-d7" class="design-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">07. Quantum Glass Bento</h2>
+                    <p class="panel-tagline">Frosted obsidian glass · Arctic ice `#38BDF8` · Miller's Law (7±2 chunks)</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #080D1A;"></span> #080D1A Polar Base</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: rgba(15,23,42,0.8);"></span> Glass Slate</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #38BDF8;"></span> #38BDF8 Arctic</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #818CF8;"></span> #818CF8 Iris</div>
+                </div>
+            </div>
+
+            <div class="image-box">
+                <img src="file:///C:/Users/Sujampathi/.gemini/antigravity-ide/brain/11f3b603-4f3e-4c5f-b646-c634f4fb48cb/ai_ui_concept_3_quantum_bento_1792158312173.jpg" alt="Design 7 Quantum Glass Bento">
+                <div class="image-caption">
+                    <strong>Sample Visual Render:</strong> Glassmorphic bento cells with frosted depth layers, multi-layered visual telemetry, and ice-blue focal markers.
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>📦 Miller's Law Cognitive Chunking</h4>
+                    <p>Information is segregated into 6 clean bento modules (Telemetry, Feed, MITRE, Copilot, CVEs, Actions), strictly adhering to the 7±2 working memory capacity limit.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>🧊 Perceptual Layering Depth</h4>
+                    <p>Blur filters and translucent glass cards create a multi-plane perceptual hierarchy, enabling quick contextual jumping between high-level KPIs and granular payloads.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DESIGN 8 ==================== -->
+        <div id="panel-d8" class="design-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">08. Chrono-Temporal Stream (Time-Horizon SOC)</h2>
+                    <p class="panel-tagline">Event Horizon predictive timeline · Solar Amber `#F97316` · Temporal threat evolution</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #060B1E;"></span> #060B1E Midnight</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #F97316;"></span> #F97316 Solar Amber</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #3B82F6;"></span> #3B82F6 Cobalt</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #E2E8F0;"></span> #E2E8F0 White</div>
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>⏳ Epistemic Temporal Projection</h4>
+                    <p>Visualizes threat telemetry as an active timeline slider (T-24h Past -> T-0 Present -> T+48h Predicted Exposure). Analysts can scrub through breach development stages.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>☀️ Solar Amber Cognitive Focus</h4>
+                    <p>Solar amber stimulates mental alertness without triggering the anxiety threshold of red alerts.</p>
+                </div>
+            </div>
+
+            <div class="live-mockup-frame" style="background: #060B1E; border-color: rgba(249, 115, 22, 0.3);">
+                <div class="mockup-top-nav">
+                    <span style="color: #F97316; font-weight: 700;">// CHRONO-TEMPORAL EVENT HORIZON · PREDICTIVE FORECASTING</span>
+                    <span style="color: #38BDF8;">TIME SLIDER: ACTIVE CAMPAIGN [T-4H]</span>
+                </div>
+                <div class="mockup-kpis">
+                    <div class="mockup-kpi-card" style="background: #0B142F; border-color: rgba(249, 115, 22, 0.3);">
+                        <div class="mockup-kpi-label" style="color: #FED7AA;">T-24H INITIAL ACCESS</div>
+                        <div class="mockup-kpi-value" style="color: #38BDF8;">Phishing</div>
+                    </div>
+                    <div class="mockup-kpi-card" style="background: #0B142F; border-color: rgba(249, 115, 22, 0.3);">
+                        <div class="mockup-kpi-label" style="color: #FED7AA;">T-0 CURRENT EXECUTION</div>
+                        <div class="mockup-kpi-value" style="color: #F97316;">PowerShell</div>
+                    </div>
+                    <div class="mockup-kpi-card" style="background: #0B142F; border-color: rgba(249, 115, 22, 0.3);">
+                        <div class="mockup-kpi-label" style="color: #FED7AA;">T+12H PREDICTED RISK</div>
+                        <div class="mockup-kpi-value" style="color: #FBBF24;">Data Exfil</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DESIGN 9 ==================== -->
+        <div id="panel-d9" class="design-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">09. Bio-Adaptive Cyber Defense</h2>
+                    <p class="panel-tagline">Biological immune network · Bio-Luminescent Lime `#84CC16` · Organic cellular hexagons</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #07100D;"></span> #07100D Lichen</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #84CC16;"></span> #84CC16 Bio-Lime</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #10B981;"></span> #10B981 Flora</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #ECFCCB;"></span> #ECFCCB Spore</div>
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>🦠 Biophilic Psychological Affiliation</h4>
+                    <p>Representing defensive infrastructure as living cellular nodes activates the brain's innate biophilia, making complex distributed systems feel natural and intuitive to protect.</p>
+                </div>
+                <div class="psych-card">
+                    <h4>🛡️ Organic Threat Phagocytosis</h4>
+                    <p>Automated responses are modeled as antibody neutralization reactions, providing immediate perceptual closure that an attack has been neutralized.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DESIGN 10 ==================== -->
+        <div id="panel-d10" class="design-panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">10. Stealth Darkroom HUD (Analyst Darkroom)</h2>
+                    <p class="panel-tagline">Titanium Charcoal `#0D1117` · High-Contrast Blaze Orange `#FF7849` · 0% glare</p>
+                </div>
+                <div class="palette-strip">
+                    <div class="color-chip"><span class="chip-swatch" style="background: #0D1117;"></span> #0D1117 Titanium</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #161B22;"></span> #161B22 Surface</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #FF7849;"></span> #FF7849 Blaze Orange</div>
+                    <div class="color-chip"><span class="chip-swatch" style="background: #F0F6FC;"></span> #F0F6FC Text</div>
+                </div>
+            </div>
+
+            <div class="psych-grid">
+                <div class="psych-card">
+                    <h4>🔭 Scotopic Darkroom Adaptation</h4>
+                    <p>Designed for low-light command bunkers. Blaze orange preserves dark-adapted vision while providing extreme contrast ratios exceeding WCAG AAA standards (>9:1).</p>
+                </div>
+                <div class="psych-card">
+                    <h4>🏎️ High-Speed Visual Saccades</h4>
+                    <p>Sharp high-contrast typography allows analysts to scan tabular indicators with rapid eye movements without loss of comprehension or headache.</p>
+                </div>
+            </div>
+
+            <div class="live-mockup-frame" style="background: #0D1117; border-color: rgba(255, 120, 73, 0.3);">
+                <div class="mockup-top-nav">
+                    <span style="color: #FF7849; font-weight: 700;">// STEALTH DARKROOM HUD · WCAG AAA CONTRAST MODE</span>
+                    <span style="color: #F0F6FC;">ZERO-GLARE COATING ACTIVE</span>
+                </div>
+                <div class="mockup-kpis">
+                    <div class="mockup-kpi-card" style="background: #161B22; border-color: rgba(255, 120, 73, 0.3);">
+                        <div class="mockup-kpi-label" style="color: #FFB399;">CRITICAL_INDICATORS</div>
+                        <div class="mockup-kpi-value" style="color: #FF7849;">0 Critical</div>
+                    </div>
+                    <div class="mockup-kpi-card" style="background: #161B22; border-color: rgba(255, 120, 73, 0.3);">
+                        <div class="mockup-kpi-label" style="color: #FFB399;">RECON_SOURCES</div>
+                        <div class="mockup-kpi-value" style="color: #F0F6FC;">500 Feeds</div>
+                    </div>
+                    <div class="mockup-kpi-card" style="background: #161B22; border-color: rgba(255, 120, 73, 0.3);">
+                        <div class="mockup-kpi-label" style="color: #FFB399;">ANALYSIS_ACCURACY</div>
+                        <div class="mockup-kpi-value" style="color: #FF7849;">99.98%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function switchDesign(designId) {
+            // Update Tab buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Update Panels
+            const panels = document.querySelectorAll('.design-panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+            document.getElementById('panel-' + designId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
