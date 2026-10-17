@@ -113,8 +113,27 @@ export default function RuleLibrary() {
                         Detection Rule Library
                     </h1>
                     <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-2xl">
-                        Production-grade Sigma YAML, YARA signatures, and Splunk/KQL query logic mapped to MITRE ATT&amp;CK techniques.
+                        Integrated Sigma &amp; YARA detections linked to the official{' '}
+                        <a
+                            href="https://github.com/SigmaHQ/sigma"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-700 underline font-medium"
+                        >
+                            SigmaHQ Open Source Repository
+                        </a>{' '}
+                        for verified SIEM queries across Microsoft Sentinel, Splunk, and Elastic.
                     </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <a
+                        href="https://github.com/SigmaHQ/sigma/tree/master/rules"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-secondary text-xs px-3 py-2 rounded-lg font-medium border border-slate-300 hover:bg-slate-50 flex items-center gap-1.5"
+                    >
+                        <span>↗ Browse SigmaHQ Rules</span>
+                    </a>
                 </div>
             </div>
 

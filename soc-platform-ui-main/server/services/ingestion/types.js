@@ -36,6 +36,6 @@ export const DEFAULT_CONFIG = {
     TIMEOUT_MS: parseInt(process.env.FETCH_TIMEOUT_MS || '12000', 10),
     MAX_RETRIES: parseInt(process.env.FETCH_MAX_RETRIES || '2', 10),
     MAX_BYTES: parseInt(process.env.FETCH_MAX_BYTES || `${5 * 1024 * 1024}`, 10), // 5MB
-    USER_AGENT: process.env.FETCH_USER_AGENT || 'NO-ENTRY-ThreatIntel-Collector/1.0 (+https://github.com/ceylonroameryt-bit/SOC-AI)',
+    USER_AGENT: process.env.FETCH_USER_AGENT || 'TacticLensBot/1.0 (+https://tacticlens.co.uk/bot)',
     ACCEPT_HEADER: 'application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, text/html;q=0.8, */*;q=0.7'
 };

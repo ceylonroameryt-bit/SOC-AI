@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
     LayoutDashboard, ShieldAlert, Shield, BarChart3, Flame,
     Database, Radio, Search, Target, BookOpen, Bot, Settings,
@@ -144,7 +144,7 @@ const NavBar = () => {
                     <Shield className="w-3 h-3 text-white" aria-hidden="true" />
                 </div>
                 <span className="font-display text-xs font-extrabold tracking-tight text-slate-800 hidden sm:block">
-                    NO ENTRY
+                    TacticLens
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shadow-[0_0_6px_#3B82F6] hidden sm:block" aria-hidden="true" />
             </div>

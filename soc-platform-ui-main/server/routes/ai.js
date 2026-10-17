@@ -5,7 +5,7 @@
  */
 
 import express from 'express';
-import { generateExecutiveBrief, generateRemediationSteps } from '../services/aiService.js';
+import { generateExecutiveBrief } from '../services/aiService.js';
 import { clusterArticles } from '../services/clusteringEngine.js';
 import { getArticles, getLatestAiBrief, saveAiBrief } from '../db/db.js';
 
@@ -101,22 +101,6 @@ router.get('/brief', async (req, res) => {
     }
 });
 
-/**
- * POST /api/ai/remediate
- * Generates tailored remediation steps for a threat indicator.
- */
-router.post('/remediate', async (req, res) => {
-    const { threat } = req.body;
-    if (!threat || typeof threat !== 'object') {
-        return res.status(400).json({ success: false, code: 'VALIDATION_ERROR', error: 'Request body must include a "threat" object.' });
-    }
-    try {
-        const result = await generateRemediationSteps(threat);
-        res.json(result);
-    } catch (err) {
-        res.status(500).json({ success: false, code: 'REMEDIATION_ERROR', error: 'Failed to generate remediation steps.', details: err.message });
-    }
-});
 
 /**
  * GET /api/ai/clusters

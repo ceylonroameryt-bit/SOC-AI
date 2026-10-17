@@ -25,6 +25,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { executeIngestionCycle } from './services/ingestion/ingestionEngine.js';
+import { hasDatabase } from './db/db.js';
+import { publishSharedSnapshot } from './services/sharedSnapshotService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -113,6 +115,14 @@ async function runCollector() {
             console.log(`[COLLECTOR] Run skipped: ${summary.reason}`);
         } else {
             console.log(`[COLLECTOR] Run finished with state: ${summary.state?.toUpperCase()}`);
+            if (!isDryRun && hasDatabase()) {
+                try {
+                    await publishSharedSnapshot();
+                    console.log('[COLLECTOR] Published shared snapshot to database.');
+                } catch (e) {
+                    console.warn('[COLLECTOR] Shared snapshot publish warning:', e.message);
+                }
+            }
         }
     } catch (err) {
         console.error('[COLLECTOR] Fatal error during collection run:', err);

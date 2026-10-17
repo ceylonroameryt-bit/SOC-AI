@@ -65,12 +65,6 @@ class ClusterResponse(BaseModel):
     deduplication_rate_percent: float
     clusters: List[Dict[str, Any]]
 
-class RemediationRequest(BaseModel):
-    threat_type: str
-    severity: str
-    description: Optional[str] = ""
-    iocs: Optional[Dict[str, List[str]]] = Field(default_factory=dict)
-
 class SigmaGenRequest(BaseModel):
     title: str
     indicator: str
@@ -83,7 +77,7 @@ class SigmaGenRequest(BaseModel):
 @app.get("/", tags=["Health"])
 def root():
     return {
-        "service": "NO ENTRY AI Microservice",
+        "service": "TacticLens AI Microservice",
         "status": "online",
         "version": "1.0.0",
         "timestamp": datetime.utcnow().isoformat(),
@@ -91,7 +85,6 @@ def root():
             "/docs",
             "/api/v1/briefing",
             "/api/v1/cluster",
-            "/api/v1/remediate",
             "/api/v1/sigma"
         ]
     }
@@ -241,42 +234,6 @@ def cluster_articles(payload: ClusterRequest):
         deduplication_rate_percent=dedup_rate,
         clusters=clusters
     )
-
-# ── SOC Analyst Remediation Playbook ──────────────────────────────────────────
-
-@app.post("/api/v1/remediate", tags=["SOC Automation"])
-def generate_remediation_playbook(payload: RemediationRequest):
-    t_type = (payload.threat_type or "").lower()
-    sev = payload.severity
-
-    playbook = {
-        "title": f"Incident Response Playbook — {payload.threat_type} ({sev})",
-        "phase_1_identification": [
-            "Validate detection alert in EDR console and correlate process execution tree.",
-            "Verify network connections to identified IP/Domain indicators.",
-            "Extract memory dump and artifact hashes from suspect host."
-        ],
-        "phase_2_containment": [
-            "Isolate compromised endpoint from network via EDR single-click isolation.",
-            "Revoke all active Kerberos / OAuth sessions for involved user accounts.",
-            "Null-route / block malicious IP addresses at the perimeter firewall."
-        ],
-        "phase_3_eradication": [
-            "Terminate unauthorized background processes and remove persistent scheduled tasks.",
-            "Delete malicious artifacts identified by hash verification.",
-            "Patch target CVE vulnerabilities across all reachable network hosts."
-        ],
-        "phase_4_recovery": [
-            "Restore encrypted or damaged files from verified offline snapshot.",
-            "Reset passwords for affected service and administrative accounts.",
-            "Monitor endpoint telemetry for 72 hours for recurrence."
-        ]
-    }
-
-    if "ransomware" in t_type:
-        playbook["phase_2_containment"].insert(0, "🚨 CRITICAL: Immediately sever SMB shares and unbind shared storage volumes to stop encryption propagation.")
-
-    return playbook
 
 # ── Sigma Detection Rule Generator ────────────────────────────────────────────
 

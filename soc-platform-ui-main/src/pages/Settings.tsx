@@ -258,54 +258,6 @@ INGEST_API_KEY=${ingestKey}`;
                 )}
             </section>
 
-            {/* SIEM Ingestion */}
-            <section className="space-y-4">
-                <h2 className="text-slate-900 font-bold font-display text-xl flex items-center gap-2">
-                    <span>📡</span> SIEM Ingestion Endpoint
-                </h2>
-                <div className="metric-card space-y-4">
-                    <p className="text-slate-600 text-sm">
-                        Push alerts from Wazuh, Snort, Suricata, or any external security pipeline directly into NO ENTRY.
-                        Critical and High alerts are automatically broadcast to all configured ChatOps webhooks.
-                    </p>
-                    <div className="space-y-2">
-                        <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">HTTP Ingestion Target</p>
-                        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-mono text-sm">
-                            <span className="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded text-xs">POST</span>
-                            <span className="text-slate-800 font-semibold">/api/v1/alerts</span>
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">Example cURL Payload</p>
-                        <div className="rounded-xl border border-slate-200 overflow-hidden">
-                            <div className="proj-img-browser-bar">
-                                <span className="dot dot-red"></span>
-                                <span className="dot dot-yellow"></span>
-                                <span className="dot dot-green"></span>
-                                <span className="proj-img-url">bash — curl /api/v1/alerts</span>
-                            </div>
-                            <pre className="bg-slate-900 p-4 text-xs text-emerald-300 font-mono overflow-x-auto whitespace-pre leading-relaxed">{`curl -X POST https://your-domain.com/api/v1/alerts \\
-  -H "X-API-Key: $INGEST_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "type": "Ransomware",
-    "severity": "Critical",
-    "source": "Wazuh",
-    "description": "Suspicious file encryption detected on WORKSTATION-04",
-    "ioc": {
-      "ip_addresses": ["192.168.1.50"],
-      "sha256": "8b668eb4f39e31d46b7eb81f8f17a94eeae4c6bc76be86fba65f9733ccfb8efc"
-    }
-  }'`}</pre>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                        {['type (required)', 'severity (required)', 'source', 'description', 'ioc.ip_addresses', 'ioc.domains', 'ioc.sha256', 'ioc.md5'].map(field => (
-                            <div key={field} className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-mono text-slate-700 text-center font-medium">{field}</div>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* .env Template */}
             <section className="space-y-4">
