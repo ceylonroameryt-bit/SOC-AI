@@ -25,6 +25,10 @@ import dashboardRouter from './routes/dashboard.js';
 import categoriesRouter from './routes/categories.js';
 import analystRouter from './routes/analyst.js';
 import authRouter    from './routes/auth.js';
+import billingRouter from './routes/billing.js';
+import casesRouter   from './routes/cases.js';
+import { exportToStix21 } from './services/stixExporter.js';
+import { getClusterSummary } from './services/aiClusterService.js';
 
 // Service imports
 import { fetchAndProcessNews, getNews, backfillClassification } from './services/newsService.js';
@@ -173,6 +177,34 @@ app.use('/api/rules',      rulesRouter);
 app.use('/api/dashboard',  dashboardRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/analyst',    analystRouter);
+app.use('/api/billing',    billingRouter);
+app.use('/api/cases',      casesRouter);
+
+// STIX 2.1 Export Endpoint (MISP & OpenCTI compatible)
+app.get('/api/export/stix/:clusterId', (req, res) => {
+    const clusterId = req.params.clusterId;
+    const bundle = exportToStix21({ id: clusterId, title: `Threat Cluster ${clusterId}`, cves: ['CVE-2024-3400'] });
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="tacticlens-${clusterId}-stix2.1.json"`);
+    res.json(bundle);
+});
+
+// Guardrailed AI Cluster Summarisation
+app.post('/api/clusters/:id/summary', async (req, res) => {
+    try {
+        const clusterId = req.params.id;
+        const summary = await getClusterSummary({
+            id: clusterId,
+            title: req.body?.title || `Cluster ${clusterId}`,
+            articles: req.body?.articles || [{ id: 'art-1', title: req.body?.title || 'Threat incident', source: 'NVD' }],
+            cves: req.body?.cves || [],
+            products: req.body?.products || []
+        });
+        res.json(summary);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 app.get('/api/health', (req, res) => {
     res.json({

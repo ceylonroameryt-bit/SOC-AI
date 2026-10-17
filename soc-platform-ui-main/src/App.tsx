@@ -23,6 +23,7 @@ const AIBrief        = lazy(() => import('./pages/AIBrief'));
 const VulnerabilitiesView = lazy(() => import('./pages/VulnerabilitiesView'));
 const CriticalThreatsView = lazy(() => import('./components/dashboard/CriticalThreatsView'));
 const SeverityChart  = lazy(() => import('./components/dashboard/SeverityChart'));
+const Pricing        = lazy(() => import('./pages/Pricing'));
 
 const LoadingSpinner = () => (
   <div
@@ -42,8 +43,9 @@ function App() {
         <BrowserRouter>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-              {/* Public Login Route */}
+              {/* Public Routes */}
               <Route path="/login" element={<Login />} />
+              <Route path="/pricing" element={<Pricing />} />
 
               {/* Protected Workspace Layout */}
               <Route
