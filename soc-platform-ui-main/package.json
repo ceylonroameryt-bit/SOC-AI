@@ -9,7 +9,7 @@
     "start": "node server/server.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "node --test tests/platform_verification.test.js tests/ingestion_pipeline.test.js tests/auth.test.js tests/data_fetching.test.js tests/cron_secret.test.js",
+    "test": "node --test tests/platform_verification.test.js tests/ingestion_pipeline.test.js tests/auth.test.js tests/data_fetching.test.js tests/cron_secret.test.js tests/risk_score.test.js tests/tql_compiler.test.js",
     "collector": "node server/collector.js",
     "preview": "vite preview"
   },

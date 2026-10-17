@@ -37,7 +37,7 @@ export const Layout: React.FC = () => {
     }, [mobileDrawerOpen]);
 
     return (
-        <div className="flex h-screen bg-[#050608] text-white font-sans selection:bg-amber-500/20 selection:text-amber-300 overflow-hidden">
+        <div className="flex h-screen bg-[#F3F4F6] text-[#0F1720] font-sans selection:bg-[#00E5FF]/20 selection:text-[#0B776C] overflow-hidden">
             {/* WCAG Skip Link */}
             <SkipLink />
 
@@ -47,8 +47,8 @@ export const Layout: React.FC = () => {
                 onClose={() => setIsModalOpen(false)}
             />
 
-            {/* Left Sidebar (Desktop: Static 216px, Mobile: Drawer) */}
-            <div className="hidden lg:block h-full">
+            {/* Left 72px Icon Rail (Desktop: Static 72px, Mobile: Drawer) */}
+            <div className="hidden lg:block h-full flex-shrink-0">
                 <Sidebar isDemoEnabled={isDemoEnabled} />
             </div>
 
@@ -62,13 +62,13 @@ export const Layout: React.FC = () => {
                 >
                     {/* Backdrop */}
                     <div
-                        className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
                         onClick={() => setMobileDrawerOpen(false)}
                         aria-hidden="true"
                     />
 
                     {/* Drawer Content */}
-                    <div className="relative flex-1 flex flex-col max-w-xs w-full bg-[#07090E] shadow-2xl z-50">
+                    <div className="relative flex-1 flex flex-col max-w-[72px] w-full bg-white shadow-2xl z-50">
                         <Sidebar
                             onClose={() => setMobileDrawerOpen(false)}
                             isDemoEnabled={isDemoEnabled}
@@ -78,7 +78,7 @@ export const Layout: React.FC = () => {
             )}
 
             {/* Right Main Column (TopBar + Workspace + CollectionStatusBar) */}
-            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-[#050608]">
+            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-[#F3F4F6]">
                 {/* 64px Top Bar */}
                 <TopBar
                     onMenuToggle={() => setMobileDrawerOpen(true)}

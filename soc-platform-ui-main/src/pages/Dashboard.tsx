@@ -67,25 +67,30 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* Header & Calm Resilience Switcher */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-emerald-500/10">
+            {/* Threat-Level Banner (CLAUDE.md §11) */}
+            <div className="p-3 bg-white border-l-4 border-[#F59E0B] border border-[#E4E7EC] rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs font-sans shadow-2xs">
+                <div className="flex items-center gap-2.5">
+                    <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-bold uppercase font-mono text-[10px] tracking-wide border border-amber-300">
+                        ELEVATED
+                    </span>
+                    <span className="font-semibold text-[#0F1720]">
+                        Threat Advisory: Active exploitation campaigns observed targeting educational and public sector tech stacks.
+                    </span>
+                </div>
+                <div className="flex items-center gap-2 text-[11px] text-[#5B6573] font-mono">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    <span>Real-time NVD · KEV · EPSS Correlation</span>
+                </div>
+            </div>
+
+            {/* Header & Tab Switcher */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[#E4E7EC]">
                 <div>
-                    <div className="flex items-center gap-2 mb-1.5">
-                        <span className="section-label">Calm Resilience · Autonomous Mission Control</span>
-                        <div
-                            className="availability-chip text-[10px] py-0.5 px-2"
-                            role="status"
-                            aria-label="Threat Radar status: Active"
-                        >
-                            <span className="chip-dot" aria-hidden="true"></span>
-                            <span className="font-semibold text-emerald-400">99.2% Core Stability</span>
-                        </div>
-                    </div>
-                    <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                        Security Operations &amp; AI Intelligence Dashboard
+                    <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0F1720] tracking-tight">
+                        SOC Threat Intelligence &amp; Triage Overview
                     </h1>
-                    <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-                        Autonomous threat intelligence, multi-agent triage, and vector correlation across enterprise telemetry.
+                    <p className="text-[#5B6573] text-xs sm:text-sm mt-0.5">
+                        Deterministic risk scoring, MITRE ATT&amp;CK® v16.1 mappings, and tech-stack relevance across 1,000 sources.
                     </p>
                 </div>
 
@@ -93,7 +98,7 @@ const Dashboard = () => {
                 <div
                     role="tablist"
                     aria-label="Dashboard views"
-                    className="flex flex-wrap items-center gap-1.5 bg-[#070A12] p-1 rounded-xl border border-emerald-500/15"
+                    className="flex flex-wrap items-center gap-1.5 bg-white p-1 rounded-xl border border-[#E4E7EC] shadow-2xs"
                 >
                     <button
                         id="tab-overview"
@@ -102,10 +107,10 @@ const Dashboard = () => {
                         aria-controls="panel-overview"
                         tabIndex={activeTab === 'overview' ? 0 : -1}
                         onClick={() => handleTabChange('overview', 'Mission Control')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-[#0B776C] ${
                             activeTab === 'overview'
-                                ? 'bg-emerald-500 text-slate-950 shadow-sm font-extrabold'
-                                : 'text-slate-400 hover:text-white'
+                                ? 'bg-[#0B776C] text-white shadow-2xs font-extrabold'
+                                : 'text-[#5B6573] hover:text-[#0F1720] hover:bg-[#F3F4F6]'
                         }`}
                     >
                         <LayoutDashboard className="w-3.5 h-3.5" aria-hidden="true" />
@@ -119,10 +124,10 @@ const Dashboard = () => {
                         aria-controls="panel-news"
                         tabIndex={activeTab === 'news' ? 0 : -1}
                         onClick={() => handleTabChange('news', 'Global Stream')}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all focus:outline-none focus:ring-1 focus:ring-[#0B776C] ${
                             activeTab === 'news'
-                                ? 'bg-emerald-500 text-slate-950 shadow-sm font-extrabold'
-                                : 'text-slate-400 hover:text-white'
+                                ? 'bg-[#0B776C] text-white shadow-2xs font-extrabold'
+                                : 'text-[#5B6573] hover:text-[#0F1720] hover:bg-[#F3F4F6]'
                         }`}
                     >
                         <Newspaper className="w-3.5 h-3.5" aria-hidden="true" />

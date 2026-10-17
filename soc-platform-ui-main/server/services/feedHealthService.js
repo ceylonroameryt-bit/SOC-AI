@@ -23,6 +23,11 @@ const SOURCES_FILE = path.join(__dirname, '../data/sources.json');
 
 // In-memory telemetry map: sourceId -> MeasuredHealth
 const healthMap = new Map();
+const adminReviewSources = new Map();
+
+export function getAdminReviewSources() {
+    return Array.from(adminReviewSources.values());
+}
 
 export const CANONICAL_RULES = {
     fetchingPermitted: true,
@@ -127,7 +132,11 @@ initHealth();
  */
 export function calculateSourceStatus(entry) {
     if (!entry) return 'unknown';
-    if (entry.status === 'disabled') return 'disabled';
+    if (entry.status === 'disabled' || entry.isEnabled === false) return 'disabled';
+
+    if (entry.consecutiveFailures >= 20) {
+        return 'disabled';
+    }
 
     if (entry.consecutiveFailures >= 3) {
         return 'failed';
@@ -221,9 +230,24 @@ export function recordCollectionResult(sourceId, {
         entry.consecutiveSuccesses = 0;
         entry.lastError = error ? String(error).slice(0, 200) : 'Connection failed';
         entry.errorCategory = errorCategory || (httpStatus >= 500 ? 'HTTP_SERVER_ERROR' : (httpStatus >= 400 ? 'HTTP_CLIENT_ERROR' : 'NETWORK_ERROR'));
+
+        if (entry.consecutiveFailures >= 20) {
+            entry.status = 'disabled';
+            entry.disabledReason = 'Auto-disabled: 20 consecutive fetch failures';
+            adminReviewSources.set(sourceId, {
+                sourceId,
+                name: entry.name,
+                url: entry.url,
+                consecutiveFailures: entry.consecutiveFailures,
+                lastError: entry.lastError,
+                disabledAt: now
+            });
+        }
     }
 
-    entry.status = calculateSourceStatus(entry);
+    if (entry.consecutiveFailures < 20) {
+        entry.status = calculateSourceStatus(entry);
+    }
 
     // Save asynchronously to PostgreSQL if available
     try {

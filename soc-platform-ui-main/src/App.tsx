@@ -57,6 +57,7 @@ function App() {
               {/* Primary Analyst Workspace */}
               <Route index element={<IntelligenceWorkspace />} />
               <Route path="intelligence" element={<IntelligenceWorkspace />} />
+              <Route path="explorer"     element={<IntelligenceWorkspace />} />
               <Route path="news"         element={<IntelligenceWorkspace />} />
               <Route path="global-news"  element={<IntelligenceWorkspace />} />
               <Route path="overview"     element={<Dashboard />} />
